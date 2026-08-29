@@ -1,0 +1,539 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  COMMANDER
+  TEAM_LEAD
+  MEMBER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum TaskStatus {
+  DRAFT
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  SUBMITTED_FOR_REVIEW
+  UNDER_REVIEW
+  COMPLETED
+  REJECTED
+  ON_HOLD
+  CANCELLED
+  OVERDUE
+}
+
+enum TaskPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TaskCategory {
+  OPERATIONS
+  ADMINISTRATION
+  FINANCE
+  HR
+  IT
+  MAINTENANCE
+  CUSTOMER_SUPPORT
+  MARKETING
+  DOCUMENTATION
+  MANAGEMENT
+  OTHER
+}
+
+enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_REASSIGNED
+  TASK_ACCEPTED
+  TASK_SUBMITTED
+  TASK_APPROVED
+  TASK_REJECTED
+  TASK_COMPLETED
+  TASK_OVERDUE
+  TASK_DELETED
+  COMMENT_ADDED
+  MENTION
+  ATTACHMENT_ADDED
+  DEADLINE_REMINDER
+  STATUS_CHANGE
+  PROGRESS_UPDATE
+  GENERAL
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  ASSIGN
+  REASSIGN
+  STATUS_CHANGE
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  USER_ACTIVATE
+  USER_DEACTIVATE
+  ROLE_CHANGE
+  APPROVE
+  REJECT
+}
+
+// ─── Users & Auth ────────────────────────────────────────────────────────────
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  firstName     String
+  lastName      String
+  phone         String?
+  avatar        String?
+  position      String?
+  rank          String?
+  role          Role        @default(MEMBER)
+  status        UserStatus  @default(ACTIVE)
+  emailVerified Boolean     @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  departmentId  String?
+  department    Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  teamId        String?
+  team          Team?       @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  // Task relations
+  createdTasks          Task[]              @relation("TaskCreator")
+  assignedTasks         TaskAssignee[]
+  comments              Comment[]
+  attachments           Attachment[]
+  notifications         Notification[]
+  activityLogs          ActivityLog[]
+  auditLogs             AuditLog[]
+  refreshTokens         RefreshToken[]
+  passwordResets        PasswordReset[]
+  sessions              UserSession[]
+  savedFilters          SavedFilter[]
+  favorites             UserFavorite[]
+  timeEntries           TaskTimeEntry[]
+  assignedSubtasks      SubtaskAssignee[]
+  commentMentions       CommentMention[]
+  createdSubtasks       Subtask[]
+  taskTemplates         TaskTemplate[]
+
+  @@index([email])
+  @@index([departmentId])
+  @@index([teamId])
+  @@index([role])
+  @@index([status])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([token])
+}
+
+model UserSession {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ip        String?
+  userAgent String?
+  isActive  Boolean  @default(true)
+  lastSeen  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ─── Organization ────────────────────────────────────────────────────────────
+
+model Department {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users   User[]
+  teams   Team[]
+  tasks   Task[]
+
+  @@index([name])
+}
+
+model Team {
+  id           String      @id @default(uuid())
+  name         String
+  description  String?
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  members User[]
+  tasks   Task[]
+
+  @@unique([name, departmentId])
+  @@index([departmentId])
+}
+
+// ─── Tasks ───────────────────────────────────────────────────────────────────
+
+model Task {
+  id               String       @id @default(uuid())
+  title            String
+  description      String?
+  status           TaskStatus   @default(DRAFT)
+  priority         TaskPriority @default(MEDIUM)
+  category         TaskCategory @default(OTHER)
+  progress         Int          @default(0)
+  estimatedHours   Float?
+  actualHours      Float?
+  dueDate          DateTime?
+  startDate        DateTime?
+  completedAt      DateTime?
+  isRecurring      Boolean      @default(false)
+  recurrenceType   RecurrenceType?
+  recurrenceEnd    DateTime?
+  location         String?
+  vehicleReference String?
+  customerReference String?
+  externalRef      String?
+  isArchived       Boolean      @default(false)
+  isFavorite       Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  // Creator
+  creatorId  String
+  creator    User    @relation("TaskCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Department
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  // Team
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  // Template
+  templateId String?
+  template   TaskTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  // Relations
+  assignees       TaskAssignee[]
+  subtasks        Subtask[]
+  dependencies    TaskDependency[]     @relation("TaskDependsOn")
+  dependentTasks  TaskDependency[]     @relation("BlockedTask")
+  comments        Comment[]
+  attachments     Attachment[]
+  activityLogs    ActivityLog[]
+  tags            TaskTag[]
+  timeEntries     TaskTimeEntry[]
+  favorites       UserFavorite[]
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([priority])
+  @@index([category])
+  @@index([dueDate])
+  @@index([departmentId])
+  @@index([teamId])
+  @@index([isArchived])
+}
+
+model TaskAssignee {
+  id        String    @id @default(uuid())
+  taskId    String
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPrimary Boolean   @default(false)
+  assignedAt DateTime @default(now())
+
+  @@unique([taskId, userId])
+  @@index([taskId])
+  @@index([userId])
+}
+
+model Subtask {
+  id          String    @id @default(uuid())
+  title       String
+  isCompleted Boolean   @default(false)
+  order       Int       @default(0)
+  taskId      String
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  creatorId   String
+  creator     User      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  assignees SubtaskAssignee[]
+
+  @@index([taskId])
+}
+
+model SubtaskAssignee {
+  id        String   @id @default(uuid())
+  subtaskId String
+  subtask   Subtask  @relation(fields: [subtaskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([subtaskId, userId])
+}
+
+model TaskDependency {
+  id              String   @id @default(uuid())
+  taskId          String
+  task            Task     @relation("BlockedTask", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnId     String
+  dependsOn       Task     @relation("TaskDependsOn", fields: [dependsOnId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@unique([taskId, dependsOnId])
+  @@index([taskId])
+  @@index([dependsOnId])
+}
+
+model Tag {
+  id    String    @id @default(uuid())
+  name  String    @unique
+  color String?
+  tasks TaskTag[]
+
+  @@index([name])
+}
+
+model TaskTag {
+  id     String @id @default(uuid())
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tagId  String
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, tagId])
+}
+
+model TaskTemplate {
+  id              String       @id @default(uuid())
+  name            String
+  description     String?
+  title           String
+  taskDescription String?
+  priority        TaskPriority @default(MEDIUM)
+  category        TaskCategory @default(OTHER)
+  estimatedHours  Float?
+  isActive        Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+
+  @@index([creatorId])
+}
+
+// ─── Comments ────────────────────────────────────────────────────────────────
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  isEdited  Boolean  @default(false)
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  mentions  CommentMention[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([taskId])
+  @@index([authorId])
+}
+
+model CommentMention {
+  id        String  @id @default(uuid())
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+// ─── Attachments ─────────────────────────────────────────────────────────────
+
+model Attachment {
+  id             String   @id @default(uuid())
+  originalName   String
+  mimeType       String
+  size           Int
+  storagePath    String
+  taskId         String?
+  task           Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  commentId      String?
+  uploaderId     String
+  uploader       User     @relation(fields: [uploaderId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+
+  @@index([taskId])
+  @@index([commentId])
+}
+
+// ─── Notifications ───────────────────────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(uuid())
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  link      String?
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actorId   String?
+  taskId    String?
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ─── Activity & Audit Logs ───────────────────────────────────────────────────
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   Json?
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id        String      @id @default(uuid())
+  action    AuditAction
+  entity    String
+  entityId  String?
+  oldValues Json?
+  newValues Json?
+  ip        String?
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}
+
+// ─── Dashboard & Filters ─────────────────────────────────────────────────────
+
+model SavedFilter {
+  id        String   @id @default(uuid())
+  name      String
+  filters   Json
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model UserFavorite {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
+}
+
+// ─── Time Tracking ───────────────────────────────────────────────────────────
+
+model TaskTimeEntry {
+  id          String   @id @default(uuid())
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  duration    Int?     // in seconds
+  taskId      String
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+}
+
+// ─── Settings ────────────────────────────────────────────────────────────────
+
+model SystemSetting {
+  id    String @id @default(uuid())
+  key   String @unique
+  value String
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}
