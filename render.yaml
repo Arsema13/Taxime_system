@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: taxime-backend
+    runtime: node
+    plan: free
+    buildCommand: |
+      cd backend
+      npm install
+      npx prisma generate
+      npx prisma migrate deploy
+      npm run build
+    startCommand: |
+      cd backend
+      node dist/app.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: taxime-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://taxime-frontend.onrender.com
+      - key: PORT
+        value: 10000
+
+databases:
+  - name: taxime-db
+    plan: free
+    databaseName: taxime_db
+    user: taxime_user
