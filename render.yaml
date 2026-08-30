@@ -43,7 +43,7 @@ services:
       npm run build
     startCommand: |
       cd frontend
-      serve dist -s
+      serve dist -s -l $PORT
     envVars:
       - key: NODE_ENV
         value: production
