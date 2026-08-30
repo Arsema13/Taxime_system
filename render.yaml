@@ -39,17 +39,16 @@ services:
     buildCommand: |
       cd frontend
       npm install
+      npm install -g serve
       npm run build
     startCommand: |
       cd frontend
-      npx serve dist -l 3000 -s
+      serve dist -s
     envVars:
       - key: NODE_ENV
         value: production
       - key: VITE_API_URL
         value: https://taxime-backend.onrender.com/api
-      - key: PORT
-        value: 3000
 
 databases:
   - name: taxime-db
