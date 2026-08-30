@@ -4,6 +4,24 @@ import { settingsService } from '../services/settings.service';
 import { successResponse } from '../utils/responses';
 
 export class SettingsController {
+  // User settings endpoints
+  async getUserSettings(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.id;
+      const settings = await settingsService.getUserSettings(userId);
+      res.json(successResponse('Settings retrieved', settings));
+    } catch (error) { next(error); }
+  }
+
+  async updateUserSettings(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.id;
+      const settings = await settingsService.updateUserSettings(userId, req.body);
+      res.json(successResponse('Settings updated', settings));
+    } catch (error) { next(error); }
+  }
+
+  // System settings endpoints (admin only)
   async getAll(_req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const settings = await settingsService.getAll();

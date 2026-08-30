@@ -5,10 +5,14 @@ import { authenticate, authorize } from '../middleware/auth';
 const router = Router();
 
 router.use(authenticate);
-router.use(authorize('COMMANDER'));
 
-router.get('/', settingsController.getAll);
-router.put('/', settingsController.set);
-router.put('/bulk', settingsController.setMultiple);
+// User settings routes (all authenticated users)
+router.get('/', settingsController.getUserSettings);
+router.put('/', settingsController.updateUserSettings);
+
+// System settings routes (admin only)
+router.get('/system', authorize('COMMANDER'), settingsController.getAll);
+router.put('/system', authorize('COMMANDER'), settingsController.set);
+router.put('/system/bulk', authorize('COMMANDER'), settingsController.setMultiple);
 
 export default router;

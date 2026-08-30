@@ -51,7 +51,7 @@ function buildWhereClause(filters: any): any {
   const where: any = {};
 
   if (userRole === 'TEAM_LEAD' && userId) {
-    where.OR = [{ creatorId: userId }, { assignees: { some: { userId } } }, { team: { members: { some: { userId } } } }];
+    where.OR = [{ creatorId: userId }, { assignees: { some: { userId } } }, { team: { members: { some: { id: userId } } } }];
   } else if (userRole === 'MEMBER' && userId) {
     where.OR = [{ creatorId: userId }, { assignees: { some: { userId } } }];
   }

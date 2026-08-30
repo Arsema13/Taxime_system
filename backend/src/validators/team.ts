@@ -18,8 +18,9 @@ export const addTeamMemberSchema = z.object({
 });
 
 export const teamQuerySchema = z.object({
-  page: z.string().optional().default('1'),
-  limit: z.string().optional().default('20'),
-  departmentId: z.string().uuid().optional(),
+  page: z.string().optional(),
+  limit: z.string().optional(),
+  departmentId: z.string().optional(),
   search: z.string().optional(),
-});
+  isActive: z.string().optional(),
+}).optional();

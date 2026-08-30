@@ -10,7 +10,7 @@ router.use(authenticate);
 
 router.get('/me/stats', userController.getMyStats);
 router.put('/me', validate(updateUserSchema), userController.updateMe);
-router.get('/', authorize('COMMANDER'), validate(userQuerySchema, 'query'), userController.getAll);
+router.get('/', authorize('COMMANDER', 'TEAM_LEAD'), validate(userQuerySchema, 'query'), userController.getAll);
 router.get('/:id', userController.getById);
 router.get('/:id/stats', userController.getStats);
 router.post('/', authorize('COMMANDER'), validate(createUserSchema), userController.create);

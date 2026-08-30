@@ -11,22 +11,27 @@ export class TeamQueryService {
     if (departmentId) where.departmentId = departmentId;
     if (search) where.name = { contains: search, mode: 'insensitive' };
 
-    const [teams, total] = await Promise.all([
-      prisma.team.findMany({
-        where, skip, take: limit,
-        include: {
-          department: { select: { id: true, name: true } },
-          _count: { select: { members: true, tasks: true } },
-        },
-        orderBy: { name: 'asc' },
-      }),
-      prisma.team.count({ where }),
-    ]);
+    try {
+      const [teams, total] = await Promise.all([
+        prisma.team.findMany({
+          where, skip, take: limit,
+          include: {
+            department: { select: { id: true, name: true } },
+            _count: { select: { members: true, tasks: true } },
+          },
+          orderBy: { name: 'asc' },
+        }),
+        prisma.team.count({ where }),
+      ]);
 
-    return {
-      data: teams,
-      pagination: { total, page, limit, totalPages: Math.ceil(total / limit), hasNext: page * limit < total, hasPrev: page > 1 },
-    };
+      return {
+        data: teams,
+        pagination: { total, page, limit, totalPages: Math.ceil(total / limit), hasNext: page * limit < total, hasPrev: page > 1 },
+      };
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+      throw error;
+    }
   }
 
   async findById(id: string) {
@@ -35,7 +40,15 @@ export class TeamQueryService {
       include: {
         department: { select: { id: true, name: true } },
         members: {
-          select: { id: true, firstName: true, lastName: true, email: true, avatar: true, position: true, role: true },
+          select: { 
+            id: true, 
+            firstName: true, 
+            lastName: true, 
+            email: true, 
+            avatar: true, 
+            position: true, 
+            role: true 
+          },
         },
         _count: { select: { members: true, tasks: true } },
       },

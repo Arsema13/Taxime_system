@@ -143,6 +143,7 @@ model User {
   commentMentions       CommentMention[]
   createdSubtasks       Subtask[]
   taskTemplates         TaskTemplate[]
+  settings              UserSettings?
 
   @@index([email])
   @@index([departmentId])
@@ -536,4 +537,33 @@ model SystemSetting {
   updatedAt DateTime @updatedAt
 
   @@index([key])
+}
+
+model UserSettings {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Notification settings
+  emailNotifications         Boolean @default(true)
+  taskAssignedNotification   Boolean @default(true)
+  taskUpdatedNotification    Boolean @default(true)
+  taskDueNotification        Boolean @default(true)
+  commentMentionNotification Boolean @default(true)
+  
+  // Appearance settings
+  theme                 String  @default("light")
+  language              String  @default("en")
+  dateFormat            String  @default("MM/DD/YYYY")
+  timeFormat            String  @default("12h")
+  
+  // Privacy settings
+  profileVisibility     String  @default("team")
+  showEmail             Boolean @default(false)
+  showPhone             Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
