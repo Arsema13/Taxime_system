@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, CheckSquare, Calendar, Star, Users, Building2,
   BarChart3, Bell, Activity, Settings, LogOut, ChevronLeft,
-  ChevronRight, Menu, X, Shield, ClipboardList,
+  ChevronRight, Menu, X, Shield, ClipboardList, AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '@/contexts';
 import { Avatar } from '@/components/ui/Avatar';
@@ -44,6 +44,12 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
   const { user, logout } = useAuth();
   const { unreadCount }  = useNotifications();
   const location         = useLocation();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = async () => {
+    setShowLogoutConfirm(false);
+    await logout();
+  };
 
   const allowed = NAV_ITEMS.filter(
     (item) => !item.roles || item.roles.includes(user?.role ?? ''),
@@ -117,7 +123,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
           )}
         </NavLink>
         <button
-          onClick={logout}
+          onClick={() => setShowLogoutConfirm(true)}
           title="Logout"
           className={`sidebar-link sidebar-link-inactive text-red-300 hover:bg-red-900/30 hover:text-red-200 ${collapsed ? 'justify-center px-2' : ''}`}
         >
@@ -138,6 +144,41 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
 
   return (
     <>
+      {/* ── Logout Confirmation Modal ──────────────────────────────────────── */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowLogoutConfirm(false)}
+          />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-auto p-6 sm:p-8 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <AlertTriangle className="w-7 h-7 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 mb-1">Logout</h3>
+              <p className="text-slate-500 text-sm mb-6">
+                Are you sure you want to log out?
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+                >
+                  Yes, Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Desktop sidebar ─────────────────────────────────────────────── */}
       <aside
         className={[
