@@ -32,6 +32,25 @@ services:
       - key: PORT
         value: 10000
 
+  - type: web
+    name: taxime-frontend
+    runtime: node
+    plan: free
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build
+    startCommand: |
+      cd frontend
+      npx serve dist -l 3000 -s
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        value: https://taxime-backend.onrender.com/api
+      - key: PORT
+        value: 3000
+
 databases:
   - name: taxime-db
     plan: free
