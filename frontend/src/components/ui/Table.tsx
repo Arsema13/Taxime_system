@@ -24,15 +24,14 @@ export function Table<T>({
   columns, data, keyExtractor, loading = false, emptyMessage = 'No data found.',
   onRowClick, sortKey, sortOrder, onSort,
 }: TableProps<T>) {
-  // Safety checks
   const safeColumns = Array.isArray(columns) ? columns : [];
   const safeData = Array.isArray(data) ? data : [];
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200">
+    <div className="overflow-x-auto rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
+          <tr className="border-b border-white/40 bg-white/20">
             {safeColumns.map((col) => (
               <th
                 key={col.key}
@@ -56,10 +55,10 @@ export function Table<T>({
         <tbody>
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => (
-              <tr key={i} className="border-b border-slate-100">
+              <tr key={i} className="border-b border-white/20">
                 {safeColumns.map((col) => (
                   <td key={col.key} className="px-4 py-3">
-                    <div className="h-4 bg-slate-200 rounded animate-pulse" />
+                    <div className="h-4 bg-white/40 rounded animate-pulse" />
                   </td>
                 ))}
               </tr>
@@ -76,8 +75,8 @@ export function Table<T>({
                 key={keyExtractor(row)}
                 onClick={() => onRowClick?.(row)}
                 className={[
-                  'border-b border-slate-100 last:border-0 transition-colors',
-                  onRowClick ? 'cursor-pointer hover:bg-slate-50' : '',
+                  'border-b border-white/20 last:border-0 transition-colors',
+                  onRowClick ? 'cursor-pointer hover:bg-white/30' : '',
                 ].join(' ')}
               >
                 {safeColumns.map((col) => (

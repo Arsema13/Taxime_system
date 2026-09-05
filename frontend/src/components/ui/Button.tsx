@@ -15,17 +15,17 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const VARIANTS: Record<Variant, string> = {
   primary:   'bg-teal-600 text-white hover:bg-teal-700 shadow-sm border border-teal-600',
-  secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200',
+  secondary: 'bg-white/60 backdrop-blur-md text-slate-700 hover:bg-white border border-white/40 shadow-sm',
   danger:    'bg-red-600 text-white hover:bg-red-700 shadow-sm border border-red-600',
-  ghost:     'text-slate-600 hover:bg-slate-100 border border-transparent',
-  outline:   'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300',
+  ghost:     'text-slate-600 hover:bg-white/40 border border-transparent',
+  outline:   'bg-white/60 backdrop-blur-md text-slate-700 hover:bg-white border border-white/40 shadow-sm',
   success:   'bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm border border-emerald-600',
 };
 
 const SIZES: Record<Size, string> = {
-  xs: 'px-2.5 py-1 text-xs gap-1 rounded-md',
-  sm: 'px-3 py-1.5 text-sm gap-1.5 rounded-lg',
-  md: 'px-4 py-2 text-sm gap-2 rounded-lg',
+  xs: 'px-2.5 py-1 text-xs gap-1 rounded-lg',
+  sm: 'px-3 py-1.5 text-sm gap-1.5 rounded-xl',
+  md: 'px-4 py-2 text-sm gap-2 rounded-xl',
   lg: 'px-5 py-2.5 text-base gap-2 rounded-xl',
 };
 

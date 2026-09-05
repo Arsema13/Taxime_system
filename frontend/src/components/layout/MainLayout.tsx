@@ -4,20 +4,23 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 
 const ROUTE_TITLES: Record<string, string> = {
-  '/dashboard':    'Dashboard',
-  '/tasks':        'Tasks',
-  '/my-tasks':     'My Tasks',
-  '/calendar':     'Calendar',
-  '/favorites':    'Favorites',
-  '/teams':        'Teams',
-  '/employees':    'Employees',
-  '/departments':  'Departments',
-  '/reports':      'Reports',
-  '/activity':     'Activity Log',
-  '/audit':        'Audit Log',
-  '/notifications':'Notifications',
-  '/settings':     'Settings',
-  '/profile':      'Profile',
+  '/dashboard':          'Dashboard',
+  '/tasks':              'Tasks',
+  '/my-tasks':           'My Tasks',
+  '/calendar':           'Calendar',
+  '/favorites':          'Favorites',
+  '/teams':              'Teams',
+  '/employees':          'Employees',
+  '/departments':        'Departments',
+  '/reports':            'Reports',
+  '/reports/submit':     'Submit Report',
+  '/reports/my-reports': 'My Reports',
+  '/reports/review':     'Review Reports',
+  '/activity':           'Activity Log',
+  '/audit':              'Audit Log',
+  '/notifications':      'Notifications',
+  '/settings':           'Settings',
+  '/profile':            'Profile',
 };
 
 function usePageTitle(pathname: string) {

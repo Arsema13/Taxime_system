@@ -37,6 +37,10 @@ const NotificationsPage  = lazy(() => import('@/pages/notifications/Notification
 
 // ── Reports & Logs ────────────────────────────────────────────────────────
 const ReportsPage        = lazy(() => import('@/pages/reports/ReportsPage'));
+const SubmitReportPage   = lazy(() => import('@/pages/reports/SubmitReportPage'));
+const MyReportsPage      = lazy(() => import('@/pages/reports/MyReportsPage'));
+const ReviewReportsPage  = lazy(() => import('@/pages/reports/ReviewReportsPage'));
+const ReportDetailPage   = lazy(() => import('@/pages/reports/ReportDetailPage'));
 const ActivityLogPage    = lazy(() => import('@/pages/activity/ActivityLogPage'));
 const AuditLogPage       = lazy(() => import('@/pages/activity/AuditLogPage'));
 
@@ -142,6 +146,21 @@ export function AppRouter() {
             element={
               <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
                 <SuspenseWrap><ReportsPage /></SuspenseWrap>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Report Submission — All roles */}
+          <Route path="/reports/submit" element={<SuspenseWrap><SubmitReportPage /></SuspenseWrap>} />
+          <Route path="/reports/my-reports" element={<SuspenseWrap><MyReportsPage /></SuspenseWrap>} />
+          <Route path="/reports/:id" element={<SuspenseWrap><ReportDetailPage /></SuspenseWrap>} />
+
+          {/* Report Review — Commander + Team Lead */}
+          <Route
+            path="/reports/review"
+            element={
+              <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
+                <SuspenseWrap><ReviewReportsPage /></SuspenseWrap>
               </ProtectedRoute>
             }
           />

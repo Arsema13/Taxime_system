@@ -21,14 +21,12 @@ const SIZES = {
 };
 
 export function Modal({ isOpen, onClose, title, description, size = 'md', children, footer, hideClose = false }: ModalProps) {
-  // lock body scroll
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     else        document.body.style.overflow = '';
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
-  // close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handler);
@@ -39,21 +37,18 @@ export function Modal({ isOpen, onClose, title, description, size = 'md', childr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      {/* Panel */}
       <div
         className={[
-          'relative bg-white rounded-2xl shadow-2xl w-full animate-in flex flex-col max-h-[90vh]',
+          'relative bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl w-full animate-in flex flex-col max-h-[90vh] border border-white/40',
           SIZES[size],
         ].join(' ')}
       >
-        {/* Header */}
         {(title || !hideClose) && (
-          <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-4 border-b border-slate-100 shrink-0">
+          <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-4 border-b border-white/40 shrink-0">
             <div>
               {title && <h2 className="text-lg font-semibold text-slate-800">{title}</h2>}
               {description && <p className="text-sm text-slate-500 mt-0.5">{description}</p>}
@@ -61,7 +56,7 @@ export function Modal({ isOpen, onClose, title, description, size = 'md', childr
             {!hideClose && (
               <button
                 onClick={onClose}
-                className="text-slate-400 hover:text-slate-600 transition-colors rounded-lg p-1 hover:bg-slate-100 shrink-0 mt-0.5"
+                className="text-slate-400 hover:text-slate-600 transition-colors rounded-lg p-1 hover:bg-white/40 shrink-0 mt-0.5"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -69,12 +64,10 @@ export function Modal({ isOpen, onClose, title, description, size = 'md', childr
           </div>
         )}
 
-        {/* Body */}
         <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
 
-        {/* Footer */}
         {footer && (
-          <div className="px-6 pb-5 pt-4 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
+          <div className="px-6 pb-5 pt-4 border-t border-white/40 flex items-center justify-end gap-2 shrink-0">
             {footer}
           </div>
         )}
@@ -120,14 +113,14 @@ export function ConfirmDialog({
         <div className="flex gap-3 w-full mt-1">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 rounded-lg border border-slate-300 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+            className="flex-1 px-4 py-2 rounded-xl bg-white/60 backdrop-blur-md border border-white/40 text-sm font-medium text-slate-700 hover:bg-white transition-colors"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60 ${colors[variant]}`}
+            className={`flex-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-60 ${colors[variant]}`}
           >
             {loading ? 'Loading…' : confirmLabel}
           </button>

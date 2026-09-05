@@ -7,6 +7,7 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/layout/PageHeader';
 
 export default function TeamDetailPage() {
@@ -35,7 +36,7 @@ export default function TeamDetailPage() {
         actions={<Button variant="outline" size="sm" icon={<ArrowLeft className="w-4 h-4" />} onClick={() => navigate(-1)}>Back</Button>}
       />
 
-      <div className="card p-6">
+      <Card padding="lg">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-slate-800">Members ({members.length})</h3>
         </div>
@@ -44,7 +45,7 @@ export default function TeamDetailPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {members.map((m) => (
-              <div key={m.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+              <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/30 border border-white/40 hover:bg-white/50 transition-colors">
                 <Avatar src={m.user.avatar} name={`${m.user.firstName} ${m.user.lastName}`} size="md" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
@@ -58,7 +59,7 @@ export default function TeamDetailPage() {
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

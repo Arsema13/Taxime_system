@@ -144,6 +144,10 @@ model User {
   createdSubtasks       Subtask[]
   taskTemplates         TaskTemplate[]
   settings              UserSettings?
+  
+  // Report relations
+  authoredReports       Report[]           @relation("ReportAuthor")
+  assignedReports       Report[]           @relation("ReportAssigner")
 
   @@index([email])
   @@index([departmentId])
@@ -278,6 +282,7 @@ model Task {
   tags            TaskTag[]
   timeEntries     TaskTimeEntry[]
   favorites       UserFavorite[]
+  reports         Report[]
 
   @@index([creatorId])
   @@index([status])
@@ -526,6 +531,74 @@ model TaskTimeEntry {
 
   @@index([taskId])
   @@index([userId])
+}
+
+// ─── Reports ─────────────────────────────────────────────────────────────────
+
+enum ReportType {
+  TASK_REPORT
+  DAILY_SUMMARY
+  WEEKLY_REPORT
+  MONTHLY_REPORT
+  YEARLY_REPORT
+}
+
+enum ReportPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+  CUSTOM
+}
+
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  REVISION_NEEDED
+}
+
+model Report {
+  id              String       @id @default(uuid())
+  title           String
+  reportType      ReportType   @default(TASK_REPORT)
+  period          ReportPeriod @default(CUSTOM)
+  fromDate        DateTime
+  toDate          DateTime
+  
+  // Content
+  summary         String
+  progress        Int          @default(0)
+  timeSpent       Float?       // Hours spent
+  blockers        String?
+  achievements    String?
+  nextSteps       String?
+  
+  // Status
+  status          ReportStatus @default(DRAFT)
+  submittedAt     DateTime?
+  reviewedAt      DateTime?
+  reviewerComment String?
+  
+  // Relations
+  authorId        String
+  author          User         @relation("ReportAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  assignerId      String?
+  assigner        User?        @relation("ReportAssigner", fields: [assignerId], references: [id], onDelete: SetNull)
+  taskId          String?
+  task            Task?        @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([authorId])
+  @@index([assignerId])
+  @@index([taskId])
+  @@index([status])
+  @@index([reportType])
+  @@index([createdAt])
 }
 
 // ─── Settings ────────────────────────────────────────────────────────────────

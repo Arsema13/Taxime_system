@@ -7,5 +7,6 @@ export { dashboardService } from './dashboard.service';
 export { departmentService } from './department.service';
 export { teamService } from './team.service';
 export { reportService, downloadBlob } from './report.service';
+export { submittedReportService } from './submitted-report.service';
 export { activityService } from './activity.service';
 export { settingsService } from './settings.service';

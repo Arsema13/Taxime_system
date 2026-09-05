@@ -5,3 +5,4 @@ export * from './notification.types';
 export * from './dashboard.types';
 export * from './department.types';
 export * from './common.types';
+export * from './report.types';

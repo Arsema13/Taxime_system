@@ -6,7 +6,7 @@ import type { User, UserStats } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
-import { StatCard } from '@/components/ui/Card';
+import { StatCard, Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { format } from 'date-fns';
@@ -37,8 +37,7 @@ export default function EmployeeDetailPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile card */}
-        <div className="card p-6 flex flex-col items-center text-center gap-4">
+        <Card padding="lg" className="flex flex-col items-center text-center gap-4">
           <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="xl" />
           <div>
             <h2 className="text-xl font-bold text-slate-800">{user.firstName} {user.lastName}</h2>
@@ -53,16 +52,15 @@ export default function EmployeeDetailPage() {
               {user.status}
             </Badge>
           </div>
-          <div className="w-full border-t border-slate-100 pt-4 flex flex-col gap-2 text-sm text-slate-600">
+          <div className="w-full border-t border-white/40 pt-4 flex flex-col gap-2 text-sm text-slate-600">
             <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-slate-400" />{user.email}</span>
             {user.phone && <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-slate-400" />{user.phone}</span>}
             {user.department && <span className="flex items-center gap-2"><Building2 className="w-4 h-4 text-slate-400" />{user.department.name}</span>}
             {user.team && <span className="flex items-center gap-2"><Users className="w-4 h-4 text-slate-400" />{user.team.name}</span>}
             <span className="flex items-center gap-2"><Calendar className="w-4 h-4 text-slate-400" />Joined {format(new Date(user.createdAt), 'MMM yyyy')}</span>
           </div>
-        </div>
+        </Card>
 
-        {/* Stats */}
         {stats && (
           <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4 content-start">
             <StatCard label="Assigned" value={stats.totalAssigned} icon={<span className="text-2xl">📋</span>} iconBg="bg-blue-100" />

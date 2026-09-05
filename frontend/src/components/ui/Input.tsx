@@ -29,9 +29,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             {...props}
             className={[
-              'w-full rounded-lg border bg-white text-sm text-slate-800 placeholder:text-slate-400',
+              'w-full rounded-xl border bg-white/60 backdrop-blur-md text-sm text-slate-800 placeholder:text-slate-400',
               'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500',
-              error ? 'border-red-400 focus:ring-red-400' : 'border-slate-300',
+              error ? 'border-red-400 focus:ring-red-400' : 'border-white/40',
               icon       ? 'pl-9'  : 'pl-3',
               iconRight  ? 'pr-9'  : 'pr-3',
               'py-2',
@@ -79,9 +79,9 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           {...props}
           className={[
-            'w-full rounded-lg border bg-white text-sm text-slate-800 placeholder:text-slate-400 resize-y min-h-[80px]',
+            'w-full rounded-xl border bg-white/60 backdrop-blur-md text-sm text-slate-800 placeholder:text-slate-400 resize-y min-h-[80px]',
             'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 px-3 py-2',
-            error ? 'border-red-400' : 'border-slate-300',
+            error ? 'border-red-400' : 'border-white/40',
             props.disabled ? 'bg-slate-50 opacity-60 cursor-not-allowed' : '',
             className,
           ].join(' ')}
@@ -117,9 +117,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           {...props}
           className={[
-            'w-full rounded-lg border bg-white text-sm text-slate-800',
+            'w-full rounded-xl border bg-white/60 backdrop-blur-md text-sm text-slate-800',
             'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 px-3 py-2',
-            error ? 'border-red-400' : 'border-slate-300',
+            error ? 'border-red-400' : 'border-white/40',
             props.disabled ? 'bg-slate-50 opacity-60 cursor-not-allowed' : '',
             className,
           ].join(' ')}

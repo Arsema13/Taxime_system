@@ -4,7 +4,7 @@ import {
   LayoutDashboard, CheckSquare, Calendar, Star, Users, Building2,
   BarChart3, Bell, Activity, Settings, LogOut, ChevronLeft,
   ChevronRight, Menu, X, Shield, ClipboardList, AlertTriangle,
-  Plus, Send, Triangle,
+  Plus, Send, Triangle, FileText, ClipboardCheck,
 } from 'lucide-react';
 import { useAuth } from '@/contexts';
 import { useNotifications } from '@/contexts';
@@ -18,19 +18,22 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard',    to: '/dashboard',     icon: <LayoutDashboard size={18} /> },
-  { label: 'Tasks',        to: '/tasks',         icon: <CheckSquare size={18} /> },
-  { label: 'My Tasks',     to: '/my-tasks',      icon: <ClipboardList size={18} /> },
-  { label: 'Calendar',     to: '/calendar',      icon: <Calendar size={18} /> },
-  { label: 'Favorites',    to: '/favorites',     icon: <Star size={18} /> },
-  { label: 'Teams',        to: '/teams',         icon: <Users size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
-  { label: 'Employees',    to: '/employees',     icon: <Users size={18} />, roles: ['COMMANDER'] },
-  { label: 'Departments',  to: '/departments',   icon: <Building2 size={18} />, roles: ['COMMANDER'] },
-  { label: 'Reports',      to: '/reports',       icon: <BarChart3 size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
-  { label: 'Activity Log', to: '/activity',      icon: <Activity size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
-  { label: 'Audit Log',    to: '/audit',         icon: <Shield size={18} />, roles: ['COMMANDER'] },
-  { label: 'Notifications',to: '/notifications', icon: <Bell size={18} /> },
-  { label: 'Settings',     to: '/settings',      icon: <Settings size={18} /> },
+  { label: 'Dashboard',      to: '/dashboard',        icon: <LayoutDashboard size={18} /> },
+  { label: 'Tasks',          to: '/tasks',            icon: <CheckSquare size={18} /> },
+  { label: 'My Tasks',       to: '/my-tasks',         icon: <ClipboardList size={18} /> },
+  { label: 'Calendar',       to: '/calendar',         icon: <Calendar size={18} /> },
+  { label: 'Favorites',      to: '/favorites',        icon: <Star size={18} /> },
+  { label: 'Submit Report',  to: '/reports/submit',   icon: <Send size={18} /> },
+  { label: 'My Reports',     to: '/reports/my-reports', icon: <FileText size={18} /> },
+  { label: 'Review Reports', to: '/reports/review',   icon: <ClipboardCheck size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
+  { label: 'Teams',          to: '/teams',            icon: <Users size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
+  { label: 'Employees',      to: '/employees',        icon: <Users size={18} />, roles: ['COMMANDER'] },
+  { label: 'Departments',    to: '/departments',      icon: <Building2 size={18} />, roles: ['COMMANDER'] },
+  { label: 'Reports',        to: '/reports',          icon: <BarChart3 size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
+  { label: 'Activity Log',   to: '/activity',         icon: <Activity size={18} />, roles: ['COMMANDER', 'TEAM_LEAD'] },
+  { label: 'Audit Log',      to: '/audit',            icon: <Shield size={18} />, roles: ['COMMANDER'] },
+  { label: 'Notifications',  to: '/notifications',    icon: <Bell size={18} /> },
+  { label: 'Settings',       to: '/settings',         icon: <Settings size={18} /> },
 ];
 
 interface SidebarProps {
