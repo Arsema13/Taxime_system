@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { CheckSquare, AlertTriangle, Clock, TrendingUp, Plus, RefreshCw } from 'lucide-react';
+import { CheckSquare, AlertTriangle, Clock, TrendingUp, Plus, RefreshCw, MoreHorizontal, ArrowUpRight } from 'lucide-react';
 import { dashboardService } from '@/services';
 import type { MemberDashboard as TMemberDashboard } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -39,10 +39,9 @@ export default function MemberDashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Greeting */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Welcome back, {user?.firstName} 👋</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-800">Welcome back, {user?.firstName}</h1>
           <p className="text-slate-500 text-sm mt-0.5">Here's your personal task overview.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -52,51 +51,63 @@ export default function MemberDashboard() {
         </div>
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        <StatCard
-          label="Assigned"
-          value={data.stats.assignedTasks}
-          icon={<CheckSquare className="w-6 h-6 text-teal-600" />}
-          iconBg="bg-teal-100"
-        />
-        <StatCard
-          label="In Progress"
-          value={data.stats.inProgressTasks}
-          icon={<Clock className="w-6 h-6 text-amber-600" />}
-          iconBg="bg-amber-100"
-        />
-        <StatCard
-          label="Pending"
-          value={data.stats.pendingTasks}
-          icon={<Clock className="w-6 h-6 text-blue-600" />}
-          iconBg="bg-blue-100"
-        />
-        <StatCard
-          label="Completed"
-          value={data.stats.completedTasks}
-          icon={<TrendingUp className="w-6 h-6 text-emerald-600" />}
-          iconBg="bg-emerald-100"
-          trend={{ value: data.stats.completionRate, label: 'rate', up: data.stats.completionRate >= 70 }}
-        />
-        <StatCard
-          label="Overdue"
-          value={data.stats.overdueTasks}
-          icon={<AlertTriangle className="w-6 h-6 text-red-600" />}
-          iconBg="bg-red-100"
-        />
-        <StatCard
-          label="Completion"
-          value={`${(data.stats?.completionRate ?? 0).toFixed(0)}%`}
-          icon={<TrendingUp className="w-6 h-6 text-purple-600" />}
-          iconBg="bg-purple-100"
-        />
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><CheckSquare size={16} className="text-teal-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats.assignedTasks}</span>
+            <p className="text-xs text-slate-500">Assigned</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><Clock size={16} className="text-amber-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats.inProgressTasks}</span>
+            <p className="text-xs text-slate-500">In Progress</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><Clock size={16} className="text-blue-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats.pendingTasks}</span>
+            <p className="text-xs text-slate-500">Pending</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><TrendingUp size={16} className="text-emerald-600" /></div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-lg">{data.stats.completedTasks}</span>
+              <span className="bg-lime-300 text-xs px-1.5 py-0.5 rounded font-medium">{data.stats.completionRate}% rate</span>
+            </div>
+            <p className="text-xs text-slate-500">Completed</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><AlertTriangle size={16} className="text-red-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats.overdueTasks}</span>
+            <p className="text-xs text-slate-500">Overdue</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><TrendingUp size={16} className="text-purple-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{(data.stats?.completionRate ?? 0).toFixed(0)}%</span>
+            <p className="text-xs text-slate-500">Completion</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Tasks by status */}
-        <Card padding="lg">
-          <h3 className="font-semibold text-slate-800 mb-4">My Tasks by Status</h3>
+        <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-sm text-slate-700">My Tasks by Status</h2>
+            <div className="flex space-x-2">
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><MoreHorizontal size={14} /></button>
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><ArrowUpRight size={14} /></button>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
@@ -128,14 +139,13 @@ export default function MemberDashboard() {
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
-        {/* Upcoming deadlines */}
-        <Card padding="lg" className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-slate-800">Upcoming Deadlines</h3>
-            <Link to="/my-tasks" className="text-xs text-teal-600 hover:underline font-medium">
-              View all
+        <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm lg:col-span-2">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-sm text-slate-700">Upcoming Deadlines</h2>
+            <Link to="/my-tasks" className="text-xs text-teal-600 hover:underline font-medium flex items-center gap-1">
+              View all <ArrowUpRight size={12} />
             </Link>
           </div>
           {data.upcomingDeadlines.length === 0 ? (
@@ -146,7 +156,7 @@ export default function MemberDashboard() {
                 <Link
                   key={i}
                   to={`/tasks/${d.taskId}`}
-                  className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-slate-100"
+                  className="flex items-center justify-between p-3 rounded-2xl bg-white/30 hover:bg-white/50 border border-white/40 transition-colors"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-slate-800 truncate">{d.title}</p>
@@ -173,15 +183,14 @@ export default function MemberDashboard() {
               ))}
             </div>
           )}
-        </Card>
+        </div>
       </div>
 
-      {/* Recent activity */}
-      <Card padding="lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-800">Recent Activity</h3>
-          <Link to="/my-tasks" className="text-xs text-teal-600 hover:underline font-medium">
-            View tasks
+      <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-semibold text-sm text-slate-700">Recent Activity</h2>
+          <Link to="/my-tasks" className="text-xs text-teal-600 hover:underline font-medium flex items-center gap-1">
+            View tasks <ArrowUpRight size={12} />
           </Link>
         </div>
         <div className="flex flex-col gap-3">
@@ -189,7 +198,7 @@ export default function MemberDashboard() {
             <p className="text-slate-400 text-sm text-center py-4">No recent activity.</p>
           ) : (
             data.recentActivity.slice(0, 6).map((a) => (
-              <div key={a.id} className="flex items-start gap-3 text-sm">
+              <div key={a.id} className="flex items-start gap-3 text-sm p-3 rounded-2xl bg-white/30 border border-white/40">
                 <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center shrink-0 text-teal-700">
                   {a.action.includes('CREATED') ? '✨' : a.action.includes('STATUS') ? '🔄' : '📋'}
                 </div>
@@ -214,7 +223,7 @@ export default function MemberDashboard() {
             ))
           )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

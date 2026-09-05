@@ -32,31 +32,22 @@ export function MainLayout() {
   const title    = usePageTitle(location.pathname);
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar
-        collapsed={collapsed}
-        onToggle={() => setCollapsed((c) => !c)}
-        mobileOpen={mobileOpen}
-        onMobileClose={() => setMobileOpen(false)}
+    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-100 via-slate-100 to-green-100 overflow-hidden font-sans text-slate-800">
+      <Header
+        onMenuToggle={() => setMobileOpen(true)}
+        title={title}
       />
 
-      {/* Main content area */}
-      <div
-        className={[
-          'flex flex-col flex-1 min-w-0 transition-all duration-300',
-          'lg:ml-0', // offset handled by sidebar flex
-        ].join(' ')}
-        style={{ marginLeft: undefined }}
-      >
-        <Header
-          onMenuToggle={() => setMobileOpen(true)}
-          title={title}
+      <div className="flex flex-1 overflow-hidden p-6 gap-6">
+        <Sidebar
+          collapsed={collapsed}
+          onToggle={() => setCollapsed((c) => !c)}
+          mobileOpen={mobileOpen}
+          onMobileClose={() => setMobileOpen(false)}
         />
 
-        {/* Page content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-screen-2xl mx-auto p-4 lg:p-6">
+          <div className="max-w-screen-2xl mx-auto">
             <Outlet />
           </div>
         </main>

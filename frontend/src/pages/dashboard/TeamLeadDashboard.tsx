@@ -3,7 +3,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { CheckSquare, AlertTriangle, Clock, Users, TrendingUp, RefreshCw } from 'lucide-react';
+import { CheckSquare, AlertTriangle, Clock, Users, TrendingUp, RefreshCw, MoreHorizontal, ArrowUpRight } from 'lucide-react';
 import { dashboardService } from '@/services';
 import type { TeamLeadDashboard as TTeamLeadDashboard } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -48,30 +48,71 @@ export default function TeamLeadDashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Greeting */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Team Overview 👥</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-800">Team Overview</h1>
           <p className="text-slate-500 text-sm mt-0.5">Welcome back, {user?.firstName}. Here's your team status.</p>
         </div>
         <Button variant="outline" size="sm" icon={<RefreshCw className="w-4 h-4" />} onClick={load} loading={loading}>Refresh</Button>
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-        <StatCard label="Team Tasks"     value={data.stats?.totalTasks ?? 0}      icon={<CheckSquare className="w-6 h-6 text-teal-600" />}    iconBg="bg-teal-100" />
-        <StatCard label="Completed"      value={data.stats?.completedTasks ?? 0}  icon={<TrendingUp className="w-6 h-6 text-emerald-600" />}  iconBg="bg-emerald-100" trend={{ value: completionRate, label: 'rate', up: completionRate >= 70 }} />
-        <StatCard label="Overdue"        value={data.stats?.overdueTasks ?? 0}    icon={<AlertTriangle className="w-6 h-6 text-red-600" />}   iconBg="bg-red-100" />
-        <StatCard label="Pending Review" value={data.stats?.pendingReview ?? 0}   icon={<Clock className="w-6 h-6 text-purple-600" />}        iconBg="bg-purple-100" />
-        <StatCard label="Completion"     value={`${completionRate.toFixed(0)}%`} icon={<TrendingUp className="w-6 h-6 text-blue-600" />} iconBg="bg-blue-100" />
-        <StatCard label="Team Size"      value={data.stats?.teamSize ?? 0}        icon={<Users className="w-6 h-6 text-indigo-600" />}        iconBg="bg-indigo-100" />
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><CheckSquare size={16} className="text-teal-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats?.totalTasks ?? 0}</span>
+            <p className="text-xs text-slate-500">Team Tasks</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><TrendingUp size={16} className="text-emerald-600" /></div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-lg">{data.stats?.completedTasks ?? 0}</span>
+              <span className="bg-lime-300 text-xs px-1.5 py-0.5 rounded font-medium">{completionRate}% rate</span>
+            </div>
+            <p className="text-xs text-slate-500">Completed</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><AlertTriangle size={16} className="text-red-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats?.overdueTasks ?? 0}</span>
+            <p className="text-xs text-slate-500">Overdue</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><Clock size={16} className="text-purple-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats?.pendingReview ?? 0}</span>
+            <p className="text-xs text-slate-500">Pending Review</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><TrendingUp size={16} className="text-blue-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{completionRate.toFixed(0)}%</span>
+            <p className="text-xs text-slate-500">Completion</p>
+          </div>
+        </div>
+        <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl flex items-center space-x-3 shadow-sm border border-white/40">
+          <div className="bg-white p-2 rounded-xl"><Users size={16} className="text-indigo-600" /></div>
+          <div>
+            <span className="font-bold text-lg">{data.stats?.teamSize ?? 0}</span>
+            <p className="text-xs text-slate-500">Team Size</p>
+          </div>
+        </div>
       </div>
 
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Status pie */}
-        <Card padding="lg">
-          <h3 className="font-semibold text-slate-800 mb-4">Tasks by Status</h3>
+        <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-sm text-slate-700">Tasks by Status</h2>
+            <div className="flex space-x-2">
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><MoreHorizontal size={14} /></button>
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><ArrowUpRight size={14} /></button>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie data={tasksByStatus} dataKey="count" nameKey="status" cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2}>
@@ -82,11 +123,16 @@ export default function TeamLeadDashboard() {
               <Tooltip formatter={(v, n) => [v, String(n).replace(/_/g, ' ')]} />
             </PieChart>
           </ResponsiveContainer>
-        </Card>
+        </div>
 
-        {/* Member workload bars */}
-        <Card padding="lg">
-          <h3 className="font-semibold text-slate-800 mb-4">Member Workload</h3>
+        <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-sm text-slate-700">Member Workload</h2>
+            <div className="flex space-x-2">
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><MoreHorizontal size={14} /></button>
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><ArrowUpRight size={14} /></button>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={memberWorkload.slice(0,8)} barSize={20} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
@@ -97,18 +143,19 @@ export default function TeamLeadDashboard() {
               <Bar dataKey="completed" fill="#14b8a6" radius={[0,4,4,0]} name="Completed" />
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </div>
       </div>
 
-      {/* Member detail list */}
-      <Card padding="lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-800">Member Performance</h3>
-          <Link to="/teams" className="text-xs text-teal-600 hover:underline font-medium">View team</Link>
+      <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-semibold text-sm text-slate-700">Member Performance</h2>
+          <Link to="/teams" className="text-xs text-teal-600 hover:underline font-medium flex items-center gap-1">
+            View team <ArrowUpRight size={12} />
+          </Link>
         </div>
         <div className="flex flex-col gap-3">
           {memberWorkload.map((m, i) => (
-            <div key={i} className="flex items-center gap-3">
+            <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-white/30 border border-white/40">
               <Avatar src={m.avatar} name={m.name} size="sm" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2 mb-1">
@@ -125,15 +172,20 @@ export default function TeamLeadDashboard() {
             </div>
           ))}
         </div>
-      </Card>
+      </div>
 
-      {/* Upcoming deadlines */}
       {upcomingDeadlines.length > 0 && (
-        <Card padding="lg">
-          <h3 className="font-semibold text-slate-800 mb-4">Upcoming Deadlines</h3>
+        <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-sm text-slate-700">Upcoming Deadlines</h2>
+            <div className="flex space-x-2">
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><MoreHorizontal size={14} /></button>
+              <button className="p-1.5 bg-white/60 rounded-full hover:bg-white"><ArrowUpRight size={14} /></button>
+            </div>
+          </div>
           <div className="flex flex-col gap-2">
             {upcomingDeadlines.slice(0, 5).map((d, i) => (
-              <Link key={i} to={`/tasks/${d.taskId}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-slate-100">
+              <Link key={i} to={`/tasks/${d.taskId}`} className="flex items-center justify-between p-3 rounded-2xl bg-white/30 hover:bg-white/50 border border-white/40 transition-colors">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-800 truncate">{d.title}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{d.priority.replace(/_/g,' ')}</p>
@@ -144,18 +196,19 @@ export default function TeamLeadDashboard() {
               </Link>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
-      {/* Recent activity */}
-      <Card padding="lg">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-800">Recent Activity</h3>
-          <Link to="/activity" className="text-xs text-teal-600 hover:underline font-medium">View all</Link>
+      <div className="bg-white/40 backdrop-blur-md p-5 rounded-3xl border border-white/40 shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-semibold text-sm text-slate-700">Recent Activity</h2>
+          <Link to="/activity" className="text-xs text-teal-600 hover:underline font-medium flex items-center gap-1">
+            View all <ArrowUpRight size={12} />
+          </Link>
         </div>
         <div className="flex flex-col gap-3">
           {recentActivity.slice(0, 6).map((a) => (
-            <div key={a.id} className="flex items-start gap-3">
+            <div key={a.id} className="flex items-start gap-3 p-3 rounded-2xl bg-white/30 border border-white/40">
               <Avatar src={a.userAvatar} name={a.userName} size="xs" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-slate-700">
@@ -168,7 +221,7 @@ export default function TeamLeadDashboard() {
             </div>
           ))}
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

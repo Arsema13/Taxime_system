@@ -40,10 +40,9 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 font-sans antialiased;
+    @apply bg-gradient-to-br from-blue-100 via-slate-100 to-green-100 text-slate-800 font-sans antialiased;
   }
 
-  /* Dark mode styles */
   .dark body {
     @apply bg-slate-900 text-slate-100;
   }
@@ -53,10 +52,7 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-slate-100;
-  }
-  .dark ::-webkit-scrollbar-track {
-    @apply bg-slate-800;
+    @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
     @apply bg-slate-300 rounded-full;
@@ -73,6 +69,15 @@
 }
 
 @layer utilities {
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-md rounded-3xl border border-white/40 shadow-sm;
+  }
+  .glass-card-solid {
+    @apply bg-white/60 backdrop-blur-md rounded-3xl border border-white/40 shadow-sm;
+  }
+  .glass-button {
+    @apply bg-white/60 backdrop-blur-md rounded-full shadow-sm hover:bg-white transition-colors;
+  }
   .sidebar-link {
     @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200;
   }
@@ -97,12 +102,10 @@
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* Kanban column styles */
 .kanban-col {
   @apply flex flex-col gap-3 min-h-24;
 }
 
-/* Priority ring colors */
 .ring-critical { @apply ring-2 ring-red-400; }
 .ring-high     { @apply ring-2 ring-orange-400; }
 .ring-medium   { @apply ring-2 ring-yellow-400; }
