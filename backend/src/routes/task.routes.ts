@@ -11,8 +11,8 @@ router.use(authenticate);
 // Static routes (must come before /:id)
 router.get('/workload/overview', taskController.getWorkload);
 router.get('/count', taskController.getCount);
-router.post('/bulk', authorize('COMMANDER', 'TEAM_LEAD'), validate(bulkTaskSchema), taskController.bulkUpdate);
-router.post('/from-template', authorize('COMMANDER', 'TEAM_LEAD'), validate(createFromTemplateSchema), taskController.createFromTemplate);
+router.post('/bulk', authorize('ADMIN', 'TEAM_LEAD'), validate(bulkTaskSchema), taskController.bulkUpdate);
+router.post('/from-template', authorize('ADMIN', 'TEAM_LEAD'), validate(createFromTemplateSchema), taskController.createFromTemplate);
 
 // CRUD
 router.get('/', validate(taskQuerySchema, 'query'), taskController.getAll);
@@ -22,15 +22,15 @@ router.put('/:id', validate(updateTaskSchema), taskController.update);
 router.delete('/:id', taskController.delete);
 
 // Assignment
-router.post('/:id/assign', authorize('COMMANDER', 'TEAM_LEAD'), validate(assignTaskSchema), taskController.assign);
+router.post('/:id/assign', authorize('ADMIN', 'TEAM_LEAD'), validate(assignTaskSchema), taskController.assign);
 
 // Status workflow
 router.post('/:id/status', validate(statusChangeSchema), taskController.changeStatus);
 router.post('/:id/accept', taskController.acceptTask);
 router.post('/:id/start', taskController.startTask);
 router.post('/:id/submit', taskController.submitForReview);
-router.post('/:id/approve', authorize('COMMANDER', 'TEAM_LEAD'), taskController.approveTask);
-router.post('/:id/reject', authorize('COMMANDER', 'TEAM_LEAD'), taskController.rejectTask);
+router.post('/:id/approve', authorize('ADMIN', 'TEAM_LEAD'), taskController.approveTask);
+router.post('/:id/reject', authorize('ADMIN', 'TEAM_LEAD'), taskController.rejectTask);
 
 // Subtasks
 router.post('/:id/subtasks', validate(subtaskSchema), taskController.addSubtask);

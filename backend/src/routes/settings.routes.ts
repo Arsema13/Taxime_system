@@ -11,8 +11,8 @@ router.get('/', settingsController.getUserSettings);
 router.put('/', settingsController.updateUserSettings);
 
 // System settings routes (admin only)
-router.get('/system', authorize('COMMANDER'), settingsController.getAll);
-router.put('/system', authorize('COMMANDER'), settingsController.set);
-router.put('/system/bulk', authorize('COMMANDER'), settingsController.setMultiple);
+router.get('/system', authorize('ADMIN'), settingsController.getAll);
+router.put('/system', authorize('ADMIN'), settingsController.set);
+router.put('/system/bulk', authorize('ADMIN'), settingsController.setMultiple);
 
 export default router;

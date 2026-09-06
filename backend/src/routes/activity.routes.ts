@@ -8,6 +8,6 @@ router.use(authenticate);
 
 router.get('/task/:taskId', activityController.getByTask);
 router.get('/recent', activityController.getRecentActivity);
-router.get('/audit', authorize('COMMANDER'), activityController.getAuditLogs);
+router.get('/audit', authorize('ADMIN'), activityController.getAuditLogs);
 
 export default router;

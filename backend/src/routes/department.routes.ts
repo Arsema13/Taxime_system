@@ -10,8 +10,8 @@ router.use(authenticate);
 
 router.get('/', departmentController.getAll);
 router.get('/:id', departmentController.getById);
-router.post('/', authorize('COMMANDER'), validate(createDepartmentSchema), departmentController.create);
-router.put('/:id', authorize('COMMANDER'), validate(updateDepartmentSchema), departmentController.update);
-router.delete('/:id', authorize('COMMANDER'), departmentController.delete);
+router.post('/', authorize('ADMIN'), validate(createDepartmentSchema), departmentController.create);
+router.put('/:id', authorize('ADMIN'), validate(updateDepartmentSchema), departmentController.update);
+router.delete('/:id', authorize('ADMIN'), departmentController.delete);
 
 export default router;

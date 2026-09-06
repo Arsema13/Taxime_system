@@ -39,7 +39,7 @@ export function authorize(...roles: string[]) {
 export async function authorizeTaskAccess(req: AuthRequest, taskId: string): Promise<void> {
   const user = req.user!;
 
-  if (user.role === 'COMMANDER') return;
+  if (user.role === 'ADMIN') return;
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
