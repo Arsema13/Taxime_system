@@ -73,13 +73,13 @@ app.get('/api/seed', async (_req, res) => {
     const customerSupport = await prisma.team.create({ data: { name: 'Customer Support', departmentId: operations.id } });
     const softwareTeam = await prisma.team.create({ data: { name: 'Software', departmentId: technology.id } });
 
-    await prisma.user.create({ data: { email: 'commander@taxime.com', password: hashedPassword, firstName: 'Abebe', lastName: 'Kebede', role: 'ADMIN' as any, position: 'Operations Director', departmentId: management.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'hana@taxime.com', password: hashedPassword, firstName: 'Hana', lastName: 'Tadesse', role: 'TEAM_LEAD' as any, position: 'Team Lead - Operations', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'arsema@taxime.com', password: hashedPassword, firstName: 'Arsema', lastName: 'Mulugeta', role: 'MEMBER' as any, position: 'Operations Specialist', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'sara@taxime.com', password: hashedPassword, firstName: 'Sara', lastName: 'Bekele', role: 'MEMBER' as any, position: 'Fleet Coordinator', departmentId: operations.id, teamId: fleetOps.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'meron@taxime.com', password: hashedPassword, firstName: 'Meron', lastName: 'Abebe', role: 'MEMBER' as any, position: 'Software Developer', departmentId: technology.id, teamId: softwareTeam.id, status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'commander@gmail.com', password: hashedPassword, firstName: 'Abebe', lastName: 'Kebede', role: 'ADMIN' as any, position: 'Operations Director', departmentId: management.id, status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'hana@gmail.com', password: hashedPassword, firstName: 'Hana', lastName: 'Tadesse', role: 'TEAM_LEAD' as any, position: 'Team Lead - Operations', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'arsema@gmail.com', password: hashedPassword, firstName: 'Arsema', lastName: 'Mulugeta', role: 'MEMBER' as any, position: 'Operations Specialist', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'sara@gmail.com', password: hashedPassword, firstName: 'Sara', lastName: 'Bekele', role: 'MEMBER' as any, position: 'Fleet Coordinator', departmentId: operations.id, teamId: fleetOps.id, status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'meron@gmail.com', password: hashedPassword, firstName: 'Meron', lastName: 'Abebe', role: 'MEMBER' as any, position: 'Software Developer', departmentId: technology.id, teamId: softwareTeam.id, status: 'ACTIVE' as any, emailVerified: true } });
 
-    res.json({ message: 'Database seeded successfully! You can now login with commander@taxime.com / password123' });
+    res.json({ message: 'Database seeded successfully! You can now login with commander@gmail.com / password123' });
   } catch (error: any) {
     res.status(500).json({ message: 'Seeding failed', error: error.message });
   }

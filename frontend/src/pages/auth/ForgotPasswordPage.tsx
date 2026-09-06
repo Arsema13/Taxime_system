@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
             <input
               type="email"
-              placeholder="you@taxime.com"
+              placeholder="you@gmail.com"
               autoComplete="email"
               autoFocus
               value={email}

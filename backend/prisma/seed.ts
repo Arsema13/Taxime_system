@@ -51,7 +51,7 @@ async function main() {
 
   const commander = await prisma.user.create({
     data: {
-      email: 'commander@taxime.com', password: hashedPassword,
+      email: 'commander@gmail.com', password: hashedPassword,
       firstName: 'Abebe', lastName: 'Kebede', role: Role.ADMIN,
       position: 'Operations Director', departmentId: management.id,
       status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000001',
@@ -60,7 +60,7 @@ async function main() {
 
   const teamLead1 = await prisma.user.create({
     data: {
-      email: 'hana@taxime.com', password: hashedPassword,
+      email: 'hana@gmail.com', password: hashedPassword,
       firstName: 'Hana', lastName: 'Tadesse', role: Role.TEAM_LEAD,
       position: 'Team Lead - Operations', departmentId: operations.id,
       teamId: dispatch.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000002',
@@ -69,7 +69,7 @@ async function main() {
 
   const teamLead2 = await prisma.user.create({
     data: {
-      email: 'dawit@taxime.com', password: hashedPassword,
+      email: 'dawit@gmail.com', password: hashedPassword,
       firstName: 'Dawit', lastName: 'Haile', role: Role.TEAM_LEAD,
       position: 'Team Lead - Technology', departmentId: technology.id,
       teamId: softwareTeam.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000003',
@@ -78,7 +78,7 @@ async function main() {
 
   const teamLead3 = await prisma.user.create({
     data: {
-      email: 'fatima@taxime.com', password: hashedPassword,
+      email: 'fatima@gmail.com', password: hashedPassword,
       firstName: 'Fatima', lastName: 'Ahmed', role: Role.TEAM_LEAD,
       position: 'Team Lead - Finance', departmentId: finance.id,
       teamId: accounting.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000004',
@@ -87,7 +87,7 @@ async function main() {
 
   const member1 = await prisma.user.create({
     data: {
-      email: 'arsema@taxime.com', password: hashedPassword,
+      email: 'arsema@gmail.com', password: hashedPassword,
       firstName: 'Arsema', lastName: 'Mulugeta', role: Role.MEMBER,
       position: 'Operations Specialist', departmentId: operations.id,
       teamId: dispatch.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000005',
@@ -96,7 +96,7 @@ async function main() {
 
   const member2 = await prisma.user.create({
     data: {
-      email: 'sara@taxime.com', password: hashedPassword,
+      email: 'sara@gmail.com', password: hashedPassword,
       firstName: 'Sara', lastName: 'Bekele', role: Role.MEMBER,
       position: 'Fleet Coordinator', departmentId: operations.id,
       teamId: fleetOps.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000006',
@@ -105,7 +105,7 @@ async function main() {
 
   const member3 = await prisma.user.create({
     data: {
-      email: 'abel@taxime.com', password: hashedPassword,
+      email: 'abel@gmail.com', password: hashedPassword,
       firstName: 'Abel', lastName: 'Dereje', role: Role.MEMBER,
       position: 'Support Agent', departmentId: operations.id,
       teamId: customerSupport.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000007',
@@ -114,7 +114,7 @@ async function main() {
 
   const member4 = await prisma.user.create({
     data: {
-      email: 'meron@taxime.com', password: hashedPassword,
+      email: 'meron@gmail.com', password: hashedPassword,
       firstName: 'Meron', lastName: 'Abebe', role: Role.MEMBER,
       position: 'Software Developer', departmentId: technology.id,
       teamId: softwareTeam.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000008',
@@ -123,7 +123,7 @@ async function main() {
 
   const member5 = await prisma.user.create({
     data: {
-      email: 'yonas@taxime.com', password: hashedPassword,
+      email: 'yonas@gmail.com', password: hashedPassword,
       firstName: 'Yonas', lastName: 'Girma', role: Role.MEMBER,
       position: 'Accountant', departmentId: finance.id,
       teamId: accounting.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000009',
@@ -132,7 +132,7 @@ async function main() {
 
   const member6 = await prisma.user.create({
     data: {
-      email: 'liya@taxime.com', password: hashedPassword,
+      email: 'liya@gmail.com', password: hashedPassword,
       firstName: 'Liya', lastName: 'Tesfaye', role: Role.MEMBER,
       position: 'HR Specialist', departmentId: hr.id,
       teamId: talentAcq.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000010',
@@ -141,7 +141,7 @@ async function main() {
 
   const member7 = await prisma.user.create({
     data: {
-      email: 'kaleb@taxime.com', password: hashedPassword,
+      email: 'kaleb@gmail.com', password: hashedPassword,
       firstName: 'Kaleb', lastName: 'Mengistu', role: Role.MEMBER,
       position: 'Marketing Specialist', departmentId: marketing.id,
       teamId: digitalMarketing.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000011',
@@ -150,7 +150,7 @@ async function main() {
 
   const member8 = await prisma.user.create({
     data: {
-      email: 'nadia@taxime.com', password: hashedPassword,
+      email: 'nadia@gmail.com', password: hashedPassword,
       firstName: 'Nadia', lastName: 'Ibrahim', role: Role.MEMBER,
       position: 'Safety Officer', departmentId: safety.id,
       teamId: complianceTeam.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000012',
@@ -159,7 +159,7 @@ async function main() {
 
   const member9 = await prisma.user.create({
     data: {
-      email: 'samuel@taxime.com', password: hashedPassword,
+      email: 'samuel@gmail.com', password: hashedPassword,
       firstName: 'Samuel', lastName: 'Tadesse', role: Role.MEMBER,
       position: 'IT Support Engineer', departmentId: technology.id,
       teamId: itSupport.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000013',
@@ -168,7 +168,7 @@ async function main() {
 
   const member10 = await prisma.user.create({
     data: {
-      email: 'helen@taxime.com', password: hashedPassword,
+      email: 'helen@gmail.com', password: hashedPassword,
       firstName: 'Helen', lastName: 'Alemayehu', role: Role.MEMBER,
       position: 'Customer Service Lead', departmentId: operations.id,
       teamId: customerSupport.id, status: UserStatus.ACTIVE, emailVerified: true, phone: '+251911000014',
@@ -177,7 +177,7 @@ async function main() {
 
   const inactiveUser = await prisma.user.create({
     data: {
-      email: 'getachew@taxime.com', password: hashedPassword,
+      email: 'getachew@gmail.com', password: hashedPassword,
       firstName: 'Getachew', lastName: 'Worku', role: Role.MEMBER,
       position: 'Former Driver', departmentId: operations.id,
       teamId: fleetOps.id, status: UserStatus.INACTIVE, emailVerified: true,
@@ -1023,12 +1023,12 @@ async function main() {
   console.log(`  - 15 audit logs`);
   console.log('---');
   console.log('Default login credentials (password: password123):');
-  console.log('  Admin:      commander@taxime.com');
-  console.log('  Team Lead:  hana@taxime.com / dawit@taxime.com / fatima@taxime.com');
-  console.log('  Member:     arsema@taxime.com / sara@taxime.com / abel@taxime.com');
-  console.log('  Member:     meron@taxime.com / yonas@taxime.com / liya@taxime.com');
-  console.log('  Member:     kaleb@taxime.com / nadia@taxime.com / samuel@taxime.com');
-  console.log('  Member:     helen@taxime.com');
+  console.log('  Admin:      commander@gmail.com');
+  console.log('  Team Lead:  hana@gmail.com / dawit@gmail.com / fatima@gmail.com');
+  console.log('  Member:     arsema@gmail.com / sara@gmail.com / abel@gmail.com');
+  console.log('  Member:     meron@gmail.com / yonas@gmail.com / liya@gmail.com');
+  console.log('  Member:     kaleb@gmail.com / nadia@gmail.com / samuel@gmail.com');
+  console.log('  Member:     helen@gmail.com');
 }
 
 main()

@@ -75,21 +75,21 @@ export default function LoginPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
-            onClick={() => setDemoCredentials('commander@taxime.com')}
+            onClick={() => setDemoCredentials('commander@gmail.com')}
             className="text-[11px] font-semibold px-3 py-1 rounded-full bg-white dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-700 dark:text-slate-300 hover:text-[#FF4D67] border border-slate-200/80 dark:border-slate-600/80 transition-all shadow-2xs active:scale-95"
           >
             Commander
           </button>
           <button
             type="button"
-            onClick={() => setDemoCredentials('lead@taxime.com')}
+            onClick={() => setDemoCredentials('hana@gmail.com')}
             className="text-[11px] font-semibold px-3 py-1 rounded-full bg-white dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-700 dark:text-slate-300 hover:text-[#FF4D67] border border-slate-200/80 dark:border-slate-600/80 transition-all shadow-2xs active:scale-95"
           >
             Team Lead
           </button>
           <button
             type="button"
-            onClick={() => setDemoCredentials('member@taxime.com')}
+            onClick={() => setDemoCredentials('arsema@gmail.com')}
             className="text-[11px] font-semibold px-3 py-1 rounded-full bg-white dark:bg-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-700 dark:text-slate-300 hover:text-[#FF4D67] border border-slate-200/80 dark:border-slate-600/80 transition-all shadow-2xs active:scale-95"
           >
             Driver / Member
@@ -106,7 +106,7 @@ export default function LoginPage() {
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
             <input
               type="email"
-              placeholder="you@taxime.com"
+              placeholder="you@gmail.com"
               autoComplete="email"
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
