@@ -8,7 +8,7 @@ export class DashboardController {
     try {
       const role = req.user!.role;
       let data;
-      if (role === 'COMMANDER') {
+      if (role === 'ADMIN') {
         data = await dashboardService.getCommanderDashboard();
       } else if (role === 'TEAM_LEAD') {
         data = await dashboardService.getTeamLeadDashboard(req.user!.id);

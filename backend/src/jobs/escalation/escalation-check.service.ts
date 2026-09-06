@@ -8,7 +8,7 @@ export class EscalationCheckService {
     const now = new Date();
     const escalationThresholds = [
       { hours: 24, notify: 'TEAM_LEAD' },
-      { hours: 48, notify: 'COMMANDER' },
+      { hours: 48, notify: 'ADMIN' },
     ];
 
     for (const threshold of escalationThresholds) {
@@ -37,7 +37,7 @@ export class EscalationCheckService {
           department: {
             include: {
               users: {
-                where: { role: 'COMMANDER' as any },
+                where: { role: 'ADMIN' as any },
                 select: { id: true, firstName: true, lastName: true, email: true },
               },
             },
@@ -59,7 +59,7 @@ export class EscalationCheckService {
 
         if (threshold.notify === 'TEAM_LEAD' && task.team) {
           notifyTargets = task.team.members;
-        } else if (threshold.notify === 'COMMANDER') {
+        } else if (threshold.notify === 'ADMIN') {
           notifyTargets = task.department?.users || [];
         }
 
