@@ -133,6 +133,7 @@ export default function ReportDetailPage() {
   };
 
   const handleExportPdf = async () => {
+    if (!report) return;
     setExporting(true);
     try {
       const blob = await submittedReportService.exportReportPdf(report.id);
@@ -145,6 +146,7 @@ export default function ReportDetailPage() {
   };
 
   const handleExportExcel = async () => {
+    if (!report) return;
     setExporting(true);
     try {
       const blob = await submittedReportService.exportReportExcel(report.id);
@@ -156,11 +158,24 @@ export default function ReportDetailPage() {
     }
   };
 
-  if (loading) return <div className="text-center py-20 text-slate-500">Loading report...</div>;
-  if (!report) return <div className="text-center py-20 text-slate-500">Report not found</div>;
+  const handleExportWord = async () => {
+    if (!report) return;
+    setExporting(true);
+    try {
+      const blob = await submittedReportService.exportReportWord(report.id);
+      submittedReportService.downloadBlob(blob, `report-${report.id}.docx`);
+    } catch (error) {
+      console.error('Failed to export Word:', error);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  if (loading) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading report...</div>;
+  if (!report) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Report not found</div>;
 
   const isAuthor = user?.id === report.authorId;
-  const isCommander = user?.role === 'COMMANDER';
+  const isCommander = user?.role === 'ADMIN';
   const isTeamLead = user?.role === 'TEAM_LEAD';
   const isReviewer = (isCommander || isTeamLead) && !isAuthor;
   
@@ -204,11 +219,11 @@ export default function ReportDetailPage() {
               <Button variant="outline" size="sm" icon={<Download className="w-4 h-4" />}>
                 Export
               </Button>
-              <div className="absolute right-0 top-full mt-1 w-40 bg-white/90 backdrop-blur-md rounded-xl border border-white/40 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <div className="absolute right-0 top-full mt-1 w-40 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-xl border border-white/40 dark:border-slate-700/40 shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                 <button
                   onClick={handleExportPdf}
                   disabled={exporting}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-white/40 rounded-t-xl transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/40 dark:hover:bg-slate-700/40 rounded-t-xl transition-colors"
                 >
                   <FileText className="w-4 h-4" />
                   Export PDF
@@ -216,10 +231,18 @@ export default function ReportDetailPage() {
                 <button
                   onClick={handleExportExcel}
                   disabled={exporting}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-white/40 rounded-b-xl transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/40 dark:hover:bg-slate-700/40 transition-colors"
                 >
                   <FileSpreadsheet className="w-4 h-4" />
                   Export Excel
+                </button>
+                <button
+                  onClick={handleExportWord}
+                  disabled={exporting}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-white/40 dark:hover:bg-slate-700/40 rounded-b-xl transition-colors"
+                >
+                  <FileText className="w-4 h-4" />
+                  Export Word
                 </button>
               </div>
             </div>
@@ -254,7 +277,7 @@ export default function ReportDetailPage() {
                   onChange={(e) => setForm(prev => ({ ...prev, summary: e.target.value }))}
                 />
                 <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
                     Progress: {form.progress}%
                   </label>
                   <input
@@ -303,28 +326,28 @@ export default function ReportDetailPage() {
             </Card>
           ) : (
             <Card padding="lg">
-              <h3 className="font-semibold text-slate-800 mb-4">Report Content</h3>
+                <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Report Content</h3>
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-medium text-slate-500 mb-1">Summary</h4>
-                  <p className="text-slate-700 whitespace-pre-wrap">{report.summary}</p>
+                  <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Summary</h4>
+                  <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{report.summary}</p>
                 </div>
                 {report.achievements && (
                   <div>
-                    <h4 className="text-sm font-medium text-slate-500 mb-1">Achievements</h4>
-                    <p className="text-slate-700 whitespace-pre-wrap">{report.achievements}</p>
+                    <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Achievements</h4>
+                    <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{report.achievements}</p>
                   </div>
                 )}
                 {report.blockers && (
                   <div>
-                    <h4 className="text-sm font-medium text-slate-500 mb-1">Blockers</h4>
-                    <p className="text-slate-700 whitespace-pre-wrap">{report.blockers}</p>
+                    <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Blockers</h4>
+                    <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{report.blockers}</p>
                   </div>
                 )}
                 {report.nextSteps && (
                   <div>
-                    <h4 className="text-sm font-medium text-slate-500 mb-1">Next Steps</h4>
-                    <p className="text-slate-700 whitespace-pre-wrap">{report.nextSteps}</p>
+                    <h4 className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Next Steps</h4>
+                    <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{report.nextSteps}</p>
                   </div>
                 )}
               </div>
@@ -333,34 +356,34 @@ export default function ReportDetailPage() {
 
           {report.reviewerComment && (
             <Card padding="lg">
-              <h3 className="font-semibold text-slate-800 mb-4">Reviewer Comments</h3>
-              <p className="text-slate-700 whitespace-pre-wrap">{report.reviewerComment}</p>
+                <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Reviewer Comments</h3>
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{report.reviewerComment}</p>
             </Card>
           )}
         </div>
 
         <div className="space-y-6">
           <Card padding="lg">
-            <h3 className="font-semibold text-slate-800 mb-4">Report Details</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Report Details</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Status</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Status</span>
                 <Badge variant={STATUS_CONFIG[report.status].variant}>
                   {STATUS_CONFIG[report.status].label}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Type</span>
-                <span className="text-sm font-medium text-slate-700">{report.reportType.replace(/_/g, ' ')}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Type</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{report.reportType.replace(/_/g, ' ')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Period</span>
-                <span className="text-sm font-medium text-slate-700">{report.period}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Period</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{report.period}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">Progress</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">Progress</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-slate-700">{report.progress}%</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{report.progress}%</span>
                   <div className="w-16 h-1.5 bg-slate-200 rounded-full">
                     <div className="h-full bg-teal-500 rounded-full" style={{ width: `${report.progress}%` }} />
                   </div>
@@ -368,53 +391,53 @@ export default function ReportDetailPage() {
               </div>
               {report.timeSpent && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Time Spent</span>
-                  <span className="text-sm font-medium text-slate-700">{report.timeSpent}h</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">Time Spent</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{report.timeSpent}h</span>
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">From</span>
-                <span className="text-sm font-medium text-slate-700">{format(new Date(report.fromDate), 'MMM d, yyyy')}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">From</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{format(new Date(report.fromDate), 'MMM d, yyyy')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-slate-500">To</span>
-                <span className="text-sm font-medium text-slate-700">{format(new Date(report.toDate), 'MMM d, yyyy')}</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">To</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{format(new Date(report.toDate), 'MMM d, yyyy')}</span>
               </div>
               {report.task && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Task</span>
-                  <span className="text-sm font-medium text-slate-700 truncate max-w-[150px]">{report.task.title}</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">Task</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{report.task.title}</span>
                 </div>
               )}
               {report.submittedAt && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Submitted</span>
-                  <span className="text-sm font-medium text-slate-700">{format(new Date(report.submittedAt), 'MMM d, yyyy h:mm a')}</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">Submitted</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{format(new Date(report.submittedAt), 'MMM d, yyyy h:mm a')}</span>
                 </div>
               )}
               {report.reviewedAt && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-500">Reviewed</span>
-                  <span className="text-sm font-medium text-slate-700">{format(new Date(report.reviewedAt), 'MMM d, yyyy h:mm a')}</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">Reviewed</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{format(new Date(report.reviewedAt), 'MMM d, yyyy h:mm a')}</span>
                 </div>
               )}
             </div>
           </Card>
 
           <Card padding="lg">
-            <h3 className="font-semibold text-slate-800 mb-4">Author</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Author</h3>
             <div className="flex items-center gap-3">
               <Avatar src={report.author.avatar} name={`${report.author.firstName} ${report.author.lastName}`} size="md" />
               <div>
                 <p className="font-medium text-slate-800">{report.author.firstName} {report.author.lastName}</p>
-                {report.author.email && <p className="text-xs text-slate-500">{report.author.email}</p>}
+                {report.author.email && <p className="text-xs text-slate-500 dark:text-slate-400">{report.author.email}</p>}
               </div>
             </div>
           </Card>
 
           {report.assigner && (
             <Card padding="lg">
-              <h3 className="font-semibold text-slate-800 mb-4">Assigned To</h3>
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Assigned To</h3>
               <div className="flex items-center gap-3">
                 <Avatar src={report.assigner.avatar} name={`${report.assigner.firstName} ${report.assigner.lastName}`} size="md" />
                 <div>
@@ -425,13 +448,16 @@ export default function ReportDetailPage() {
           )}
 
           <Card padding="lg">
-            <h3 className="font-semibold text-slate-800 mb-4">Export</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Export</h3>
             <div className="space-y-2">
               <Button variant="outline" fullWidth icon={<FileText className="w-4 h-4" />} onClick={handleExportPdf} loading={exporting}>
                 Download PDF
               </Button>
               <Button variant="outline" fullWidth icon={<FileSpreadsheet className="w-4 h-4" />} onClick={handleExportExcel} loading={exporting}>
                 Download Excel
+              </Button>
+              <Button variant="outline" fullWidth icon={<FileText className="w-4 h-4" />} onClick={handleExportWord} loading={exporting}>
+                Download Word
               </Button>
             </div>
           </Card>
@@ -449,8 +475,8 @@ export default function ReportDetailPage() {
       {showReview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowReview(false)} />
-          <div className="relative bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-6 border border-white/40">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4">Review Report</h3>
+          <div className="relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-6 border border-white/40">
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Review Report</h3>
             <div className="space-y-4">
               <Select
                 label="Decision"

@@ -65,40 +65,40 @@ export default function MyReportsPage() {
 
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <FileText size={16} className="text-slate-600" />
               <span className="font-bold text-lg">{stats.total}</span>
             </div>
-            <p className="text-xs text-slate-500">Total</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Total</p>
           </div>
-          <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <Clock size={16} className="text-blue-600" />
               <span className="font-bold text-lg">{stats.submitted}</span>
             </div>
-            <p className="text-xs text-slate-500">Submitted</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Submitted</p>
           </div>
-          <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <CheckCircle size={16} className="text-emerald-600" />
               <span className="font-bold text-lg">{stats.approved}</span>
             </div>
-            <p className="text-xs text-slate-500">Approved</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Approved</p>
           </div>
-          <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <XCircle size={16} className="text-red-600" />
               <span className="font-bold text-lg">{stats.rejected}</span>
             </div>
-            <p className="text-xs text-slate-500">Rejected</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Rejected</p>
           </div>
-          <div className="bg-white/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <AlertCircle size={16} className="text-amber-600" />
               <span className="font-bold text-lg">{stats.revisionNeeded}</span>
             </div>
-            <p className="text-xs text-slate-500">Needs Revision</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Needs Revision</p>
           </div>
         </div>
       )}
@@ -126,11 +126,11 @@ export default function MyReportsPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-slate-500">Loading reports...</div>
+          <div className="text-center py-12 text-slate-500 dark:text-slate-400">Loading reports...</div>
         ) : paginatedReports.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">No reports found</p>
+            <p className="text-slate-500 dark:text-slate-400">No reports found</p>
             <Button variant="primary" size="sm" className="mt-3" onClick={() => navigate('/reports/submit')}>
               Create your first report
             </Button>
@@ -140,17 +140,17 @@ export default function MyReportsPage() {
             {paginatedReports.map((report) => (
               <div
                 key={report.id}
-                className="flex items-center justify-between p-4 rounded-2xl bg-white/30 border border-white/40 hover:bg-white/50 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-2xl bg-white/30 dark:bg-slate-800/30 border border-white/40 dark:border-slate-700/40 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                 onClick={() => navigate(`/reports/${report.id}`)}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-slate-800 truncate">{report.title}</h4>
+                    <h4 className="font-medium text-slate-800 dark:text-slate-200 truncate">{report.title}</h4>
                     <Badge variant={STATUS_CONFIG[report.status].variant}>
                       {STATUS_CONFIG[report.status].label}
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     {report.reportType.replace(/_/g, ' ')} · {format(new Date(report.createdAt), 'MMM d, yyyy')}
                   </p>
                   {report.task && (
@@ -158,7 +158,7 @@ export default function MyReportsPage() {
                   )}
                 </div>
                 <div className="text-right ml-4">
-                  <div className="text-sm font-medium text-slate-700">{report.progress}%</div>
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">{report.progress}%</div>
                   <div className="w-16 h-1.5 bg-slate-200 rounded-full mt-1">
                     <div
                       className="h-full bg-teal-500 rounded-full"
@@ -174,8 +174,10 @@ export default function MyReportsPage() {
         {totalPages > 1 && (
           <div className="mt-4">
             <Pagination
-              currentPage={page}
+              page={page}
               totalPages={totalPages}
+              total={reports.length}
+              limit={perPage}
               onPageChange={setPage}
             />
           </div>

@@ -78,7 +78,7 @@ export default function SubmitReportPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card padding="lg">
-            <h3 className="font-semibold text-slate-800 mb-4">Report Information</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Report Information</h3>
             <div className="space-y-4">
               <Input
                 label="Report Title"
@@ -131,7 +131,7 @@ export default function SubmitReportPage() {
           </Card>
 
           <Card padding="lg">
-            <h3 className="font-semibold text-slate-800 mb-4">Summary & Progress</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Summary & Progress</h3>
             <div className="space-y-4">
               <Textarea
                 label="Summary"
@@ -141,7 +141,7 @@ export default function SubmitReportPage() {
                 required
               />
               <div>
-                <label className="text-sm font-medium text-slate-700 mb-2 block">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
                   Progress: {form.progress}%
                 </label>
                 <input
@@ -152,7 +152,7 @@ export default function SubmitReportPage() {
                   onChange={(e) => handleChange('progress', parseInt(e.target.value))}
                   className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-600"
                 />
-                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
                   <span>0%</span>
                   <span>50%</span>
                   <span>100%</span>
@@ -169,7 +169,7 @@ export default function SubmitReportPage() {
           </Card>
 
           <Card padding="lg">
-            <h3 className="font-semibold text-slate-800 mb-4">Details</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Details</h3>
             <div className="space-y-4">
               <Textarea
                 label="Achievements"
@@ -195,7 +195,7 @@ export default function SubmitReportPage() {
 
         <div className="space-y-6">
           <Card padding="lg" className="sticky top-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Actions</h3>
+            <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Actions</h3>
             <div className="space-y-3">
               <Button
                 variant="primary"
@@ -218,7 +218,7 @@ export default function SubmitReportPage() {
                 Save as Draft
               </Button>
             </div>
-            <div className="mt-4 p-3 bg-slate-50 rounded-xl text-xs text-slate-600">
+            <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl text-xs text-slate-600">
               <p className="font-medium mb-1">Tips:</p>
               <ul className="list-disc list-inside space-y-1 text-slate-500">
                 <li>Be specific about your accomplishments</li>
