@@ -15,7 +15,7 @@ const ROUTE_TITLES: Record<string, string> = {
   '/reports':            'Reports',
   '/reports/submit':     'Submit Report',
   '/reports/my-reports': 'My Reports',
-  '/reports/review':     'Review Reports',
+  '/reports/review':     'Reports',
   '/activity':           'Activity Log',
   '/audit':              'Audit Log',
   '/notifications':      'Notifications',
@@ -29,28 +29,28 @@ function usePageTitle(pathname: string) {
 }
 
 export function MainLayout() {
-  const [collapsed,   setCollapsed]   = useState(false);
-  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const title    = usePageTitle(location.pathname);
+  const title = usePageTitle(location.pathname);
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-100 via-slate-100 to-green-100 overflow-hidden font-sans text-slate-800">
-      <Header
-        onMenuToggle={() => setMobileOpen(true)}
-        title={title}
+    <div className="flex h-screen bg-[#F4F5F9] dark:bg-[#0B1120] text-slate-800 dark:text-slate-100 overflow-hidden font-sans">
+      <Sidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((c) => !c)}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
       />
 
-      <div className="flex flex-1 overflow-hidden p-6 gap-6">
-        <Sidebar
-          collapsed={collapsed}
-          onToggle={() => setCollapsed((c) => !c)}
-          mobileOpen={mobileOpen}
-          onMobileClose={() => setMobileOpen(false)}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Header
+          onMenuToggle={() => setMobileOpen(true)}
+          title={title}
         />
 
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-screen-2xl mx-auto">
+        <main className="flex-1 overflow-y-auto px-6 pb-6 pt-1">
+          <div className="max-w-[1700px] mx-auto">
             <Outlet />
           </div>
         </main>
