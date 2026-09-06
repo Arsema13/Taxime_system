@@ -3,6 +3,7 @@ import { hashPassword } from '../../utils/helpers';
 import { BadRequestError, ConflictError } from '../../utils/errors';
 import { config } from '../../config';
 import { emailService } from '../email.service';
+import { notificationService } from '../notification';
 import { AuthUser } from '../../types';
 import { TokenService } from './auth-token.service';
 
@@ -42,6 +43,27 @@ export class AuthRegisterService {
         <p style="color:#6b7280;font-size:12px;">Taxime Operations & Task Management System</p>
       </div>`,
     );
+
+    // Notify all admins about the new registration
+    try {
+      const admins = await prisma.user.findMany({
+        where: { role: 'ADMIN', status: 'ACTIVE' },
+        select: { id: true },
+      });
+
+      for (const admin of admins) {
+        await notificationService.create({
+          userId: admin.id,
+          type: 'NEW_USER_REGISTERED',
+          title: 'New User Registered',
+          message: `${data.firstName} ${data.lastName} has created an account and is waiting to be assigned a role and team.`,
+          actorId: user.id,
+          link: '/employees',
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to send admin notifications:', notifErr);
+    }
 
     const tokens = tokenService.generateTokens(user);
     return { user, ...tokens, verificationToken };
