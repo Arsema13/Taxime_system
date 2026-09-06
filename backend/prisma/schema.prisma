@@ -10,7 +10,7 @@ datasource db {
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
 enum Role {
-  COMMANDER
+  ADMIN
   TEAM_LEAD
   MEMBER
 }
@@ -77,6 +77,7 @@ enum NotificationType {
   MENTION
   ATTACHMENT_ADDED
   DEADLINE_REMINDER
+  NEW_USER_REGISTERED
   STATUS_CHANGE
   PROGRESS_UPDATE
   GENERAL
