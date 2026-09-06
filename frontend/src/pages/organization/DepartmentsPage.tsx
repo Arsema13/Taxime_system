@@ -159,11 +159,11 @@ export default function DepartmentsPage() {
               <Card key={dept.id} padding="lg" hover>
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-                      <Building2 className="w-6 h-6 text-teal-600" />
+                    <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/30 rounded-xl flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-teal-600 dark:text-teal-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-800">{dept.name}</h3>
+                      <h3 className="font-semibold text-slate-800 dark:text-slate-200">{dept.name}</h3>
                       {dept.code && (
                         <Badge variant="default" className="mt-1">{dept.code}</Badge>
                       )}
@@ -172,18 +172,18 @@ export default function DepartmentsPage() {
                 </div>
 
                 {dept.description && (
-                  <p className="text-sm text-slate-600 mb-3 line-clamp-2">{dept.description}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">{dept.description}</p>
                 )}
 
-                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                  <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
                       <span>{dept._count?.teams ?? 0} teams</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
-                      <span>{dept._count?.employees ?? 0} employees</span>
+                      <span>{dept._count?.users ?? 0} employees</span>
                     </div>
                   </div>
 

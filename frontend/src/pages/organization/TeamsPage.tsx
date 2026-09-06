@@ -24,7 +24,7 @@ interface TeamFormData {
   name: string;
   description: string;
   departmentId: string;
-  leaderId: string;
+  leadId: string;
 }
 
 export default function TeamsPage() {
@@ -43,7 +43,7 @@ export default function TeamsPage() {
   const [deleteModal, setDeleteModal] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [formData, setFormData] = useState<TeamFormData>({
-    name: '', description: '', departmentId: '', leaderId: ''
+    name: '', description: '', departmentId: '', leadId: ''
   });
   const [saving, setSaving] = useState(false);
 
@@ -73,13 +73,13 @@ export default function TeamsPage() {
       name: team.name,
       description: team.description ?? '',
       departmentId: team.departmentId,
-      leaderId: team.leaderId ?? '',
+      leadId: team.leadId ?? '',
     });
     setEditModal(true);
   };
 
   const handleCreate = () => {
-    setFormData({ name: '', description: '', departmentId: '', leaderId: '' });
+    setFormData({ name: '', description: '', departmentId: '', leadId: '' });
     setCreateModal(true);
   };
 
@@ -95,14 +95,14 @@ export default function TeamsPage() {
       const payload: any = {
         name: formData.name,
         description: formData.description || undefined,
-        leaderId: formData.leaderId || undefined,
+        leadId: formData.leadId || undefined,
       };
 
       if (selectedTeam) {
-        await departmentService.updateTeam(formData.departmentId, selectedTeam.id, payload);
+        await teamService.updateTeam(selectedTeam.id, payload);
         success('Updated', 'Team updated successfully');
       } else {
-        await departmentService.createTeam(formData.departmentId, payload);
+        await teamService.createTeam({ ...payload, departmentId: formData.departmentId });
         success('Created', 'Team created successfully');
       }
 
@@ -119,7 +119,7 @@ export default function TeamsPage() {
   const handleDelete = async () => {
     if (!deleteModal || !selectedTeam) return;
     try {
-      await departmentService.deleteTeam(selectedTeam.departmentId, deleteModal);
+      await teamService.deleteTeam(deleteModal);
       success('Deleted', 'Team deleted successfully');
       setDeleteModal(null);
       load();
@@ -184,13 +184,13 @@ export default function TeamsPage() {
                 <Card key={team.id} padding="lg" hover>
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                        <Users className="w-6 h-6 text-indigo-600" />
+                      <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl flex items-center justify-center">
+                        <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-slate-800 truncate">{team.name}</h3>
+                        <h3 className="font-semibold text-slate-800 dark:text-slate-200 truncate">{team.name}</h3>
                         {team.department && (
-                          <div className="flex items-center gap-1 mt-1 text-xs text-slate-500">
+                          <div className="flex items-center gap-1 mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                             <Building2 className="w-3 h-3" />
                             <span>{team.department.name}</span>
                           </div>
@@ -200,32 +200,32 @@ export default function TeamsPage() {
                   </div>
 
                   {team.description && (
-                    <p className="text-sm text-slate-600 mb-3 line-clamp-2">{team.description}</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400 dark:text-slate-500 mb-3 line-clamp-2">{team.description}</p>
                   )}
 
-                  {team.leader && (
-                    <div className="flex items-center gap-2 mb-3 p-2 bg-slate-50 rounded-lg">
-                      <User className="w-3 h-3 text-slate-400" />
-                      <span className="text-xs text-slate-600">Lead:</span>
+                  {team.lead && (
+                    <div className="flex items-center gap-2 mb-3 p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                      <User className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                      <span className="text-xs text-slate-600 dark:text-slate-400 dark:text-slate-500">Lead:</span>
                       <Avatar
-                        src={team.leader.avatar}
-                        name={`${team.leader.firstName} ${team.leader.lastName}`}
+                        src={team.lead.avatar}
+                        name={`${team.lead.firstName} ${team.lead.lastName}`}
                         size="xs"
                       />
-                      <span className="text-xs font-medium text-slate-700 truncate">
-                        {team.leader.firstName} {team.leader.lastName}
+                      <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate">
+                        {team.lead.firstName} {team.lead.lastName}
                       </span>
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
                     <div className="flex items-center gap-2">
                       {memberAvatars.length > 0 ? (
                         <AvatarGroup users={memberAvatars} max={3} size="xs" />
                       ) : (
-                        <span className="text-xs text-slate-400">No members</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">No members</span>
                       )}
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">
                         {team._count?.members ?? 0} member{team._count?.members !== 1 ? 's' : ''}
                       </span>
                     </div>
@@ -291,8 +291,8 @@ export default function TeamsPage() {
 
           <Select
             label="Team Lead"
-            value={formData.leaderId}
-            onChange={e => setFormData(f => ({ ...f, leaderId: e.target.value }))}
+            value={formData.leadId}
+            onChange={e => setFormData(f => ({ ...f, leadId: e.target.value }))}
           >
             <option value="">No Lead</option>
             {Array.isArray(users) && users.map(u => (
