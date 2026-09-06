@@ -6,6 +6,7 @@ interface ThemeContextType {
   theme: Theme;
   effectiveTheme: 'light' | 'dark';
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -28,6 +29,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     localStorage.setItem('theme', newTheme);
+  };
+
+  const toggleTheme = () => {
+    const next = effectiveTheme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
   };
 
   useEffect(() => {
@@ -65,7 +71,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, effectiveTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, effectiveTheme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

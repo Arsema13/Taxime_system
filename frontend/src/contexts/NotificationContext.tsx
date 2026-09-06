@@ -15,6 +15,7 @@ interface NotificationContextValue {
   unreadCount: number;
   isLoading: boolean;
   fetchNotifications: () => Promise<void>;
+  refreshNotifications: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   removeNotification: (id: string) => Promise<void>;
@@ -86,6 +87,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         unreadCount,
         isLoading,
         fetchNotifications,
+        refreshNotifications: fetchNotifications,
         markRead,
         markAllRead,
         removeNotification,
