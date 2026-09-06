@@ -34,7 +34,7 @@ const ACTION_CONFIG: Record<WorkflowAction, ActionConfig> = {
 
 function getAllowedActions(status: TaskStatus, role: string): WorkflowAction[] {
   const isMember  = role === 'MEMBER';
-  const canReview = role === 'COMMANDER' || role === 'TEAM_LEAD';
+  const canReview = role === 'ADMIN' || role === 'TEAM_LEAD';
 
   switch (status) {
     case 'PENDING':              return isMember ? ['accept'] : [];

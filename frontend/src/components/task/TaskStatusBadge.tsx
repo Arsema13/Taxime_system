@@ -7,17 +7,17 @@ interface Props {
 }
 
 const CONFIG: Record<TaskStatus, { label: string; classes: string; dot: string }> = {
-  DRAFT:                 { label: 'Draft',           classes: 'bg-slate-100 text-slate-600',    dot: 'bg-slate-400' },
-  PENDING:               { label: 'Pending',         classes: 'bg-blue-100 text-blue-700',      dot: 'bg-blue-500' },
-  ACCEPTED:              { label: 'Accepted',        classes: 'bg-indigo-100 text-indigo-700',  dot: 'bg-indigo-500' },
-  IN_PROGRESS:           { label: 'In Progress',     classes: 'bg-amber-100 text-amber-700',    dot: 'bg-amber-500' },
-  SUBMITTED_FOR_REVIEW:  { label: 'Submitted',       classes: 'bg-purple-100 text-purple-700',  dot: 'bg-purple-500' },
-  UNDER_REVIEW:          { label: 'Under Review',    classes: 'bg-violet-100 text-violet-700',  dot: 'bg-violet-500' },
-  COMPLETED:             { label: 'Completed',       classes: 'bg-emerald-100 text-emerald-700',dot: 'bg-emerald-500' },
-  REJECTED:              { label: 'Rejected',        classes: 'bg-red-100 text-red-700',        dot: 'bg-red-500' },
-  ON_HOLD:               { label: 'On Hold',         classes: 'bg-slate-200 text-slate-600',    dot: 'bg-slate-500' },
-  CANCELLED:             { label: 'Cancelled',       classes: 'bg-slate-100 text-slate-500',    dot: 'bg-slate-400' },
-  OVERDUE:               { label: 'Overdue',         classes: 'bg-red-100 text-red-700',        dot: 'bg-red-500' },
+  DRAFT:                 { label: 'Draft',           classes: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-600/60',       dot: 'bg-slate-400 dark:bg-slate-500' },
+  PENDING:               { label: 'Pending',         classes: 'bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-200/80 dark:border-sky-800/50',              dot: 'bg-sky-500' },
+  ACCEPTED:              { label: 'Accepted',        classes: 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-800/50',    dot: 'bg-indigo-500' },
+  IN_PROGRESS:           { label: 'In Transit',      classes: 'bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border border-sky-200/80 dark:border-sky-800/50',              dot: 'bg-sky-500' },
+  SUBMITTED_FOR_REVIEW:  { label: 'Review Ready',    classes: 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/50',    dot: 'bg-purple-500' },
+  UNDER_REVIEW:          { label: 'Under Review',    classes: 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200/80 dark:border-violet-800/50',    dot: 'bg-violet-500' },
+  COMPLETED:             { label: 'Delivered',       classes: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/50',  dot: 'bg-emerald-500' },
+  REJECTED:              { label: 'Issue Reported',  classes: 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/50',          dot: 'bg-rose-500' },
+  ON_HOLD:               { label: 'Waiting Courier', classes: 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/50',          dot: 'bg-rose-400' },
+  CANCELLED:             { label: 'Cancelled',       classes: 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-600/60',       dot: 'bg-slate-400 dark:bg-slate-500' },
+  OVERDUE:               { label: 'Delayed',         classes: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200/80 dark:border-red-800/50',             dot: 'bg-red-500' },
 };
 
 export function TaskStatusBadge({ status, size = 'sm' }: Props) {
