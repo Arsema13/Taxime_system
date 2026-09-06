@@ -67,7 +67,7 @@ export class CommentCrudService {
   async delete(commentId: string, userId: string, userRole: string) {
     const comment = await prisma.comment.findUnique({ where: { id: commentId } });
     if (!comment) throw new NotFoundError('Comment not found');
-    if (comment.authorId !== userId && userRole !== 'COMMANDER') {
+    if (comment.authorId !== userId && userRole !== 'ADMIN') {
       throw new ForbiddenError('You can only delete your own comments');
     }
 
