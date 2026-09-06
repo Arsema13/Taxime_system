@@ -34,8 +34,19 @@ export async function createTask(data: {
 
   const task = await prisma.task.create({ data: createInput });
 
-  if (assigneeIds && assigneeIds.length > 0) {
-    for (const userId of assigneeIds) {
+  // Filter out admin users from assignees
+  let validAssigneeIds = assigneeIds || [];
+  if (validAssigneeIds.length > 0) {
+    const adminUsers = await prisma.user.findMany({
+      where: { id: { in: validAssigneeIds }, role: 'ADMIN' },
+      select: { id: true },
+    });
+    const adminIds = new Set(adminUsers.map(u => u.id));
+    validAssigneeIds = validAssigneeIds.filter(id => !adminIds.has(id));
+  }
+
+  if (validAssigneeIds.length > 0) {
+    for (const userId of validAssigneeIds) {
       await prisma.taskAssignee.create({ data: { taskId: task.id, userId, isPrimary: userId === primaryAssigneeId } });
     }
   }
@@ -47,8 +58,8 @@ export async function createTask(data: {
     }
   }
 
-  if (assigneeIds) {
-    for (const userId of assigneeIds) {
+  if (validAssigneeIds.length > 0) {
+    for (const userId of validAssigneeIds) {
       if (userId !== data.creatorId) {
         await notificationService.create({
           userId, type: 'TASK_ASSIGNED', title: 'New Task Assigned',

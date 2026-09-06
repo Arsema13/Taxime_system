@@ -11,6 +11,15 @@ export async function assignTask(taskId: string, assigneeIds: string[], primaryA
   const task = await prisma.task.findUnique({ where: { id: taskId } });
   if (!task) throw new NotFoundError('Task not found');
 
+  // Prevent assigning tasks to admin users
+  const adminUsers = await prisma.user.findMany({
+    where: { id: { in: assigneeIds }, role: 'ADMIN' },
+    select: { id: true },
+  });
+  if (adminUsers.length > 0) {
+    throw new BadRequestError('Cannot assign tasks to admin users');
+  }
+
   await prisma.taskAssignee.deleteMany({ where: { taskId } });
   for (const userId of assigneeIds) {
     await prisma.taskAssignee.create({
@@ -49,13 +58,13 @@ export async function bulkUpdateTasks(taskIds: string[], action: string, data: R
           if (data.status) await changeTaskStatus(taskId, data.status, userId);
           break;
         case 'priority':
-          if (data.priority) await updateTask(taskId, userId, 'COMMANDER', { priority: data.priority });
+          if (data.priority) await updateTask(taskId, userId, 'ADMIN', { priority: data.priority });
           break;
         case 'archive':
-          await updateTask(taskId, userId, 'COMMANDER', { isArchived: true });
+          await updateTask(taskId, userId, 'ADMIN', { isArchived: true });
           break;
         case 'unarchive':
-          await updateTask(taskId, userId, 'COMMANDER', { isArchived: false });
+          await updateTask(taskId, userId, 'ADMIN', { isArchived: false });
           break;
         case 'delete':
           await deleteTask(taskId, userId);
