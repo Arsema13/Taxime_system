@@ -52,6 +52,10 @@ export class ReportService {
   async exportToPDF(reportData: any): Promise<Buffer> {
     return this.exportService.exportToPDF(reportData);
   }
+
+  async exportToWord(reportData: any): Promise<Buffer> {
+    return this.exportService.exportToWord(reportData);
+  }
 }
 
 export const reportService = new ReportService();
