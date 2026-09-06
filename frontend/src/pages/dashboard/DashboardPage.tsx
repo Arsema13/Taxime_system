@@ -1,13 +1,21 @@
 import React from 'react';
 import { useAuth } from '@/contexts';
-import CommanderDashboard from './CommanderDashboard';
+import AdminDashboard from './AdminDashboard';
 import TeamLeadDashboard from './TeamLeadDashboard';
 import MemberDashboard from './MemberDashboard';
 
 export default function DashboardPage() {
   const { user } = useAuth();
 
-  if (user?.role === 'COMMANDER') return <CommanderDashboard />;
-  if (user?.role === 'TEAM_LEAD') return <TeamLeadDashboard />;
-  return <MemberDashboard />;
+  const renderRoleDashboard = () => {
+    if (user?.role === 'ADMIN') return <AdminDashboard />;
+    if (user?.role === 'TEAM_LEAD') return <TeamLeadDashboard />;
+    return <MemberDashboard />;
+  };
+
+  return (
+    <div className="flex flex-col gap-5">
+      {renderRoleDashboard()}
+    </div>
+  );
 }
