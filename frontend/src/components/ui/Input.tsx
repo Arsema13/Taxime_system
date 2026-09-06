@@ -14,14 +14,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col gap-1">
         {label && (
-          <label className="text-sm font-medium text-slate-700">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {label}
             {props.required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
         )}
         <div className="relative">
           {icon && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 pointer-events-none">
               {icon}
             </span>
           )}
@@ -29,13 +29,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             {...props}
             className={[
-              'w-full rounded-xl border bg-white/60 backdrop-blur-md text-sm text-slate-800 placeholder:text-slate-400',
-              'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500',
-              error ? 'border-red-400 focus:ring-red-400' : 'border-white/40',
-              icon       ? 'pl-9'  : 'pl-3',
-              iconRight  ? 'pr-9'  : 'pr-3',
-              'py-2',
-              props.disabled ? 'bg-slate-50 opacity-60 cursor-not-allowed' : '',
+              'w-full rounded-2xl border bg-white dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-xs',
+              'transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67]',
+              error ? 'border-rose-400 focus:ring-rose-400/20' : 'border-slate-200/80 dark:border-slate-600/80',
+              icon       ? 'pl-10' : 'pl-4',
+              iconRight  ? 'pr-10' : 'pr-4',
+              'py-2.5',
+              props.disabled ? 'bg-slate-50 dark:bg-slate-900 opacity-60 cursor-not-allowed' : '',
               className,
             ].join(' ')}
           />
@@ -44,14 +44,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               type="button"
               tabIndex={-1}
               onClick={onIconRightClick}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
             >
               {iconRight}
             </button>
           )}
         </div>
         {error && <p className="text-xs text-red-500">{error}</p>}
-        {hint && !error && <p className="text-xs text-slate-500">{hint}</p>}
+        {hint && !error && <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
       </div>
     );
   },
@@ -70,7 +70,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="flex flex-col gap-1">
         {label && (
-          <label className="text-sm font-medium text-slate-700">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {label}
             {props.required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
@@ -79,15 +79,15 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           {...props}
           className={[
-            'w-full rounded-xl border bg-white/60 backdrop-blur-md text-sm text-slate-800 placeholder:text-slate-400 resize-y min-h-[80px]',
+            'w-full rounded-xl border bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-y min-h-[80px]',
             'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 px-3 py-2',
-            error ? 'border-red-400' : 'border-white/40',
-            props.disabled ? 'bg-slate-50 opacity-60 cursor-not-allowed' : '',
+            error ? 'border-red-400' : 'border-white/40 dark:border-slate-600/60',
+            props.disabled ? 'bg-slate-50 dark:bg-slate-900 opacity-60 cursor-not-allowed' : '',
             className,
           ].join(' ')}
         />
         {error && <p className="text-xs text-red-500">{error}</p>}
-        {hint && !error && <p className="text-xs text-slate-500">{hint}</p>}
+        {hint && !error && <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
       </div>
     );
   },
@@ -108,7 +108,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="flex flex-col gap-1">
         {label && (
-          <label className="text-sm font-medium text-slate-700">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
             {label}
             {props.required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
@@ -117,10 +117,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           {...props}
           className={[
-            'w-full rounded-xl border bg-white/60 backdrop-blur-md text-sm text-slate-800',
+            'w-full rounded-xl border bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-sm text-slate-800 dark:text-slate-200',
             'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 px-3 py-2',
-            error ? 'border-red-400' : 'border-white/40',
-            props.disabled ? 'bg-slate-50 opacity-60 cursor-not-allowed' : '',
+            error ? 'border-red-400' : 'border-white/40 dark:border-slate-600/60',
+            props.disabled ? 'bg-slate-50 dark:bg-slate-900 opacity-60 cursor-not-allowed' : '',
             className,
           ].join(' ')}
         >
@@ -130,7 +130,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           )) : children}
         </select>
         {error && <p className="text-xs text-red-500">{error}</p>}
-        {hint && !error && <p className="text-xs text-slate-500">{hint}</p>}
+        {hint && !error && <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
       </div>
     );
   },

@@ -39,14 +39,14 @@ export function Dropdown({ trigger, items, align = 'right', width = 'w-48' }: Dr
       {open && (
         <div
           className={[
-            'absolute z-50 mt-1 bg-white rounded-xl border border-slate-200 shadow-lg py-1 animate-in',
+            'absolute z-50 mt-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg py-1 animate-in',
             width,
             align === 'right' ? 'right-0' : 'left-0',
           ].join(' ')}
         >
           {items.map((item, i) =>
             item.divider ? (
-              <div key={`div-${i}`} className="my-1 border-t border-slate-100" />
+              <div key={`div-${i}`} className="my-1 border-t border-slate-100 dark:border-slate-700" />
             ) : (
               <button
                 key={i}
@@ -55,12 +55,12 @@ export function Dropdown({ trigger, items, align = 'right', width = 'w-48' }: Dr
                 className={[
                   'w-full flex items-center gap-2.5 px-3.5 py-2 text-sm transition-colors text-left',
                   item.danger
-                    ? 'text-red-600 hover:bg-red-50'
-                    : 'text-slate-700 hover:bg-slate-50',
+                    ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50',
                   item.disabled ? 'opacity-50 cursor-not-allowed' : '',
                 ].join(' ')}
               >
-                {item.icon && <span className="text-slate-400 shrink-0">{item.icon}</span>}
+                {item.icon && <span className="text-slate-400 dark:text-slate-500 shrink-0">{item.icon}</span>}
                 {item.label}
               </button>
             ),
@@ -98,21 +98,21 @@ export function SelectDropdown({ value, onChange, options, placeholder = 'Select
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-slate-300 bg-white text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
       >
-        <span className={selected ? 'text-slate-800' : 'text-slate-400'}>
+        <span className={selected ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500'}>
           {selected?.label ?? placeholder}
         </span>
-        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute z-50 top-full mt-1 w-full bg-white rounded-xl border border-slate-200 shadow-lg py-1 animate-in max-h-56 overflow-y-auto">
+        <div className="absolute z-50 top-full mt-1 w-full bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg py-1 animate-in max-h-56 overflow-y-auto">
           {placeholder && (
             <button
               type="button"
               onClick={() => { onChange(''); setOpen(false); }}
-              className="w-full text-left px-3.5 py-2 text-sm text-slate-400 hover:bg-slate-50"
+              className="w-full text-left px-3.5 py-2 text-sm text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50"
             >
               {placeholder}
             </button>
@@ -123,7 +123,7 @@ export function SelectDropdown({ value, onChange, options, placeholder = 'Select
               type="button"
               onClick={() => { onChange(o.value); setOpen(false); }}
               className={`w-full text-left px-3.5 py-2 text-sm transition-colors ${
-                o.value === value ? 'text-teal-700 bg-teal-50 font-medium' : 'text-slate-700 hover:bg-slate-50'
+                o.value === value ? 'text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 font-medium' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
               }`}
             >
               {o.label}

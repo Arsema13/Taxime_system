@@ -21,7 +21,7 @@ const COLORS = [
 ];
 
 function getColor(name?: string) {
-  if (!name) return 'bg-slate-400';
+  if (!name) return 'bg-slate-400 dark:bg-slate-600';
   const code = name.charCodeAt(0) + (name.charCodeAt(1) || 0);
   return COLORS[code % COLORS.length];
 }
@@ -39,13 +39,13 @@ export function Avatar({ src, name, size = 'md', className = '' }: AvatarProps) 
       <img
         src={src}
         alt={name ?? 'avatar'}
-        className={`${SIZES[size]} rounded-full object-cover shrink-0 ring-2 ring-white ${className}`}
+        className={`${SIZES[size]} rounded-full object-cover shrink-0 ring-2 ring-white dark:ring-slate-800 ${className}`}
       />
     );
   }
   return (
     <div
-      className={`${SIZES[size]} ${getColor(name)} rounded-full flex items-center justify-center text-white font-semibold shrink-0 ring-2 ring-white ${className}`}
+      className={`${SIZES[size]} ${getColor(name)} rounded-full flex items-center justify-center text-white font-semibold shrink-0 ring-2 ring-white dark:ring-slate-800 ${className}`}
     >
       {getInitials(name)}
     </div>
@@ -70,7 +70,7 @@ export function AvatarGroup({ users, max = 3, size = 'sm' }: AvatarGroupProps) {
         </div>
       ))}
       {overflow > 0 && (
-        <div className={`-ml-2 bg-slate-200 text-slate-600 rounded-full flex items-center justify-center ring-2 ring-white font-medium
+        <div className={`-ml-2 bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-full flex items-center justify-center ring-2 ring-white dark:ring-slate-800 font-medium
           ${size === 'sm' ? 'w-8 h-8 text-xs' : size === 'md' ? 'w-9 h-9 text-xs' : 'w-6 h-6 text-xs'}`}>
           +{overflow}
         </div>

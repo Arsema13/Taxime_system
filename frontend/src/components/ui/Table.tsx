@@ -28,24 +28,24 @@ export function Table<T>({
   const safeData = Array.isArray(data) ? data : [];
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-white/40 bg-white/30 backdrop-blur-md">
+    <div className="overflow-x-auto rounded-2xl border border-white/40 dark:border-slate-700/40 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-white/40 bg-white/20">
+          <tr className="border-b border-white/40 dark:border-slate-700/40 bg-white/20 dark:bg-slate-700/20">
             {safeColumns.map((col) => (
               <th
                 key={col.key}
                 style={{ width: col.width }}
                 className={[
-                  'px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide',
-                  col.sortable ? 'cursor-pointer select-none hover:text-slate-700' : '',
+                  'px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide',
+                  col.sortable ? 'cursor-pointer select-none hover:text-slate-700 dark:hover:text-slate-200' : '',
                 ].join(' ')}
                 onClick={() => col.sortable && onSort?.(col.key)}
               >
                 <span className="flex items-center gap-1">
                   {col.header}
                   {col.sortable && sortKey === col.key && (
-                    <span className="text-teal-600">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+                    <span className="text-teal-600 dark:text-teal-400">{sortOrder === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </span>
               </th>
@@ -55,17 +55,17 @@ export function Table<T>({
         <tbody>
           {loading ? (
             Array.from({ length: 5 }).map((_, i) => (
-              <tr key={i} className="border-b border-white/20">
+              <tr key={i} className="border-b border-white/20 dark:border-slate-700/30">
                 {safeColumns.map((col) => (
                   <td key={col.key} className="px-4 py-3">
-                    <div className="h-4 bg-white/40 rounded animate-pulse" />
+                    <div className="h-4 bg-white/40 dark:bg-slate-700/40 rounded animate-pulse" />
                   </td>
                 ))}
               </tr>
             ))
           ) : safeData.length === 0 ? (
             <tr>
-              <td colSpan={safeColumns.length} className="px-4 py-12 text-center text-slate-500">
+              <td colSpan={safeColumns.length} className="px-4 py-12 text-center text-slate-500 dark:text-slate-400">
                 {emptyMessage}
               </td>
             </tr>
@@ -75,12 +75,12 @@ export function Table<T>({
                 key={keyExtractor(row)}
                 onClick={() => onRowClick?.(row)}
                 className={[
-                  'border-b border-white/20 last:border-0 transition-colors',
-                  onRowClick ? 'cursor-pointer hover:bg-white/30' : '',
+                  'border-b border-white/20 dark:border-slate-700/30 last:border-0 transition-colors',
+                  onRowClick ? 'cursor-pointer hover:bg-white/30 dark:hover:bg-slate-700/30' : '',
                 ].join(' ')}
               >
                 {safeColumns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-slate-700">
+                  <td key={col.key} className="px-4 py-3 text-slate-700 dark:text-slate-300">
                     {col.render(row, idx)}
                   </td>
                 ))}

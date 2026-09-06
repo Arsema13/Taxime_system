@@ -31,7 +31,7 @@ interface TabListProps {
 
 export function TabList({ children, className = '' }: TabListProps) {
   return (
-    <div className={`flex gap-1 bg-slate-100 p-1 rounded-xl w-fit ${className}`}>
+    <div className={`flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit ${className}`}>
       {children}
     </div>
   );
@@ -53,8 +53,8 @@ export function TabTrigger({ value, children, icon }: TabTriggerProps) {
       className={[
         'flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150',
         isActive
-          ? 'bg-white text-teal-700 shadow-sm'
-          : 'text-slate-600 hover:text-slate-800',
+          ? 'bg-white dark:bg-slate-700 text-teal-700 dark:text-teal-400 shadow-sm'
+          : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200',
       ].join(' ')}
     >
       {icon}
