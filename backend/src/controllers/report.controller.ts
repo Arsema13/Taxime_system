@@ -36,6 +36,14 @@ export class ReportController {
         return;
       }
 
+      if (format === 'docx') {
+        const buffer = await reportService.exportToWord(reportData);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', `attachment; filename=${type}_report.docx`);
+        res.send(buffer);
+        return;
+      }
+
       res.json(successResponse('Report generated', reportData));
     } catch (error) { next(error); }
   }

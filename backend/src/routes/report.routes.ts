@@ -6,6 +6,6 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/', authorize('COMMANDER', 'TEAM_LEAD'), reportController.generate);
+router.get('/', authorize('ADMIN', 'TEAM_LEAD'), reportController.generate);
 
 export default router;
