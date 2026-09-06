@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, Phone, Building2, Users, Calendar } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building2, Users, Calendar, ClipboardList, CheckCircle, Clock, TrendingUp, Zap } from 'lucide-react';
 import { userService } from '@/services';
 import type { User, UserStats } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -26,7 +26,7 @@ export default function EmployeeDetailPage() {
   }, [id]);
 
   if (loading) return <PageLoader />;
-  if (!user)   return <p className="text-center text-slate-500 py-20">Employee not found.</p>;
+  if (!user)   return <p className="text-center text-slate-500 dark:text-slate-400 py-20">Employee not found.</p>;
 
   return (
     <div>
@@ -41,11 +41,11 @@ export default function EmployeeDetailPage() {
           <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="xl" />
           <div>
             <h2 className="text-xl font-bold text-slate-800">{user.firstName} {user.lastName}</h2>
-            {user.position && <p className="text-slate-500 text-sm">{user.position}</p>}
+            {user.position && <p className="text-slate-500 dark:text-slate-400 text-sm">{user.position}</p>}
             {user.rank    && <p className="text-slate-400 text-xs mt-0.5">{user.rank}</p>}
           </div>
           <div className="flex flex-wrap gap-2 justify-center">
-            <Badge variant={user.role === 'COMMANDER' ? 'primary' : user.role === 'TEAM_LEAD' ? 'purple' : 'default'}>
+            <Badge variant={user.role === 'ADMIN' ? 'primary' : user.role === 'TEAM_LEAD' ? 'purple' : 'default'}>
               {user.role.replace('_', ' ')}
             </Badge>
             <Badge variant={user.status === 'ACTIVE' ? 'success' : 'danger'} dot>
@@ -63,15 +63,15 @@ export default function EmployeeDetailPage() {
 
         {stats && (
           <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4 content-start">
-            <StatCard label="Assigned" value={stats.totalAssigned} icon={<span className="text-2xl">📋</span>} iconBg="bg-blue-100" />
-            <StatCard label="Completed" value={stats.totalCompleted} icon={<span className="text-2xl">✅</span>} iconBg="bg-emerald-100" />
-            <StatCard label="Overdue" value={stats.totalOverdue} icon={<span className="text-2xl">⏰</span>} iconBg="bg-red-100" />
-            <StatCard label="Completion Rate" value={`${stats.completionRate.toFixed(0)}%`} icon={<span className="text-2xl">📈</span>} iconBg="bg-teal-100" />
+            <StatCard label="Assigned" value={stats.totalAssigned} icon={<ClipboardList className="w-6 h-6 text-blue-600" />} iconBg="bg-blue-100" />
+            <StatCard label="Completed" value={stats.totalCompleted} icon={<CheckCircle className="w-6 h-6 text-emerald-600" />} iconBg="bg-emerald-100" />
+            <StatCard label="Overdue" value={stats.totalOverdue} icon={<Clock className="w-6 h-6 text-red-600" />} iconBg="bg-red-100" />
+            <StatCard label="Completion Rate" value={`${stats.completionRate.toFixed(0)}%`} icon={<TrendingUp className="w-6 h-6 text-teal-600" />} iconBg="bg-teal-100" />
             {stats.avgCompletionTime != null && (
-              <StatCard label="Avg. Completion" value={`${stats.avgCompletionTime.toFixed(1)}d`} icon={<span className="text-2xl">⚡</span>} iconBg="bg-purple-100" />
+              <StatCard label="Avg. Completion" value={`${stats.avgCompletionTime.toFixed(1)}d`} icon={<Zap className="w-6 h-6 text-purple-600" />} iconBg="bg-purple-100" />
             )}
             {stats.tasksThisMonth != null && (
-              <StatCard label="This Month" value={stats.tasksThisMonth} icon={<span className="text-2xl">📅</span>} iconBg="bg-orange-100" />
+              <StatCard label="This Month" value={stats.tasksThisMonth} icon={<Calendar className="w-6 h-6 text-orange-600" />} iconBg="bg-orange-100" />
             )}
           </div>
         )}

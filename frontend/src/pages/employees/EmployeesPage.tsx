@@ -83,7 +83,7 @@ export default function EmployeesPage() {
       phone: user.phone ?? '',
       role: user.role,
       departmentId: user.departmentId ?? '',
-      isActive: user.isActive,
+      isActive: user.isActive ?? false,
     });
     setEditModal(true);
   };
@@ -152,7 +152,7 @@ export default function EmployeesPage() {
   const getRoleBadgeVariant = (role: UserRole) => {
     switch (role) {
       case 'SUPER_ADMIN': return 'danger';
-      case 'COMMANDER': return 'warning';
+      case 'ADMIN': return 'warning';
       case 'TEAM_LEAD': return 'primary';
       default: return 'default';
     }
@@ -205,14 +205,14 @@ export default function EmployeesPage() {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
               <Select
                 value={filters.role ?? ''}
                 onChange={e => setFilters(f => ({ ...f, role: e.target.value as UserRole || undefined, page: 1 }))}
               >
                 <option value="">All Roles</option>
                 <option value="SUPER_ADMIN">Super Admin</option>
-                <option value="COMMANDER">Commander</option>
+                <option value="ADMIN">Admin</option>
                 <option value="TEAM_LEAD">Team Lead</option>
                 <option value="EMPLOYEE">Employee</option>
               </Select>
@@ -253,25 +253,25 @@ export default function EmployeesPage() {
           <Card padding="none">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-              <thead className="border-b border-slate-200 bg-slate-50">
+              <thead className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Employee</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Role</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Department</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Contact</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Employee</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Role</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Department</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Contact</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {Array.isArray(data?.data) && data.data.map(user => (
-                  <tr key={user.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                  <tr key={user.id} className="border-b border-slate-100 dark:border-slate-700/50 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-900/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
                         <div>
                           <p className="font-medium text-slate-800">{user.firstName} {user.lastName}</p>
-                          <p className="text-xs text-slate-500">{user.email}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
                         </div>
                       </div>
                     </td>
@@ -282,7 +282,7 @@ export default function EmployeesPage() {
                     </td>
                     <td className="px-4 py-3">
                       {user.department ? (
-                        <span className="text-sm text-slate-700">{user.department.name}</span>
+                        <span className="text-sm text-slate-700 dark:text-slate-300">{user.department.name}</span>
                       ) : (
                         <span className="text-sm text-slate-400">—</span>
                       )}
@@ -389,7 +389,7 @@ export default function EmployeesPage() {
           >
             <option value="EMPLOYEE">Employee</option>
             <option value="TEAM_LEAD">Team Lead</option>
-            <option value="COMMANDER">Commander</option>
+            <option value="ADMIN">Admin</option>
             <option value="SUPER_ADMIN">Super Admin</option>
           </Select>
 
@@ -409,7 +409,7 @@ export default function EmployeesPage() {
               onChange={e => setFormData(f => ({ ...f, isActive: e.target.checked }))}
               className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500"
             />
-            <span className="text-sm text-slate-700">Active</span>
+            <span className="text-sm text-slate-700 dark:text-slate-300">Active</span>
           </label>
 
           <div className="flex gap-2 pt-2">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Check, CheckCheck, Trash2, Bell, BellOff, Filter, RefreshCw } from 'lucide-react';
+import { Check, CheckCheck, Trash2, Bell, RefreshCw, ClipboardList, CheckCircle, Clock, MessageSquare, AlertTriangle, AtSign, UserPlus } from 'lucide-react';
 import { notificationService } from '@/services';
 import type { Notification, PaginatedResponse } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -90,22 +90,25 @@ export default function NotificationsPage() {
     if (!notification.isRead) {
       handleMarkRead(notification.id);
     }
-    if (notification.relatedTaskId) {
-      navigate(`/tasks/${notification.relatedTaskId}`);
+    if (notification.link) {
+      navigate(notification.link);
+    } else if (notification.taskId) {
+      navigate(`/tasks/${notification.taskId}`);
     }
   };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'TASK_ASSIGNED': return '📋';
-      case 'TASK_UPDATED': return '🔄';
-      case 'TASK_COMPLETED': return '✅';
-      case 'DEADLINE_REMINDER': return '⏰';
-      case 'COMMENT_ADDED': return '💬';
-      case 'TASK_OVERDUE': return '⚠️';
-      case 'TASK_ESCALATED': return '🚨';
-      case 'MENTION': return '@';
-      default: return '🔔';
+      case 'TASK_ASSIGNED': return <ClipboardList size={14} />;
+      case 'TASK_UPDATED': return <RefreshCw size={14} />;
+      case 'TASK_COMPLETED': return <CheckCircle size={14} />;
+      case 'DEADLINE_REMINDER': return <Clock size={14} />;
+      case 'COMMENT_ADDED': return <MessageSquare size={14} />;
+      case 'TASK_OVERDUE': return <AlertTriangle size={14} />;
+      case 'TASK_ESCALATED': return <AlertTriangle size={14} />;
+      case 'MENTION': return <AtSign size={14} />;
+      case 'NEW_USER_REGISTERED': return <UserPlus size={14} />;
+      default: return <Bell size={14} />;
     }
   };
 
@@ -179,9 +182,9 @@ export default function NotificationsPage() {
           icon={<Bell className="w-12 h-12" />}
           title="No notifications"
           description={
-            filters.isRead === false
+            filters.unreadOnly === true
               ? "You're all caught up! No unread notifications."
-              : filters.isRead === true
+              : filters.unreadOnly === false
                 ? "No read notifications to show."
                 : "You don't have any notifications yet."
           }
@@ -193,7 +196,7 @@ export default function NotificationsPage() {
               {Array.isArray(data?.data) && data.data.map(notification => (
                 <div
                   key={notification.id}
-                  className={`flex items-start gap-4 p-4 transition-colors hover:bg-slate-50 ${
+                  className={`flex items-start gap-4 p-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/50 ${
                     !notification.isRead ? 'bg-teal-50/30' : ''
                   }`}
                 >
@@ -205,13 +208,13 @@ export default function NotificationsPage() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div
-                      className={`${notification.relatedTaskId ? 'cursor-pointer' : ''}`}
-                      onClick={() => notification.relatedTaskId && handleNotificationClick(notification)}
+                      className={`${(notification.link || notification.taskId) ? 'cursor-pointer' : ''}`}
+                      onClick={() => (notification.link || notification.taskId) && handleNotificationClick(notification)}
                     >
-                      <p className={`text-sm mb-1 ${!notification.isRead ? 'font-semibold text-slate-800' : 'text-slate-700'}`}>
+                      <p className={`text-sm mb-1 ${!notification.isRead ? 'font-semibold text-slate-800' : 'text-slate-700 dark:text-slate-300'}`}>
                         {notification.message}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                         <span>{formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}</span>
                         {!notification.isRead && (
                           <Badge variant="primary" className="text-[10px] px-1.5 py-0.5">New</Badge>
