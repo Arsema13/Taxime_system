@@ -1,4 +1,6 @@
-import type { Role, UserStatus } from './auth.types';
+import type { Role, UserRole, UserStatus } from './auth.types';
+
+export { type UserRole };
 
 export interface User {
   id: string;
@@ -12,6 +14,8 @@ export interface User {
   position?: string | null;
   rank?: string | null;
   phone?: string | null;
+  bio?: string | null;
+  isActive?: boolean;
   emailVerified: boolean;
   departmentId?: string | null;
   teamId?: string | null;

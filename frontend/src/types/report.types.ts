@@ -2,6 +2,8 @@ export type ReportType = 'TASK_REPORT' | 'DAILY_SUMMARY' | 'WEEKLY_REPORT' | 'MO
 export type ReportPeriod = 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY' | 'CUSTOM';
 export type ReportStatus = 'DRAFT' | 'SUBMITTED' | 'UNDER_REVIEW' | 'APPROVED' | 'REJECTED' | 'REVISION_NEEDED';
 
+export type TaskReport = Report;
+
 export interface Report {
   id: string;
   title: string;

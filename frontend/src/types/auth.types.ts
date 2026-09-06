@@ -1,4 +1,5 @@
-export type Role = 'COMMANDER' | 'TEAM_LEAD' | 'MEMBER';
+export type Role = 'ADMIN' | 'TEAM_LEAD' | 'MEMBER' | 'EMPLOYEE' | 'SUPER_ADMIN';
+export type UserRole = Role;
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
 export interface AuthUser {
@@ -12,6 +13,8 @@ export interface AuthUser {
   position?: string | null;
   rank?: string | null;
   phone?: string | null;
+  bio?: string | null;
+  isActive?: boolean;
   emailVerified: boolean;
   departmentId?: string | null;
   teamId?: string | null;
@@ -19,6 +22,7 @@ export interface AuthUser {
   team?: { id: string; name: string } | null;
   lastLoginAt?: string | null;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface LoginPayload {

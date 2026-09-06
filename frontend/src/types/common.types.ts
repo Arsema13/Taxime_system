@@ -26,3 +26,20 @@ export interface DateRange {
   from?: string;
   to?: string;
 }
+
+export interface UserSettings {
+  id?: string;
+  userId?: string;
+  emailNotifications?: boolean;
+  taskAssignedNotification?: boolean;
+  taskUpdatedNotification?: boolean;
+  taskDueNotification?: boolean;
+  commentMentionNotification?: boolean;
+  theme?: string;
+  dateFormat?: string;
+  timeFormat?: string;
+  profileVisibility?: string;
+  showEmail?: boolean;
+  showPhone?: boolean;
+}
+

@@ -11,7 +11,8 @@ export type NotificationType =
   | 'TASK_REASSIGNED'
   | 'TASK_SUBMITTED'
   | 'FILE_UPLOADED'
-  | 'SYSTEM';
+  | 'SYSTEM'
+  | 'NEW_USER_REGISTERED';
 
 export interface Notification {
   id: string;
@@ -20,8 +21,10 @@ export interface Notification {
   message: string;
   isRead: boolean;
   data?: Record<string, unknown> | null;
+  link?: string | null;
   userId: string;
   taskId?: string | null;
+  actorId?: string | null;
   task?: { id: string; title: string } | null;
   createdAt: string;
 }

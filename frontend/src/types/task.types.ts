@@ -188,6 +188,8 @@ export interface ActivityLog {
   action: string;
   details?: Record<string, unknown> | null;
   taskId?: string | null;
+  taskTitle?: string | null;
+  metadata?: Record<string, unknown> | null;
   userId: string;
   createdAt: string;
   user: {

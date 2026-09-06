@@ -24,9 +24,9 @@ export interface CompletionTrend {
 
 export interface DepartmentPerformance {
   departmentId: string;
-  department: string;
-  total: number;
-  completed: number;
+  name: string;
+  totalTasks: number;
+  completedTasks: number;
   overdue: number;
   completionRate: number;
 }
@@ -59,6 +59,7 @@ export interface CommanderDashboard {
     criticalTasks: number;
     pendingReview: number;
     completionRate: number;
+    inProgressTasks: number;
   };
   tasksByStatus: TaskStatusCount[];
   tasksByPriority: TaskPriorityCount[];
@@ -67,6 +68,7 @@ export interface CommanderDashboard {
   teamPerformance: TeamPerformance[];
   employeeWorkload: EmployeeWorkload[];
   recentActivity: RecentActivity[];
+  recentTasks: RecentTask[];
 }
 
 export interface TeamLeadDashboard {
@@ -117,4 +119,12 @@ export interface UpcomingDeadline {
   priority: string;
   status: string;
   daysLeft: number;
+}
+
+export interface RecentTask {
+  id: string;
+  title: string;
+  priority: string;
+  category: string;
+  status: string;
 }
