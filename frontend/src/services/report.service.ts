@@ -62,6 +62,42 @@ export const reportService = {
     });
     return data;
   },
+
+  async exportWord(filters: ReportFilters = {}): Promise<Blob> {
+    const { data } = await api.get('/reports', {
+      params: {
+        type: 'task_summary',
+        format: 'docx',
+        ...filters
+      },
+      responseType: 'blob',
+    });
+    return data;
+  },
+
+  async exportAnalyticsPdf(filters: ReportFilters = {}): Promise<Blob> {
+    const { data } = await api.get('/reports', {
+      params: { type: 'task_summary', format: 'pdf', ...filters },
+      responseType: 'blob',
+    });
+    return data;
+  },
+
+  async exportAnalyticsExcel(filters: ReportFilters = {}): Promise<Blob> {
+    const { data } = await api.get('/reports', {
+      params: { type: 'task_summary', format: 'excel', ...filters },
+      responseType: 'blob',
+    });
+    return data;
+  },
+
+  async exportAnalyticsWord(filters: ReportFilters = {}): Promise<Blob> {
+    const { data } = await api.get('/reports', {
+      params: { type: 'task_summary', format: 'docx', ...filters },
+      responseType: 'blob',
+    });
+    return data;
+  },
 };
 
 export function downloadBlob(blob: Blob, filename: string) {

@@ -4,15 +4,21 @@ import type {
   CreateDepartmentPayload,
   CreateTeamPayload,
   Department,
+  PaginatedResponse,
   Team,
   TeamMember,
 } from '@/types';
 
 export const departmentService = {
   // ── Departments ────────────────────────────────────────────────────────────
-  async getDepartments(): Promise<Department[]> {
-    const { data } = await api.get('/departments');
-    return data.data ?? data;
+  async getDepartments(params?: { page?: number; limit?: number; search?: string }): Promise<PaginatedResponse<Department>> {
+    const { data } = await api.get('/departments', { params: params?.search ? { search: params.search } : {} });
+    const departments: Department[] = data.data ?? data;
+    return {
+      success: true,
+      data: departments,
+      pagination: { page: 1, limit: departments.length, total: departments.length, totalPages: 1 }
+    };
   },
 
   async getDepartment(id: string): Promise<Department> {

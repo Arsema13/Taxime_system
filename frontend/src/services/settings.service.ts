@@ -1,28 +1,17 @@
 import api from './api';
 
 export interface UserSettings {
-  notifications?: {
-    taskAssigned?: boolean;
-    taskCompleted?: boolean;
-    taskOverdue?: boolean;
-    commentAdded?: boolean;
-    mentionReceived?: boolean;
-    statusChanged?: boolean;
-  };
-  appearance?: {
-    theme?: string;
-    defaultView?: string;
-  };
-  preferences?: {
-    language?: string;
-    timezone?: string;
-    dateFormat?: string;
-    timeFormat?: string;
-  };
-  privacy?: {
-    showOnlineStatus?: boolean;
-    allowTaskInvitations?: boolean;
-  };
+  emailNotifications?: boolean;
+  taskAssignedNotification?: boolean;
+  taskUpdatedNotification?: boolean;
+  taskDueNotification?: boolean;
+  commentMentionNotification?: boolean;
+  theme?: string;
+  dateFormat?: string;
+  timeFormat?: string;
+  profileVisibility?: string;
+  showEmail?: boolean;
+  showPhone?: boolean;
 }
 
 export const settingsService = {

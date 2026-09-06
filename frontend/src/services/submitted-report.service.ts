@@ -90,6 +90,13 @@ class SubmittedReportService {
     return data;
   }
 
+  async exportReportWord(id: string): Promise<Blob> {
+    const { data } = await api.get(`/submitted-reports/${id}/export/word`, {
+      responseType: 'blob'
+    });
+    return data;
+  }
+
   downloadBlob(blob: Blob, filename: string) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

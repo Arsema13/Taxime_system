@@ -12,7 +12,7 @@ import type {
 export const userService = {
   async getUsers(params: UserQueryParams = {}): Promise<PaginatedResponse<User>> {
     const { data } = await api.get('/users', { params });
-    return data;
+    return data.data ?? data;
   },
 
   async getUser(id: string): Promise<User> {
@@ -31,16 +31,7 @@ export const userService = {
   },
 
   async updateProfile(payload: UpdateUserPayload): Promise<User> {
-    const { data } = await api.put('/users/profile', payload);
-    return data.data ?? data;
-  },
-
-  async uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
-    const form = new FormData();
-    form.append('avatar', file);
-    const { data } = await api.post('/users/profile/avatar', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const { data } = await api.put('/users/me', payload);
     return data.data ?? data;
   },
 
@@ -62,5 +53,9 @@ export const userService = {
   async searchUsers(query: string, limit = 10): Promise<User[]> {
     const { data } = await api.get('/users/search', { params: { q: query, limit } });
     return data.data ?? data;
+  },
+
+  async deleteUser(id: string): Promise<void> {
+    await api.delete(`/users/${id}`);
   },
 };

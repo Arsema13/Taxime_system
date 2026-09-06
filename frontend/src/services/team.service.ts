@@ -13,7 +13,7 @@ export interface CreateTeamData {
   name: string;
   description?: string;
   departmentId: string;
-  leaderId: string;
+  leadId: string;
   isActive?: boolean;
 }
 

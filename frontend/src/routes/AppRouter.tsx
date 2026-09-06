@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts';
 
 // ── Auth pages ─────────────────────────────────────────────────────────────
 const LoginPage          = lazy(() => import('@/pages/auth/LoginPage'));
+const RegisterPage       = lazy(() => import('@/pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage  = lazy(() => import('@/pages/auth/ResetPasswordPage'));
 
@@ -72,6 +73,7 @@ export function AppRouter() {
         {/* ── Auth routes ─────────────────────────────────────────── */}
         <Route element={<AuthLayout />}>
           <Route path="/login"            element={<SuspenseWrap><LoginPage /></SuspenseWrap>} />
+          <Route path="/register"         element={<SuspenseWrap><RegisterPage /></SuspenseWrap>} />
           <Route path="/forgot-password"  element={<SuspenseWrap><ForgotPasswordPage /></SuspenseWrap>} />
           <Route path="/reset-password"   element={<SuspenseWrap><ResetPasswordPage /></SuspenseWrap>} />
         </Route>
@@ -84,7 +86,14 @@ export function AppRouter() {
 
           {/* Tasks */}
           <Route path="/tasks"           element={<SuspenseWrap><TaskListPage /></SuspenseWrap>} />
-          <Route path="/tasks/new"       element={<SuspenseWrap><CreateTaskPage /></SuspenseWrap>} />
+          <Route
+            path="/tasks/new"
+            element={
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
+                <SuspenseWrap><CreateTaskPage /></SuspenseWrap>
+              </ProtectedRoute>
+            }
+          />
           <Route path="/tasks/:id"       element={<SuspenseWrap><TaskDetailPage /></SuspenseWrap>} />
           <Route path="/tasks/:id/edit"  element={<SuspenseWrap><EditTaskPage /></SuspenseWrap>} />
           <Route path="/my-tasks"        element={<SuspenseWrap><MyTasksPage /></SuspenseWrap>} />
@@ -95,7 +104,7 @@ export function AppRouter() {
           <Route
             path="/employees"
             element={
-              <ProtectedRoute roles={['COMMANDER']}>
+              <ProtectedRoute roles={['ADMIN']}>
                 <SuspenseWrap><EmployeesPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -103,7 +112,7 @@ export function AppRouter() {
           <Route
             path="/employees/:id"
             element={
-              <ProtectedRoute roles={['COMMANDER']}>
+              <ProtectedRoute roles={['ADMIN']}>
                 <SuspenseWrap><EmployeeDetailPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -113,7 +122,7 @@ export function AppRouter() {
           <Route
             path="/teams"
             element={
-              <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><TeamsPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -121,7 +130,7 @@ export function AppRouter() {
           <Route
             path="/teams/:id"
             element={
-              <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><TeamDetailPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -131,7 +140,7 @@ export function AppRouter() {
           <Route
             path="/departments"
             element={
-              <ProtectedRoute roles={['COMMANDER']}>
+              <ProtectedRoute roles={['ADMIN']}>
                 <SuspenseWrap><DepartmentsPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -144,7 +153,7 @@ export function AppRouter() {
           <Route
             path="/reports"
             element={
-              <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><ReportsPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -159,7 +168,7 @@ export function AppRouter() {
           <Route
             path="/reports/review"
             element={
-              <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><ReviewReportsPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -169,7 +178,7 @@ export function AppRouter() {
           <Route
             path="/activity"
             element={
-              <ProtectedRoute roles={['COMMANDER', 'TEAM_LEAD']}>
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><ActivityLogPage /></SuspenseWrap>
               </ProtectedRoute>
             }
@@ -177,7 +186,7 @@ export function AppRouter() {
           <Route
             path="/audit"
             element={
-              <ProtectedRoute roles={['COMMANDER']}>
+              <ProtectedRoute roles={['ADMIN']}>
                 <SuspenseWrap><AuditLogPage /></SuspenseWrap>
               </ProtectedRoute>
             }
