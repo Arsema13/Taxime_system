@@ -47,11 +47,11 @@ export default function ResetPasswordPage() {
   if (done) {
     return (
       <div className="text-center py-4">
-        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="w-8 h-8 text-emerald-600" />
+        <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <CheckCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
         </div>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Password updated!</h2>
-        <p className="text-slate-500 text-sm mb-6">Your password has been reset successfully.</p>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Password updated!</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Your password has been reset successfully.</p>
         <Button onClick={() => navigate('/login')} fullWidth>Go to Login</Button>
       </div>
     );
@@ -60,21 +60,21 @@ export default function ResetPasswordPage() {
   if (!token) {
     return (
       <div className="text-center py-4">
-        <p className="text-red-600 font-medium mb-4">Invalid or missing reset token.</p>
-        <Link to="/forgot-password" className="text-teal-600 hover:underline text-sm">Request a new reset link</Link>
+        <p className="text-red-600 dark:text-red-400 font-medium mb-4">Invalid or missing reset token.</p>
+        <Link to="/forgot-password" className="text-teal-600 dark:text-teal-400 hover:underline text-sm">Request a new reset link</Link>
       </div>
     );
   }
 
   return (
     <div>
-      <Link to="/login" className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700 text-sm mb-6 transition-colors">
+      <Link to="/login" className="inline-flex items-center gap-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 text-sm mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to login
       </Link>
 
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">Set new password</h2>
-        <p className="text-slate-500 text-sm mt-1">Choose a strong password of at least 8 characters.</p>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Set new password</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Choose a strong password of at least 8 characters.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
@@ -102,7 +102,6 @@ export default function ResetPasswordPage() {
           required
         />
 
-        {/* Password strength indicator */}
         {form.password && (
           <div className="flex gap-1 mt-1">
             {[1, 2, 3, 4].map((i) => {
@@ -116,7 +115,7 @@ export default function ResetPasswordPage() {
               return (
                 <div
                   key={i}
-                  className={`h-1 flex-1 rounded-full transition-colors ${i <= strength ? colors[strength] : 'bg-slate-200'}`}
+                  className={`h-1 flex-1 rounded-full transition-colors ${i <= strength ? colors[strength] : 'bg-slate-200 dark:bg-slate-700'}`}
                 />
               );
             })}
