@@ -12,7 +12,7 @@ export class AuthSessionController {
       const result = await authService.login(email, password, ip, userAgent);
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true, secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/',
       });
       res.json(successResponse('Login successful', result));
     } catch (error) { next(error); }
@@ -22,7 +22,12 @@ export class AuthSessionController {
     try {
       const sessionId = req.query.sessionId as string | undefined;
       await authService.logout(req.user!.id, sessionId);
-      res.clearCookie('refreshToken');
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
+        path: '/',
+      });
       res.json(successResponse('Logged out successfully'));
     } catch (error) { next(error); }
   }

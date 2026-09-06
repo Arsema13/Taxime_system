@@ -9,7 +9,7 @@ export class AuthRegisterController {
       const result = await authService.register(req.body);
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true, secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/',
       });
       res.status(201).json(successResponse('Registration successful', result));
     } catch (error) { next(error); }
