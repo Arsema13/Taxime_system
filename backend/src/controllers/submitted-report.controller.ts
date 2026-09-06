@@ -113,7 +113,7 @@ export class SubmittedReportController {
         return res.status(404).json({ success: false, message: 'Report not found' });
       }
 
-      if (existing.authorId !== userId && role !== 'COMMANDER') {
+      if (existing.authorId !== userId && role !== 'ADMIN') {
         return res.status(403).json({ success: false, message: 'Not authorized' });
       }
 
@@ -193,7 +193,7 @@ export class SubmittedReportController {
       const role = req.user!.role;
       const { status, reviewerComment } = req.body;
 
-      if (role !== 'COMMANDER' && role !== 'TEAM_LEAD') {
+      if (role !== 'ADMIN' && role !== 'TEAM_LEAD') {
         return res.status(403).json({ success: false, message: 'Not authorized' });
       }
 
@@ -353,6 +353,30 @@ export class SubmittedReportController {
       const buffer = await exportService.exportToExcel(reportData);
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', `attachment; filename=report-${id}.xlsx`);
+      res.send(buffer);
+    } catch (error) { next(error); }
+  }
+
+  async exportWord(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      const report = await prisma.report.findUnique({
+        where: { id },
+        include: {
+          author: { select: { id: true, firstName: true, lastName: true, email: true } },
+          assigner: { select: { id: true, firstName: true, lastName: true, email: true } },
+          task: { select: { id: true, title: true, status: true, priority: true } }
+        }
+      });
+
+      if (!report) {
+        return res.status(404).json({ success: false, message: 'Report not found' });
+      }
+
+      const buffer = await exportService.exportSubmittedReportToWord(report);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', `attachment; filename=report-${id}.docx`);
       res.send(buffer);
     } catch (error) { next(error); }
   }

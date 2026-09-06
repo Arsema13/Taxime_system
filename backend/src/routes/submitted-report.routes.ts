@@ -15,8 +15,9 @@ router.post('/', submittedReportController.create);
 router.put('/:id', submittedReportController.update);
 router.delete('/:id', submittedReportController.delete);
 router.post('/:id/submit', submittedReportController.submit);
-router.post('/:id/review', authorize('COMMANDER', 'TEAM_LEAD'), submittedReportController.review);
+router.post('/:id/review', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.review);
 router.get('/:id/export/pdf', submittedReportController.exportPdf);
 router.get('/:id/export/excel', submittedReportController.exportExcel);
+router.get('/:id/export/word', submittedReportController.exportWord);
 
 export default router;
