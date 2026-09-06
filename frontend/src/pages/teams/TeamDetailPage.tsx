@@ -25,7 +25,7 @@ export default function TeamDetailPage() {
   }, [id]);
 
   if (loading) return <PageLoader />;
-  if (!team)   return <p className="text-center text-slate-500 py-20">Team not found.</p>;
+  if (!team)   return <p className="text-center text-slate-500 dark:text-slate-400 py-20">Team not found.</p>;
 
   return (
     <div>
@@ -38,22 +38,22 @@ export default function TeamDetailPage() {
 
       <Card padding="lg">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-slate-800">Members ({members.length})</h3>
+          <h3 className="font-semibold text-slate-800 dark:text-slate-200">Members ({members.length})</h3>
         </div>
         {members.length === 0 ? (
-          <p className="text-slate-500 text-sm text-center py-8">No members yet.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm text-center py-8">No members yet.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {members.map((m) => (
-              <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/30 border border-white/40 hover:bg-white/50 transition-colors">
+              <div key={m.id} className="flex items-center gap-3 p-3 rounded-2xl bg-white/30 dark:bg-slate-800/30 border border-white/40 dark:border-slate-700/40 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-colors">
                 <Avatar src={m.user.avatar} name={`${m.user.firstName} ${m.user.lastName}`} size="md" />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-sm font-medium text-slate-800 truncate">{m.user.firstName} {m.user.lastName}</p>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{m.user.firstName} {m.user.lastName}</p>
                     {team.leadId === m.userId && <Crown className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
                   </div>
-                  <p className="text-xs text-slate-500 truncate">{m.user.email}</p>
-                  {m.user.position && <p className="text-xs text-slate-400 truncate">{m.user.position}</p>}
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{m.user.email}</p>
+                  {m.user.position && <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{m.user.position}</p>}
                 </div>
               </div>
             ))}

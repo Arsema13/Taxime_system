@@ -85,7 +85,7 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
 
   if (error) return <ErrorState message="Could not load tasks." onRetry={load} />;
 
-  const canCreateTask = user?.role === 'COMMANDER' || user?.role === 'TEAM_LEAD';
+  const canCreateTask = user?.role === 'ADMIN' || user?.role === 'TEAM_LEAD';
 
   return (
     <div>
@@ -119,7 +119,7 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
           </TabList>
         </Tabs>
 
-        <div className="text-sm text-slate-500">
+        <div className="text-sm text-slate-500 dark:text-slate-400">
           {data?.pagination ? `${data.pagination.total} task${data.pagination.total !== 1 ? 's' : ''}` : '0 tasks'}
         </div>
       </div>
@@ -190,8 +190,8 @@ function KanbanView({ tasks, onTaskClick }: { tasks: Task[]; onTaskClick: (id: s
       {groupedTasks.map((col) => (
         <div key={col.id} className={`flex-shrink-0 w-80 rounded-xl border p-3 ${col.color}`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-slate-700 text-sm">{col.label}</h3>
-            <span className="bg-white px-2 py-0.5 rounded-full text-xs font-medium text-slate-600">
+            <h3 className="font-semibold text-slate-700 dark:text-slate-300 text-sm">{col.label}</h3>
+            <span className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded-full text-xs font-medium text-slate-600">
               {col.tasks.length}
             </span>
           </div>

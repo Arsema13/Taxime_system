@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, X } from 'lucide-react';
-import { taskService, departmentService, userService } from '@/services';
+import { taskService, departmentService, userService, teamService } from '@/services';
 import type { Task, TaskCategory, TaskPriority, User, Department, Team } from '@/types';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea, Select } from '@/components/ui/Input';
@@ -31,7 +31,7 @@ export default function EditTaskPage() {
 
   const [task, setTask] = useState<Task | null>(null);
   const [form, setForm] = useState<EditTaskForm>({
-    title: '', description: '', priority: 'MEDIUM', category: 'TASK',
+    title: '', description: '', priority: 'MEDIUM', category: 'OTHER',
     dueDate: '', estimatedHours: '', departmentId: '', teamId: '',
     assigneeIds: [], tags: []
   });
@@ -66,8 +66,8 @@ export default function EditTaskPage() {
           estimatedHours: t.estimatedHours?.toString() ?? '',
           departmentId: t.departmentId ?? '',
           teamId: t.teamId ?? '',
-          assigneeIds: t.assignees?.map(a => a.userId) ?? [],
-          tags: t.tags?.map(tt => tt.tag.name) ?? [],
+          assigneeIds: t.assignees?.map((a: { userId: string }) => a.userId) ?? [],
+          tags: t.tags?.map((tt: { tag: { name: string } }) => tt.tag.name) ?? [],
         });
       } catch {
         setLoadError(true);
@@ -80,7 +80,7 @@ export default function EditTaskPage() {
 
   useEffect(() => {
     if (form.departmentId) {
-      departmentService.getTeams(form.departmentId, { page: 1, limit: 100 }).then(r => setTeams(r.data));
+      teamService.getTeams({ departmentId: form.departmentId }).then(r => setTeams(r.data));
     } else {
       setTeams([]);
       setForm(f => ({ ...f, teamId: '' }));
@@ -100,7 +100,7 @@ export default function EditTaskPage() {
         description: form.description || undefined,
         priority: form.priority,
         category: form.category,
-        dueDate: form.dueDate || undefined,
+        dueDate: form.dueDate ? new Date(form.dueDate + 'T00:00:00.000Z').toISOString() : undefined,
         estimatedHours: form.estimatedHours ? Number(form.estimatedHours) : undefined,
         departmentId: form.departmentId || undefined,
         teamId: form.teamId || undefined,
@@ -161,7 +161,7 @@ export default function EditTaskPage() {
           {/* Main form */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Basic Information</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Basic Information</h2>
               <div className="flex flex-col gap-4">
                 <Input
                   label="Title"
@@ -181,7 +181,7 @@ export default function EditTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Classification</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Classification</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Select
                   label="Priority"
@@ -199,14 +199,17 @@ export default function EditTaskPage() {
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value as TaskCategory }))}
                 >
-                  <option value="TASK">Task</option>
-                  <option value="BUG">Bug</option>
-                  <option value="FEATURE">Feature</option>
-                  <option value="IMPROVEMENT">Improvement</option>
-                  <option value="DOCUMENTATION">Documentation</option>
-                  <option value="RESEARCH">Research</option>
+                  <option value="OPERATIONS">Operations</option>
+                  <option value="ADMINISTRATION">Administration</option>
+                  <option value="FINANCE">Finance</option>
+                  <option value="HR">Human Resources</option>
+                  <option value="IT">IT</option>
                   <option value="MAINTENANCE">Maintenance</option>
-                  <option value="SUPPORT">Support</option>
+                  <option value="CUSTOMER_SUPPORT">Customer Support</option>
+                  <option value="MARKETING">Marketing</option>
+                  <option value="DOCUMENTATION">Documentation</option>
+                  <option value="MANAGEMENT">Management</option>
+                  <option value="OTHER">Other</option>
                 </Select>
 
                 <Select
@@ -231,7 +234,7 @@ export default function EditTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Timeline</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Timeline</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   type="date"
@@ -252,7 +255,7 @@ export default function EditTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Tags</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Tags</h2>
               <div className="flex gap-2 mb-3">
                 <Input
                   value={tagInput}
@@ -280,10 +283,10 @@ export default function EditTaskPage() {
           {/* Sidebar */}
           <div className="flex flex-col gap-6">
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Assignees</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Assignees</h2>
               <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
-                {users.map(user => (
-                  <label key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                {users.filter(u => u.role !== 'ADMIN').map(user => (
+                  <label key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={form.assigneeIds.includes(user.id)}
@@ -292,8 +295,8 @@ export default function EditTaskPage() {
                     />
                     <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700">{user.firstName} {user.lastName}</p>
-                      <p className="text-xs text-slate-500">{user.email}</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.firstName} {user.lastName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
                     </div>
                   </label>
                 ))}

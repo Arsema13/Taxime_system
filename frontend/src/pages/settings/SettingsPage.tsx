@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Bell, Shield, Palette, Globe, Moon, Sun } from 'lucide-react';
+import { Save, Bell, Shield, Palette } from 'lucide-react';
 import { settingsService } from '@/services';
 import type { UserSettings } from '@/types';
 import { Button } from '@/components/ui/Button';
@@ -11,7 +11,7 @@ import { useToast, useTheme } from '@/contexts';
 
 export default function SettingsPage() {
   const { success, error } = useToast();
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,6 @@ export default function SettingsPage() {
     try {
       const data = await settingsService.getSettings();
       setSettings(data);
-      // Sync theme from backend to local theme context
       if (data.theme) {
         setTheme(data.theme as 'light' | 'dark' | 'system');
       }
@@ -42,7 +41,6 @@ export default function SettingsPage() {
     setSaving(true);
     try {
       await settingsService.updateSettings(settings);
-      // Apply theme immediately when saved
       if (settings.theme) {
         setTheme(settings.theme as 'light' | 'dark' | 'system');
       }
@@ -57,6 +55,9 @@ export default function SettingsPage() {
   if (loading) return <PageLoader />;
   if (!settings) return null;
 
+  const update = (patch: Partial<UserSettings>) =>
+    setSettings(s => s ? { ...s, ...patch } : null);
+
   return (
     <div>
       <PageHeader
@@ -68,86 +69,73 @@ export default function SettingsPage() {
         <div className="flex flex-col gap-6">
           {/* Notifications */}
           <Card padding="lg">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Bell className="w-5 h-5 text-slate-600" />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               Notifications
             </h3>
             <div className="space-y-4">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.emailNotifications}
-                  onChange={e => setSettings(s => s ? { ...s, emailNotifications: e.target.checked } : null)}
+                  checked={settings.emailNotifications ?? true}
+                  onChange={e => update({ emailNotifications: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Email Notifications</p>
-                  <p className="text-sm text-slate-500">Receive notifications via email</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Email Notifications</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Receive notifications via email</p>
                 </div>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.taskAssignedNotification}
-                  onChange={e => setSettings(s => s ? { ...s, taskAssignedNotification: e.target.checked } : null)}
+                  checked={settings.taskAssignedNotification ?? true}
+                  onChange={e => update({ taskAssignedNotification: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Task Assignments</p>
-                  <p className="text-sm text-slate-500">Notify when assigned to a task</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Task Assignments</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Notify when assigned to a task</p>
                 </div>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.taskUpdatedNotification}
-                  onChange={e => setSettings(s => s ? { ...s, taskUpdatedNotification: e.target.checked } : null)}
+                  checked={settings.taskUpdatedNotification ?? true}
+                  onChange={e => update({ taskUpdatedNotification: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Task Updates</p>
-                  <p className="text-sm text-slate-500">Notify when a task is updated</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Task Updates</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Notify when a task is updated</p>
                 </div>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.deadlineReminderNotification}
-                  onChange={e => setSettings(s => s ? { ...s, deadlineReminderNotification: e.target.checked } : null)}
+                  checked={settings.taskDueNotification ?? true}
+                  onChange={e => update({ taskDueNotification: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Deadline Reminders</p>
-                  <p className="text-sm text-slate-500">Notify before task deadlines</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Deadline Reminders</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Notify before task deadlines</p>
                 </div>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.commentNotification}
-                  onChange={e => setSettings(s => s ? { ...s, commentNotification: e.target.checked } : null)}
+                  checked={settings.commentMentionNotification ?? true}
+                  onChange={e => update({ commentMentionNotification: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Comments</p>
-                  <p className="text-sm text-slate-500">Notify when someone comments on your tasks</p>
-                </div>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={settings.mentionNotification}
-                  onChange={e => setSettings(s => s ? { ...s, mentionNotification: e.target.checked } : null)}
-                  className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
-                />
-                <div>
-                  <p className="font-medium text-slate-700">Mentions</p>
-                  <p className="text-sm text-slate-500">Notify when you're mentioned</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Comments & Mentions</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Notify when someone comments on or mentions you in tasks</p>
                 </div>
               </label>
             </div>
@@ -155,85 +143,42 @@ export default function SettingsPage() {
 
           {/* Appearance */}
           <Card padding="lg">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Palette className="w-5 h-5 text-slate-600" />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <Palette className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               Appearance
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Theme</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Theme</label>
                 <Select
-                  value={settings.theme}
+                  value={settings.theme ?? 'light'}
                   onChange={e => {
                     const newTheme = e.target.value as 'light' | 'dark' | 'system';
-                    setSettings(s => s ? { ...s, theme: newTheme } : null);
-                    setTheme(newTheme); // Apply theme immediately
+                    update({ theme: newTheme });
+                    setTheme(newTheme);
                   }}
                 >
                   <option value="light">Light</option>
                   <option value="dark">Dark</option>
                   <option value="system">System</option>
                 </Select>
-                <p className="text-xs text-slate-500 mt-1">Choose your preferred color theme</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Default View</label>
-                <Select
-                  value={settings.defaultTaskView}
-                  onChange={e => setSettings(s => s ? { ...s, defaultTaskView: e.target.value as any } : null)}
-                >
-                  <option value="list">List View</option>
-                  <option value="kanban">Kanban Board</option>
-                  <option value="calendar">Calendar View</option>
-                </Select>
-                <p className="text-xs text-slate-500 mt-1">Your preferred task view layout</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Choose your preferred color theme</p>
               </div>
             </div>
           </Card>
 
           {/* Preferences */}
           <Card padding="lg">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-slate-600" />
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <Palette className="w-5 h-5 text-slate-600 dark:text-slate-400" />
               Preferences
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Language</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date Format</label>
                 <Select
-                  value={settings.language}
-                  onChange={e => setSettings(s => s ? { ...s, language: e.target.value } : null)}
-                >
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="fr">French</option>
-                  <option value="de">German</option>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Timezone</label>
-                <Select
-                  value={settings.timezone}
-                  onChange={e => setSettings(s => s ? { ...s, timezone: e.target.value } : null)}
-                >
-                  <option value="UTC">UTC</option>
-                  <option value="America/New_York">Eastern Time (ET)</option>
-                  <option value="America/Chicago">Central Time (CT)</option>
-                  <option value="America/Denver">Mountain Time (MT)</option>
-                  <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                  <option value="Europe/London">London (GMT)</option>
-                  <option value="Europe/Paris">Paris (CET)</option>
-                  <option value="Asia/Tokyo">Tokyo (JST)</option>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Date Format</label>
-                <Select
-                  value={settings.dateFormat}
-                  onChange={e => setSettings(s => s ? { ...s, dateFormat: e.target.value } : null)}
+                  value={settings.dateFormat ?? 'MM/DD/YYYY'}
+                  onChange={e => update({ dateFormat: e.target.value })}
                 >
                   <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                   <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -242,10 +187,10 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Time Format</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Time Format</label>
                 <Select
-                  value={settings.timeFormat}
-                  onChange={e => setSettings(s => s ? { ...s, timeFormat: e.target.value as any } : null)}
+                  value={settings.timeFormat ?? '12h'}
+                  onChange={e => update({ timeFormat: e.target.value })}
                 >
                   <option value="12h">12-hour (AM/PM)</option>
                   <option value="24h">24-hour</option>
@@ -256,34 +201,46 @@ export default function SettingsPage() {
 
           {/* Privacy & Security */}
           <Card padding="lg">
-            <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-slate-600" />
-              Privacy & Security
+            <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              Privacy
             </h3>
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Profile Visibility</label>
+                <Select
+                  value={settings.profileVisibility ?? 'team'}
+                  onChange={e => update({ profileVisibility: e.target.value })}
+                >
+                  <option value="public">Public - Everyone can see your profile</option>
+                  <option value="team">Team - Only team members can see your profile</option>
+                  <option value="private">Private - Only you can see your profile</option>
+                </Select>
+              </div>
+
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.showOnlineStatus}
-                  onChange={e => setSettings(s => s ? { ...s, showOnlineStatus: e.target.checked } : null)}
+                  checked={settings.showEmail ?? false}
+                  onChange={e => update({ showEmail: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Show Online Status</p>
-                  <p className="text-sm text-slate-500">Let others see when you're online</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Show Email</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Allow others to see your email address</p>
                 </div>
               </label>
 
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.allowTaskInvitations}
-                  onChange={e => setSettings(s => s ? { ...s, allowTaskInvitations: e.target.checked } : null)}
+                  checked={settings.showPhone ?? false}
+                  onChange={e => update({ showPhone: e.target.checked })}
                   className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500 mt-0.5"
                 />
                 <div>
-                  <p className="font-medium text-slate-700">Allow Task Invitations</p>
-                  <p className="text-sm text-slate-500">Allow others to assign tasks to you</p>
+                  <p className="font-medium text-slate-700 dark:text-slate-300">Show Phone</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Allow others to see your phone number</p>
                 </div>
               </label>
             </div>

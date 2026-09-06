@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, Filter, Search, Download, Calendar, User, Tag } from 'lucide-react';
+import { Activity, Filter, Search, Download, Calendar, User, Plus, RefreshCw, Trash2, BarChart3, MessageSquare, Paperclip, CheckSquare, ClipboardList } from 'lucide-react';
 import { activityService, userService } from '@/services';
 import type { ActivityLog, PaginatedResponse, User as UserType } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -85,15 +85,15 @@ export default function ActivityLogPage() {
   };
 
   const getActionIcon = (action: string) => {
-    if (action.includes('CREATED')) return '✨';
-    if (action.includes('UPDATED')) return '🔄';
-    if (action.includes('DELETED')) return '🗑️';
-    if (action.includes('STATUS')) return '📊';
-    if (action.includes('ASSIGNED')) return '👤';
-    if (action.includes('COMMENT')) return '💬';
-    if (action.includes('ATTACHMENT')) return '📎';
-    if (action.includes('SUBTASK')) return '☑️';
-    return '📋';
+    if (action.includes('CREATED')) return <Plus size={12} />;
+    if (action.includes('UPDATED')) return <RefreshCw size={12} />;
+    if (action.includes('DELETED')) return <Trash2 size={12} />;
+    if (action.includes('STATUS')) return <BarChart3 size={12} />;
+    if (action.includes('ASSIGNED')) return <User size={12} />;
+    if (action.includes('COMMENT')) return <MessageSquare size={12} />;
+    if (action.includes('ATTACHMENT')) return <Paperclip size={12} />;
+    if (action.includes('SUBTASK')) return <CheckSquare size={12} />;
+    return <ClipboardList size={12} />;
   };
 
   const getActionColor = (action: string) => {
@@ -151,7 +151,7 @@ export default function ActivityLogPage() {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 pt-3 border-t border-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
               <Select
                 value={filters.userId ?? ''}
                 onChange={e => setFilters(f => ({ ...f, userId: e.target.value || undefined, page: 1 }))}
@@ -209,7 +209,7 @@ export default function ActivityLogPage() {
           <Card padding="none">
             <div className="divide-y divide-slate-100">
               {Array.isArray(data?.data) && data.data.map(activity => (
-                <div key={activity.id} className="flex items-start gap-4 p-4 hover:bg-slate-50 transition-colors">
+                <div key={activity.id} className="flex items-start gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
                   {/* Icon */}
                   <div className="text-2xl shrink-0 mt-0.5">
                     {getActionIcon(activity.action)}
@@ -225,7 +225,7 @@ export default function ActivityLogPage() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2 mb-1">
-                      <p className="text-sm text-slate-700 flex-1">
+                      <p className="text-sm text-slate-700 dark:text-slate-300 flex-1">
                         <span className="font-semibold text-slate-800">
                           {activity.user ? `${activity.user.firstName} ${activity.user.lastName}` : 'System'}
                         </span>
@@ -251,7 +251,7 @@ export default function ActivityLogPage() {
                     </div>
 
                     {activity.metadata && Object.keys(activity.metadata).length > 0 && (
-                      <div className="text-xs text-slate-500 mt-1 bg-slate-50 p-2 rounded">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 bg-slate-50 dark:bg-slate-900/50 p-2 rounded">
                         {Object.entries(activity.metadata).map(([key, value]) => (
                           <span key={key} className="mr-3">
                             <span className="font-medium">{key}:</span> {String(value)}
@@ -260,7 +260,7 @@ export default function ActivityLogPage() {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
+                    <div className="flex items-center gap-3 mt-2 text-xs text-slate-500 dark:text-slate-400">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
                         <span>{format(new Date(activity.createdAt), 'PPp')}</span>

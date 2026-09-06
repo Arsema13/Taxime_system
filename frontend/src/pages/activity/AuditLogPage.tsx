@@ -44,10 +44,10 @@ export default function AuditLogPage() {
                 </div>
               )},
               { key: 'action', header: 'Action', render: (r: ActivityLog) => (
-                <code className="text-xs bg-slate-100 px-2 py-0.5 rounded font-mono text-slate-700">{r.action}</code>
+                <code className="text-xs bg-slate-100 dark:bg-slate-700/50 px-2 py-0.5 rounded font-mono text-slate-700 dark:text-slate-300">{r.action}</code>
               )},
               { key: 'time',   header: 'Time',   width: '180px', render: (r: ActivityLog) => (
-                <span title={format(new Date(r.createdAt), 'PPpp')} className="text-xs text-slate-500">
+                <span title={format(new Date(r.createdAt), 'PPpp')} className="text-xs text-slate-500 dark:text-slate-400">
                   {formatDistanceToNow(new Date(r.createdAt), { addSuffix: true })}
                 </span>
               )},

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Save, Camera, Mail, Phone, Building2, Calendar, Shield } from 'lucide-react';
-import { userService } from '@/services';
+import { Save, Mail, Phone, Building2, Calendar, Shield, Check } from 'lucide-react';
+import { userService, authService } from '@/services';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Input';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -9,6 +9,29 @@ import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { useToast, useAuth } from '@/contexts';
 import { format } from 'date-fns';
+
+const AVATAR_OPTIONS = [
+  'https://api.dicebear.com/7.x/personas/svg?seed=Felix&backgroundColor=ffdfbf',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Mia&backgroundColor=c0aede',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Luna&backgroundColor=b6e3f4',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Max&backgroundColor=ffd5dc',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Sophie&backgroundColor=d1d4f9',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Charlie&backgroundColor=c1f4c5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Bella&backgroundColor=f9d5c5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Liam&backgroundColor=f5e6cc',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Aria&backgroundColor=e8d5f5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Noah&backgroundColor=d5eef5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Zoe&backgroundColor=f5f0d5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Ethan&backgroundColor=d5f5e8',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Chloe&backgroundColor=f5d5e8',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Oliver&backgroundColor=d5f5f0',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Lily&backgroundColor=f0d5f5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=James&backgroundColor=d5f0f5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Maya&backgroundColor=f5f5d5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Lucas&backgroundColor=d5f5d5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Emma&backgroundColor=f5d5d5',
+  'https://api.dicebear.com/7.x/personas/svg?seed=Alex&backgroundColor=d5d5f5',
+];
 
 interface ProfileFormData {
   firstName: string;
@@ -44,24 +67,7 @@ export default function ProfilePage() {
 
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        error('Error', 'File size must be less than 5MB');
-        return;
-      }
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(user?.avatar ?? null);
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,19 +75,18 @@ export default function ProfilePage() {
 
     setSaving(true);
     try {
-      const formData = new FormData();
-      formData.append('firstName', profileData.firstName);
-      formData.append('lastName', profileData.lastName);
-      formData.append('email', profileData.email);
-      if (profileData.phone) formData.append('phone', profileData.phone);
-      if (profileData.bio) formData.append('bio', profileData.bio);
-      if (avatarFile) formData.append('avatar', avatarFile);
+      const payload: any = {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        email: profileData.email,
+      };
+      if (profileData.phone) payload.phone = profileData.phone;
+      if (profileData.bio) payload.bio = profileData.bio;
+      if (selectedAvatar) payload.avatar = selectedAvatar;
 
-      const updated = await userService.updateProfile(formData);
+      const updated = await userService.updateProfile(payload);
       updateUser(updated);
       success('Updated', 'Profile updated successfully');
-      setAvatarFile(null);
-      setAvatarPreview(null);
     } catch {
       error('Error', 'Could not update profile');
     } finally {
@@ -105,7 +110,7 @@ export default function ProfilePage() {
 
     setChangingPassword(true);
     try {
-      await userService.changePassword({
+      await authService.changePassword({
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword,
       });
@@ -131,21 +136,12 @@ export default function ProfilePage() {
         {/* Profile Overview */}
         <Card padding="lg">
           <div className="flex flex-col items-center text-center">
-            <div className="relative mb-4">
+            <div className="mb-4">
               <Avatar
-                src={avatarPreview || user.avatar}
+                src={selectedAvatar || user.avatar}
                 name={`${user.firstName} ${user.lastName}`}
                 size="xl"
               />
-              <label className="absolute bottom-0 right-0 w-10 h-10 bg-teal-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-teal-700 transition-colors shadow-lg">
-                <Camera className="w-5 h-5 text-white" />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                />
-              </label>
             </div>
 
             <h2 className="text-xl font-bold text-slate-800 mb-1">
@@ -153,7 +149,7 @@ export default function ProfilePage() {
             </h2>
             <Badge variant={
               user.role === 'SUPER_ADMIN' ? 'danger' :
-              user.role === 'COMMANDER' ? 'warning' :
+              user.role === 'ADMIN' ? 'warning' :
               user.role === 'TEAM_LEAD' ? 'primary' : 'default'
             } className="mb-4">
               {user.role.replace(/_/g, ' ')}
@@ -163,7 +159,7 @@ export default function ProfilePage() {
               <p className="text-sm text-slate-600 mb-4">{user.bio}</p>
             )}
 
-            <div className="w-full pt-4 border-t border-slate-100 space-y-2 text-sm">
+            <div className="w-full pt-4 border-t border-slate-100 dark:border-slate-700/50 space-y-2 text-sm">
               {user.email && (
                 <div className="flex items-center gap-2 text-slate-600">
                   <Mail className="w-4 h-4 text-slate-400" />
@@ -192,6 +188,33 @@ export default function ProfilePage() {
 
         {/* Edit Forms */}
         <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Avatar Picker */}
+          <Card padding="lg">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">Choose Avatar</h3>
+            <div className="grid grid-cols-5 sm:grid-cols-10 gap-3">
+              {AVATAR_OPTIONS.map((avatarUrl, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setSelectedAvatar(avatarUrl)}
+                  className={`relative w-12 h-12 rounded-full overflow-hidden border-2 transition-all hover:scale-110 ${
+                    selectedAvatar === avatarUrl
+                      ? 'border-teal-500 ring-2 ring-teal-200'
+                      : 'border-transparent hover:border-slate-300'
+                  }`}
+                >
+                  <img src={avatarUrl} alt={`Avatar ${index + 1}`} className="w-full h-full object-cover" />
+                  {selectedAvatar === avatarUrl && (
+                    <div className="absolute inset-0 bg-teal-500/30 flex items-center justify-center">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">Select an avatar from the options above</p>
+          </Card>
+
           {/* Profile Information */}
           <Card padding="lg">
             <h3 className="text-lg font-semibold text-slate-800 mb-4">Profile Information</h3>
@@ -284,25 +307,25 @@ export default function ProfilePage() {
           <Card padding="lg">
             <h3 className="text-lg font-semibold text-slate-800 mb-4">Account Information</h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between py-2 border-b border-slate-100">
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700/50">
                 <span className="text-slate-600">Account ID</span>
-                <span className="font-mono text-slate-700">{user.id}</span>
+                <span className="font-mono text-slate-700 dark:text-slate-300">{user.id}</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700/50">
                 <span className="text-slate-600">Account Status</span>
                 <Badge variant={user.isActive ? 'success' : 'default'}>
                   {user.isActive ? 'Active' : 'Inactive'}
                 </Badge>
               </div>
-              <div className="flex justify-between py-2 border-b border-slate-100">
+              <div className="flex justify-between py-2 border-b border-slate-100 dark:border-slate-700/50">
                 <span className="text-slate-600">Member Since</span>
-                <span className="text-slate-700">
+                <span className="text-slate-700 dark:text-slate-300">
                   {user.createdAt ? format(new Date(user.createdAt), 'PPP') : 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-slate-600">Last Updated</span>
-                <span className="text-slate-700">
+                <span className="text-slate-700 dark:text-slate-300">
                   {user.updatedAt ? format(new Date(user.updatedAt), 'PPP') : 'N/A'}
                 </span>
               </div>

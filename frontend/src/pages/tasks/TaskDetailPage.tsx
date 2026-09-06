@@ -176,7 +176,7 @@ export default function TaskDetailPage() {
           <Card padding="lg">
             <div className="flex items-start gap-3 mb-4">
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-slate-800 mb-2">{task.title}</h1>
+                <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-2">{task.title}</h1>
                 <div className="flex flex-wrap items-center gap-2">
                   <TaskStatusBadge status={task.status} />
                   <TaskPriorityBadge priority={task.priority} />
@@ -190,14 +190,14 @@ export default function TaskDetailPage() {
 
             {task.description && (
               <div className="mb-4">
-                <h3 className="text-sm font-semibold text-slate-700 mb-1">Description</h3>
-                <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{task.description}</p>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Description</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">{task.description}</p>
               </div>
             )}
 
             {/* Progress */}
             <div className="mb-4">
-              <h3 className="text-sm font-semibold text-slate-700 mb-2">Progress</h3>
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Progress</h3>
               <TaskProgress progress={task.progress} size="md" />
             </div>
 
@@ -208,7 +208,7 @@ export default function TaskDetailPage() {
           {/* Subtasks */}
           {(task.subtasks.length > 0 || true) && (
             <Card padding="lg">
-              <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
                 <CheckSquare className="w-4 h-4" /> Subtasks
               </h3>
               <SubtaskList
@@ -223,7 +223,7 @@ export default function TaskDetailPage() {
           {/* Tabs: Comments, Activity */}
           <Card padding="none">
             <Tabs defaultValue="comments">
-              <div className="border-b border-slate-200 px-6 pt-5">
+              <div className="border-b border-slate-200 dark:border-slate-700 px-6 pt-5">
                 <TabList>
                   <TabTrigger value="comments" icon={<MessageSquare className="w-4 h-4" />}>
                     Comments ({comments.length})
@@ -257,10 +257,10 @@ export default function TaskDetailPage() {
                   ) : (
                     <div className="flex flex-col gap-2">
                       {attachments.map((att) => (
-                        <div key={att.id} className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 hover:bg-slate-50">
+                        <div key={att.id} className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:bg-slate-900/50 dark:hover:bg-slate-700/50">
                           <Paperclip className="w-4 h-4 text-slate-400 shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-slate-700 truncate">{att.originalName}</p>
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{att.originalName}</p>
                             <p className="text-xs text-slate-400">
                               {(att.size / 1024).toFixed(1)} KB · {att.uploader.firstName} {att.uploader.lastName}
                             </p>
@@ -278,19 +278,19 @@ export default function TaskDetailPage() {
         {/* Sidebar */}
         <div className="flex flex-col gap-4">
           <Card padding="lg">
-            <h3 className="text-sm font-semibold text-slate-700 mb-3">Details</h3>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Details</h3>
             <div className="flex flex-col gap-3 text-sm">
               {task.assignees && task.assignees.length > 0 && (
                 <div className="flex items-start gap-2">
                   <Users className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-500 mb-1">Assigned to</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Assigned to</p>
                     {assignees.length <= 3 ? (
                       <div className="flex flex-col gap-1">
                         {task.assignees.map((a) => (
                           <div key={a.id} className="flex items-center gap-2">
                             <Avatar src={a.user.avatar} name={`${a.user.firstName} ${a.user.lastName}`} size="xs" />
-                            <span className="text-slate-700">{a.user.firstName} {a.user.lastName}</span>
+                            <span className="text-slate-700 dark:text-slate-300">{a.user.firstName} {a.user.lastName}</span>
                           </div>
                         ))}
                       </div>
@@ -305,8 +305,8 @@ export default function TaskDetailPage() {
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-slate-400 shrink-0" />
                   <div>
-                    <p className="text-xs text-slate-500">Created by</p>
-                    <p className="text-slate-700">{task.creator.firstName} {task.creator.lastName}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Created by</p>
+                    <p className="text-slate-700 dark:text-slate-300">{task.creator.firstName} {task.creator.lastName}</p>
                   </div>
                 </div>
               )}
@@ -315,8 +315,8 @@ export default function TaskDetailPage() {
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                   <div>
-                    <p className="text-xs text-slate-500">Due date</p>
-                    <p className="text-slate-700">{format(new Date(task.dueDate), 'PPP')}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Due date</p>
+                    <p className="text-slate-700 dark:text-slate-300">{format(new Date(task.dueDate), 'PPP')}</p>
                   </div>
                 </div>
               )}
@@ -325,8 +325,8 @@ export default function TaskDetailPage() {
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-slate-400 shrink-0" />
                   <div>
-                    <p className="text-xs text-slate-500">Estimated</p>
-                    <p className="text-slate-700">{task.estimatedHours}h</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Estimated</p>
+                    <p className="text-slate-700 dark:text-slate-300">{task.estimatedHours}h</p>
                   </div>
                 </div>
               )}
@@ -335,8 +335,8 @@ export default function TaskDetailPage() {
                 <div className="flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
                   <div>
-                    <p className="text-xs text-slate-500">Department</p>
-                    <p className="text-slate-700">{task.department.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Department</p>
+                    <p className="text-slate-700 dark:text-slate-300">{task.department.name}</p>
                   </div>
                 </div>
               )}
@@ -345,8 +345,8 @@ export default function TaskDetailPage() {
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-slate-400 shrink-0" />
                   <div>
-                    <p className="text-xs text-slate-500">Team</p>
-                    <p className="text-slate-700">{task.team.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Team</p>
+                    <p className="text-slate-700 dark:text-slate-300">{task.team.name}</p>
                   </div>
                 </div>
               )}
@@ -354,12 +354,12 @@ export default function TaskDetailPage() {
           </Card>
 
           <Card padding="lg">
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">Timestamps</h3>
-            <div className="flex flex-col gap-2 text-xs text-slate-500">
-              <div><span className="font-medium text-slate-600">Created:</span> {format(new Date(task.createdAt), 'PPpp')}</div>
-              <div><span className="font-medium text-slate-600">Updated:</span> {format(new Date(task.updatedAt), 'PPpp')}</div>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Timestamps</h3>
+            <div className="flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <div><span className="font-medium text-slate-600 dark:text-slate-400">Created:</span> {format(new Date(task.createdAt), 'PPpp')}</div>
+              <div><span className="font-medium text-slate-600 dark:text-slate-400">Updated:</span> {format(new Date(task.updatedAt), 'PPpp')}</div>
               {task.completedAt && (
-                <div><span className="font-medium text-slate-600">Completed:</span> {format(new Date(task.completedAt), 'PPpp')}</div>
+                <div><span className="font-medium text-slate-600 dark:text-slate-400">Completed:</span> {format(new Date(task.completedAt), 'PPpp')}</div>
               )}
             </div>
           </Card>

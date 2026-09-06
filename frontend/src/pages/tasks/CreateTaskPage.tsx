@@ -29,7 +29,7 @@ export default function CreateTaskPage() {
   const { success, error } = useToast();
 
   const [form, setForm] = useState<CreateTaskForm>({
-    title: '', description: '', priority: 'MEDIUM', category: 'TASK',
+    title: '', description: '', priority: 'MEDIUM', category: 'OTHER',
     dueDate: '', estimatedHours: '', departmentId: '', teamId: '',
     assigneeIds: [], tags: [], subtasks: []
   });
@@ -42,15 +42,19 @@ export default function CreateTaskPage() {
   const [subtaskInput, setSubtaskInput] = useState('');
 
   useEffect(() => {
-    Promise.all([
-      departmentService.getDepartments({ page: 1, limit: 100 }).then(r => setDepartments(r.data)),
-      userService.getUsers({ page: 1, limit: 100 }).then(r => setUsers(r.data)),
-    ]);
+    departmentService.getDepartments()
+      .then(r => setDepartments(Array.isArray(r) ? r : []))
+      .catch(() => setDepartments([]));
+    userService.getUsers({ page: 1, limit: 100 })
+      .then(r => setUsers(r.data ?? []))
+      .catch(() => setUsers([]));
   }, []);
 
   useEffect(() => {
     if (form.departmentId) {
-      departmentService.getTeams(form.departmentId, { page: 1, limit: 100 }).then(r => setTeams(r.data));
+      departmentService.getTeams(form.departmentId)
+        .then(r => setTeams(Array.isArray(r) ? r : []))
+        .catch(() => setTeams([]));
     } else {
       setTeams([]);
       setForm(f => ({ ...f, teamId: '' }));
@@ -70,7 +74,7 @@ export default function CreateTaskPage() {
         description: form.description || undefined,
         priority: form.priority,
         category: form.category,
-        dueDate: form.dueDate || undefined,
+        dueDate: form.dueDate ? new Date(form.dueDate + 'T00:00:00.000Z').toISOString() : undefined,
         estimatedHours: form.estimatedHours ? Number(form.estimatedHours) : undefined,
         departmentId: form.departmentId || undefined,
         teamId: form.teamId || undefined,
@@ -135,7 +139,7 @@ export default function CreateTaskPage() {
           {/* Main form */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Basic Information</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Basic Information</h2>
               <div className="flex flex-col gap-4">
                 <Input
                   label="Title"
@@ -155,7 +159,7 @@ export default function CreateTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Classification</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Classification</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Select
                   label="Priority"
@@ -173,14 +177,17 @@ export default function CreateTaskPage() {
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value as TaskCategory }))}
                 >
-                  <option value="TASK">Task</option>
-                  <option value="BUG">Bug</option>
-                  <option value="FEATURE">Feature</option>
-                  <option value="IMPROVEMENT">Improvement</option>
-                  <option value="DOCUMENTATION">Documentation</option>
-                  <option value="RESEARCH">Research</option>
+                  <option value="OPERATIONS">Operations</option>
+                  <option value="ADMINISTRATION">Administration</option>
+                  <option value="FINANCE">Finance</option>
+                  <option value="HR">Human Resources</option>
+                  <option value="IT">IT</option>
                   <option value="MAINTENANCE">Maintenance</option>
-                  <option value="SUPPORT">Support</option>
+                  <option value="CUSTOMER_SUPPORT">Customer Support</option>
+                  <option value="MARKETING">Marketing</option>
+                  <option value="DOCUMENTATION">Documentation</option>
+                  <option value="MANAGEMENT">Management</option>
+                  <option value="OTHER">Other</option>
                 </Select>
 
                 <Select
@@ -205,7 +212,7 @@ export default function CreateTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Timeline</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Timeline</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   type="date"
@@ -226,7 +233,7 @@ export default function CreateTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Tags</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Tags</h2>
               <div className="flex gap-2 mb-3">
                 <Input
                   value={tagInput}
@@ -251,7 +258,7 @@ export default function CreateTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Subtasks</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Subtasks</h2>
               <div className="flex gap-2 mb-3">
                 <Input
                   value={subtaskInput}
@@ -264,8 +271,8 @@ export default function CreateTaskPage() {
               {form.subtasks.length > 0 && (
                 <div className="flex flex-col gap-2">
                   {form.subtasks.map((sub, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
-                      <span className="flex-1 text-sm text-slate-700">{sub}</span>
+                    <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                      <span className="flex-1 text-sm text-slate-700 dark:text-slate-300">{sub}</span>
                       <button type="button" onClick={() => removeSubtask(sub)} className="text-slate-400 hover:text-red-600">
                         <X className="w-4 h-4" />
                       </button>
@@ -279,10 +286,10 @@ export default function CreateTaskPage() {
           {/* Sidebar */}
           <div className="flex flex-col gap-6">
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 mb-4">Assignees</h2>
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Assignees</h2>
               <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
-                {users.map(user => (
-                  <label key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 cursor-pointer">
+                {users.filter(u => u.role !== 'ADMIN').map(user => (
+                  <label key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:bg-slate-900/50 dark:hover:bg-slate-700/50 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={form.assigneeIds.includes(user.id)}
@@ -291,8 +298,8 @@ export default function CreateTaskPage() {
                     />
                     <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700">{user.firstName} {user.lastName}</p>
-                      <p className="text-xs text-slate-500">{user.email}</p>
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.firstName} {user.lastName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
                     </div>
                   </label>
                 ))}
