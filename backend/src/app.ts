@@ -51,12 +51,33 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// One-time seed endpoint (only works if no users exist)
-app.get('/api/seed', async (_req, res) => {
+// Seed endpoint (supports ?force=true to reset & reseed)
+app.get('/api/seed', async (req, res) => {
   try {
+    const force = req.query.force === 'true';
     const userCount = await prisma.user.count();
-    if (userCount > 0) {
-      return res.json({ message: 'Database already seeded. Users exist.' });
+    if (userCount > 0 && !force) {
+      return res.json({ message: 'Database already seeded. Pass ?force=true to re-seed.' });
+    }
+
+    if (force) {
+      // Clean up in reverse dependency order
+      await prisma.auditLog.deleteMany().catch(() => {});
+      await prisma.activityLog.deleteMany().catch(() => {});
+      await prisma.notification.deleteMany().catch(() => {});
+      await prisma.taskComment.deleteMany().catch(() => {});
+      await prisma.taskAssignee.deleteMany().catch(() => {});
+      await prisma.taskTag.deleteMany().catch(() => {});
+      await prisma.taskAttachment.deleteMany().catch(() => {});
+      await prisma.taskHistory.deleteMany().catch(() => {});
+      await prisma.taskReport.deleteMany().catch(() => {});
+      await prisma.task.deleteMany().catch(() => {});
+      await prisma.refreshToken.deleteMany().catch(() => {});
+      await prisma.userSession.deleteMany().catch(() => {});
+      await prisma.passwordReset.deleteMany().catch(() => {});
+      await prisma.user.deleteMany().catch(() => {});
+      await prisma.team.deleteMany().catch(() => {});
+      await prisma.department.deleteMany().catch(() => {});
     }
 
     const hashedPassword = await bcrypt.hash('password123', 12);
@@ -79,7 +100,7 @@ app.get('/api/seed', async (_req, res) => {
     await prisma.user.create({ data: { email: 'sara@gmail.com', password: hashedPassword, firstName: 'Sara', lastName: 'Bekele', role: 'MEMBER' as any, position: 'Fleet Coordinator', departmentId: operations.id, teamId: fleetOps.id, status: 'ACTIVE' as any, emailVerified: true } });
     await prisma.user.create({ data: { email: 'meron@gmail.com', password: hashedPassword, firstName: 'Meron', lastName: 'Abebe', role: 'MEMBER' as any, position: 'Software Developer', departmentId: technology.id, teamId: softwareTeam.id, status: 'ACTIVE' as any, emailVerified: true } });
 
-    res.json({ message: 'Database seeded successfully! You can now login with commander@gmail.com / password123' });
+    res.json({ message: 'Database seeded successfully! You can now login with commander@gmail.com, hana@gmail.com, arsema@gmail.com / password123' });
   } catch (error: any) {
     res.status(500).json({ message: 'Seeding failed', error: error.message });
   }
