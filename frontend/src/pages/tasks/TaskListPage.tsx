@@ -89,7 +89,13 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
     } catch { toastError('Error', 'Could not toggle favorite'); }
   };
 
-  const title = myTasksMode ? 'My Tasks' : favoritesMode ? 'Favorites' : 'All Tasks';
+  const title = myTasksMode
+    ? user?.role === 'ADMIN'
+      ? 'My Created Tasks'
+      : user?.role === 'TEAM_LEAD'
+        ? 'Team Tasks'
+        : 'My Tasks'
+    : favoritesMode ? 'Favorites' : 'All Tasks';
 
   const myTasksDesc = user?.role === 'ADMIN'
     ? 'Tasks you created'
