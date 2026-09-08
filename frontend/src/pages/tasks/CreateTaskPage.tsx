@@ -75,18 +75,18 @@ export default function CreateTaskPage() {
         priority: form.priority,
         category: form.category,
         dueDate: form.dueDate ? new Date(form.dueDate + 'T00:00:00.000Z').toISOString() : undefined,
-        estimatedHours: form.estimatedHours ? Number(form.estimatedHours) : undefined,
+        estimatedHours: form.estimatedHours && Number(form.estimatedHours) > 0 ? Number(form.estimatedHours) : undefined,
         departmentId: form.departmentId || undefined,
         teamId: form.teamId || undefined,
         assigneeIds: form.assigneeIds.length > 0 ? form.assigneeIds : undefined,
         tags: form.tags.length > 0 ? form.tags : undefined,
-        subtasks: form.subtasks.length > 0 ? form.subtasks : undefined,
       };
       const created = await taskService.createTask(payload);
       success('Created', 'Task created successfully');
       navigate(`/tasks/${created.id}`);
-    } catch {
-      error('Error', 'Could not create task');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Could not create task';
+      error('Error', msg);
     } finally {
       setLoading(false);
     }
