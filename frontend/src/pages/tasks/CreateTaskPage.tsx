@@ -217,6 +217,44 @@ export default function CreateTaskPage() {
               )}
 
               <div className="flex flex-col gap-1 max-h-[32rem] overflow-y-auto">
+                {unassignedUsers.length > 0 && (
+                  <div className="rounded-lg border border-slate-200 dark:border-slate-600/50 overflow-hidden mb-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleTeamExpand('__unassigned__')}
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
+                    >
+                      {expandedTeams.has('__unassigned__') ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
+                      <Users className="w-4 h-4 text-slate-500" />
+                      <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">No Team</span>
+                      {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length > 0 && (
+                        <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
+                          {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length}
+                        </span>
+                      )}
+                    </button>
+                    {expandedTeams.has('__unassigned__') && (
+                      <div className="flex flex-col">
+                        {unassignedUsers.map(user => (
+                          <label key={user.id} className="flex items-center gap-3 pl-9 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={form.assigneeIds.includes(user.id)}
+                              onChange={() => toggleAssignee(user.id)}
+                              className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
+                            />
+                            <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
+                              <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {activeTeamIds.map(teamId => {
                   const team = teamMap.get(teamId);
                   const members = teamedUsers.get(teamId) || [];
@@ -260,44 +298,6 @@ export default function CreateTaskPage() {
                     </div>
                   );
                 })}
-
-                {unassignedUsers.length > 0 && (
-                  <div className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-                    <button
-                      type="button"
-                      onClick={() => toggleTeamExpand('__unassigned__')}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
-                    >
-                      {expandedTeams.has('__unassigned__') ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
-                      <Users className="w-4 h-4 text-slate-400" />
-                      <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">No Team</span>
-                      {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length > 0 && (
-                        <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
-                          {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length}
-                        </span>
-                      )}
-                    </button>
-                    {expandedTeams.has('__unassigned__') && (
-                      <div className="flex flex-col">
-                        {unassignedUsers.map(user => (
-                          <label key={user.id} className="flex items-center gap-3 pl-9 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
-                            <input
-                              type="checkbox"
-                              checked={form.assigneeIds.includes(user.id)}
-                              onChange={() => toggleAssignee(user.id)}
-                              className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
-                            />
-                            <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
-                              <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
 
                 {activeTeamIds.length === 0 && unassignedUsers.length === 0 && (
                   <p className="text-sm text-slate-400 text-center py-4">No users available.</p>
