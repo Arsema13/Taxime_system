@@ -68,7 +68,7 @@ export default function AdminDashboard() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1628] dark:text-slate-100 tracking-tight">
             {greeting()}, {user?.firstName}
           </h1>
-          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-100 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
+          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-700 text-white dark:text-slate-200 px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
             {today}
           </div>
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
               <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats?.completedTasks || 0}</p>
             </div>
           </div>
-          <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
+          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-150 dark:border-emerald-500/20 px-2.5 py-1 rounded-full flex items-center gap-0.5">
             {data.stats?.completionRate || 0}%
           </span>
         </div>
@@ -198,7 +198,7 @@ export default function AdminDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#0B1628] dark:bg-slate-100 text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#0B1628] dark:bg-slate-600 text-white flex items-center justify-center">
                   <BarChart size={11} />
                 </div>
                 <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Tasks by Priority</h3>
@@ -289,7 +289,7 @@ export default function AdminDashboard() {
                     <div className="flex-1 min-w-0 pr-3">
                       <p className="text-sm font-semibold text-[#0B1628] dark:text-slate-100 truncate">{task.title}</p>
                       <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5 font-medium">
-                        {task.priority} · {task.category?.replace(/_/g, ' ') ?? 'General'}
+                        {task.priority}
                       </p>
                     </div>
                     <TaskStatusBadge status={task.status} />
@@ -335,23 +335,6 @@ export default function AdminDashboard() {
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Completion Rate</p>
                     <p className="text-lg font-black text-[#0B1628] dark:text-slate-100">{data.stats?.completionRate || 0}%</p>
                   </div>
-                </div>
-                <div className="w-12 h-12">
-                  <svg className="w-full h-full" viewBox="0 0 36 36">
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#e2e8f0"
-                      strokeWidth="3"
-                    />
-                    <path
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                      fill="none"
-                      stroke="#10b981"
-                      strokeWidth="3"
-                      strokeDasharray={`${data.stats?.completionRate || 0}, 100`}
-                    />
-                  </svg>
                 </div>
               </div>
 

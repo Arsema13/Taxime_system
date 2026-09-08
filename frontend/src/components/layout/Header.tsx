@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Menu, Bell, Search, X, ChevronDown, ChevronRight, Sun, Moon } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts';
 import { useNotifications } from '@/contexts';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -20,6 +20,8 @@ export function Header({ onMenuToggle, title }: HeaderProps) {
   const { unreadCount, notifications, markRead } = useNotifications();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isDashboard = location.pathname === '/dashboard';
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Task[]>([]);
@@ -77,6 +79,7 @@ export function Header({ onMenuToggle, title }: HeaderProps) {
         <Menu size={18} />
       </button>
 
+      {!isDashboard && (
       <div className="relative flex-1 max-w-xl" ref={searchRef}>
         <div className="relative flex items-center">
           <Search className="absolute left-4.5 w-4.5 h-4.5 text-[#0B1628]/30 dark:text-white/30 pointer-events-none" />
@@ -141,6 +144,7 @@ export function Header({ onMenuToggle, title }: HeaderProps) {
           </div>
         )}
       </div>
+      )}
 
       <div className="flex items-center gap-3 shrink-0">
         <button
