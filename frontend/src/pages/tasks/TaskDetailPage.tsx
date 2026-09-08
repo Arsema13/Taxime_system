@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft, Edit, Trash2, Star, Calendar, Clock, User, Users,
-  Building2, Tag, Paperclip, MessageSquare, Activity, CheckSquare,
+  Paperclip, MessageSquare, Activity, CheckSquare,
 } from 'lucide-react';
 import { taskService } from '@/services';
 import type { Task, Comment, Attachment, ActivityLog, Subtask } from '@/types';
@@ -22,7 +22,7 @@ import { Card, ErrorState } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ConfirmDialog } from '@/components/ui/Modal';
 import { useToast } from '@/contexts';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 
 export default function TaskDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -183,10 +183,6 @@ export default function TaskDetailPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <TaskStatusBadge status={task.status} />
                   <TaskPriorityBadge priority={task.priority} />
-                  <Badge variant="default">{task.category.replace(/_/g, ' ')}</Badge>
-                  {task.tags?.map((t) => (
-                    <Badge key={t.tag.id} variant="primary">{t.tag.name}</Badge>
-                  ))}
                 </div>
               </div>
             </div>
@@ -223,16 +219,13 @@ export default function TaskDetailPage() {
             </Card>
           )}
 
-          {/* Tabs: Comments, Activity */}
+          {/* Tabs: Comments, Attachments */}
           <Card padding="none">
             <Tabs defaultValue="comments">
               <div className="border-b border-slate-200 dark:border-slate-700 px-6 pt-5">
                 <TabList>
                   <TabTrigger value="comments" icon={<MessageSquare className="w-4 h-4" />}>
                     Comments ({comments.length})
-                  </TabTrigger>
-                  <TabTrigger value="activity" icon={<Activity className="w-4 h-4" />}>
-                    Activity
                   </TabTrigger>
                   <TabTrigger value="attachments" icon={<Paperclip className="w-4 h-4" />}>
                     Attachments ({attachments.length})
@@ -248,10 +241,6 @@ export default function TaskDetailPage() {
                     onEdit={handleCommentEdit}
                     onDelete={handleCommentDelete}
                   />
-                </TabContent>
-
-                <TabContent value="activity">
-                  <ActivityTimeline activities={activity} />
                 </TabContent>
 
                 <TabContent value="attachments">
@@ -334,16 +323,6 @@ export default function TaskDetailPage() {
                 </div>
               )}
 
-              {task.department && (
-                <div className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Department</p>
-                    <p className="text-slate-700 dark:text-slate-300">{task.department.name}</p>
-                  </div>
-                </div>
-              )}
-
               {task.team && (
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-slate-400 shrink-0" />
@@ -357,14 +336,51 @@ export default function TaskDetailPage() {
           </Card>
 
           <Card padding="lg">
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Timestamps</h3>
-            <div className="flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <div><span className="font-medium text-slate-600 dark:text-slate-400">Created:</span> {format(new Date(task.createdAt), 'PPpp')}</div>
-              <div><span className="font-medium text-slate-600 dark:text-slate-400">Updated:</span> {format(new Date(task.updatedAt), 'PPpp')}</div>
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-[#e89b1a]" />
+              Audits
+            </h3>
+            <div className="flex flex-col gap-3 text-xs text-slate-500 dark:text-slate-400 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-slate-600 dark:text-slate-400">Created:</span>
+                <span>{format(new Date(task.createdAt), 'PPpp')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-slate-600 dark:text-slate-400">Updated:</span>
+                <span>{format(new Date(task.updatedAt), 'PPpp')}</span>
+              </div>
               {task.completedAt && (
-                <div><span className="font-medium text-slate-600 dark:text-slate-400">Completed:</span> {format(new Date(task.completedAt), 'PPpp')}</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-slate-600 dark:text-slate-400">Completed:</span>
+                  <span>{format(new Date(task.completedAt), 'PPpp')}</span>
+                </div>
               )}
             </div>
+            {activity.length > 0 && (
+              <div className="border-t border-slate-200 dark:border-slate-700 pt-3">
+                <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">Recent Activity</h4>
+                <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+                  {activity.slice(0, 10).map((a) => (
+                    <div key={a.id} className="flex items-start gap-2 text-xs">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#e89b1a] mt-1.5 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-slate-600 dark:text-slate-400">
+                          {a.user ? `${a.user.firstName} ${a.user.lastName}` : 'System'}
+                        </span>
+                        <span className="text-slate-400 dark:text-slate-500 mx-1">·</span>
+                        <span className="text-slate-500 dark:text-slate-400">{a.action}</span>
+                        {a.taskTitle && (
+                          <span className="text-slate-400 dark:text-slate-500 ml-1">"{a.taskTitle}"</span>
+                        )}
+                        <div className="text-slate-400 dark:text-slate-500 mt-0.5">
+                          {formatDistanceToNow(new Date(a.createdAt), { addSuffix: true })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </Card>
         </div>
       </div>

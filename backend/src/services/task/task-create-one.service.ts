@@ -1,15 +1,16 @@
 import prisma from '../../config/database';
-import { TaskPriority, TaskCategory, RecurrenceType } from '@prisma/client';
+import { TaskPriority, RecurrenceType } from '@prisma/client';
 import { notificationService } from '../notification.service';
 import { activityService } from '../activity.service';
 import { findTaskById } from './task-find-by-id.service';
 
 export async function createTask(data: {
-  title: string; description?: string; priority?: string; category?: string;
+  title: string; description?: string; priority: string;
   dueDate?: string; startDate?: string; estimatedHours?: number;
-  departmentId?: string; teamId?: string; creatorId: string;
+  teamId?: string; creatorId: string;
   assigneeIds?: string[]; primaryAssigneeId?: string;
-  tags?: string[]; location?: string; vehicleReference?: string;
+  tags?: string[];
+  location?: string; vehicleReference?: string;
   customerReference?: string; externalRef?: string;
   isRecurring?: boolean; recurrenceType?: string; recurrenceEnd?: string;
 }) {
@@ -17,8 +18,7 @@ export async function createTask(data: {
 
   const createInput: any = {
     title: taskData.title, description: taskData.description, status: 'DRAFT',
-    priority: (taskData.priority as TaskPriority) || 'MEDIUM',
-    category: (taskData.category as TaskCategory) || 'OTHER',
+    priority: taskData.priority as TaskPriority,
     dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
     startDate: taskData.startDate ? new Date(taskData.startDate) : undefined,
     estimatedHours: taskData.estimatedHours, location: taskData.location,
@@ -29,7 +29,6 @@ export async function createTask(data: {
     creator: { connect: { id: data.creatorId } },
   };
 
-  if (taskData.departmentId) createInput.department = { connect: { id: taskData.departmentId } };
   if (taskData.teamId) createInput.team = { connect: { id: taskData.teamId } };
 
   const task = await prisma.task.create({ data: createInput });

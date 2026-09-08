@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Plus, X } from 'lucide-react';
-import { taskService, departmentService, userService } from '@/services';
-import type { TaskCategory, TaskPriority, User, Department, Team } from '@/types';
+import { ArrowLeft, Save, ChevronDown, ChevronRight, Users, X } from 'lucide-react';
+import { taskService, userService, teamService } from '@/services';
+import type { TaskPriority, User } from '@/types';
+import type { Team } from '@/types/department.types';
 import { Button } from '@/components/ui/Button';
 import { Input, Textarea, Select } from '@/components/ui/Input';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -14,14 +15,10 @@ interface CreateTaskForm {
   title: string;
   description: string;
   priority: TaskPriority;
-  category: TaskCategory;
   dueDate: string;
   estimatedHours: string;
-  departmentId: string;
   teamId: string;
   assigneeIds: string[];
-  tags: string[];
-  subtasks: string[];
 }
 
 export default function CreateTaskPage() {
@@ -29,37 +26,50 @@ export default function CreateTaskPage() {
   const { success, error } = useToast();
 
   const [form, setForm] = useState<CreateTaskForm>({
-    title: '', description: '', priority: 'MEDIUM', category: 'OTHER',
-    dueDate: '', estimatedHours: '', departmentId: '', teamId: '',
-    assigneeIds: [], tags: [], subtasks: []
+    title: '', description: '', priority: 'MEDIUM',
+    dueDate: '', estimatedHours: '', teamId: '',
+    assigneeIds: [],
   });
 
-  const [departments, setDepartments] = useState<Department[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tagInput, setTagInput] = useState('');
-  const [subtaskInput, setSubtaskInput] = useState('');
+  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    departmentService.getDepartments()
-      .then(r => setDepartments(Array.isArray(r) ? r : []))
-      .catch(() => setDepartments([]));
-    userService.getUsers({ page: 1, limit: 100 })
-      .then(r => setUsers(r.data ?? []))
-      .catch(() => setUsers([]));
+    Promise.all([
+      teamService.getTeams({ page: 1, limit: 100, isActive: true }),
+      userService.getUsers({ page: 1, limit: 100 }),
+    ]).then(([teamsRes, usersRes]) => {
+      setTeams(Array.isArray(teamsRes) ? teamsRes : teamsRes.data ?? []);
+      setAllUsers(usersRes.data ?? []);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (form.departmentId) {
-      departmentService.getTeams(form.departmentId)
-        .then(r => setTeams(Array.isArray(r) ? r : []))
-        .catch(() => setTeams([]));
-    } else {
-      setTeams([]);
-      setForm(f => ({ ...f, teamId: '' }));
+    if (form.teamId) {
+      setExpandedTeams(new Set([form.teamId]));
     }
-  }, [form.departmentId]);
+  }, [form.teamId]);
+
+  const { teamedUsers, unassignedUsers, teamMap } = useMemo(() => {
+    const map = new Map<string, User[]>();
+    const byId = new Map<string, Team>();
+    for (const t of teams) byId.set(t.id, t);
+    for (const u of allUsers) {
+      if (u.role === 'ADMIN') continue;
+      const tid = u.teamId || '';
+      if (tid && byId.has(tid)) {
+        if (!map.has(tid)) map.set(tid, []);
+        map.get(tid)!.push(u);
+      }
+    }
+    return {
+      teamedUsers: map,
+      unassignedUsers: allUsers.filter(u => u.role !== 'ADMIN' && (!u.teamId || !byId.has(u.teamId))),
+      teamMap: byId,
+    };
+  }, [teams, allUsers]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,13 +83,10 @@ export default function CreateTaskPage() {
         title: form.title,
         description: form.description || undefined,
         priority: form.priority,
-        category: form.category,
         dueDate: form.dueDate ? new Date(form.dueDate + 'T00:00:00.000Z').toISOString() : undefined,
         estimatedHours: form.estimatedHours && Number(form.estimatedHours) > 0 ? Number(form.estimatedHours) : undefined,
-        departmentId: form.departmentId || undefined,
         teamId: form.teamId || undefined,
         assigneeIds: form.assigneeIds.length > 0 ? form.assigneeIds : undefined,
-        tags: form.tags.length > 0 ? form.tags : undefined,
       };
       const created = await taskService.createTask(payload);
       success('Created', 'Task created successfully');
@@ -92,36 +99,32 @@ export default function CreateTaskPage() {
     }
   };
 
-  const addTag = () => {
-    if (tagInput.trim() && !form.tags.includes(tagInput.trim())) {
-      setForm(f => ({ ...f, tags: [...f.tags, tagInput.trim()] }));
-      setTagInput('');
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setForm(f => ({ ...f, tags: f.tags.filter(t => t !== tag) }));
-  };
-
-  const addSubtask = () => {
-    if (subtaskInput.trim() && !form.subtasks.includes(subtaskInput.trim())) {
-      setForm(f => ({ ...f, subtasks: [...f.subtasks, subtaskInput.trim()] }));
-      setSubtaskInput('');
-    }
-  };
-
-  const removeSubtask = (sub: string) => {
-    setForm(f => ({ ...f, subtasks: f.subtasks.filter(s => s !== sub) }));
-  };
-
   const toggleAssignee = (userId: string) => {
     setForm(f => ({
       ...f,
       assigneeIds: f.assigneeIds.includes(userId)
         ? f.assigneeIds.filter(id => id !== userId)
-        : [...f.assigneeIds, userId]
+        : [...f.assigneeIds, userId],
     }));
   };
+
+  const toggleTeamExpand = (teamId: string) => {
+    setExpandedTeams(prev => {
+      const next = new Set(prev);
+      if (next.has(teamId)) next.delete(teamId);
+      else next.add(teamId);
+      return next;
+    });
+  };
+
+  const selectedUsers = useMemo(() => {
+    return allUsers.filter(u => form.assigneeIds.includes(u.id));
+  }, [allUsers, form.assigneeIds]);
+
+  const activeTeamIds = useMemo(() => {
+    if (form.teamId) return [form.teamId];
+    return Array.from(teamedUsers.keys());
+  }, [form.teamId, teamedUsers]);
 
   return (
     <div>
@@ -139,7 +142,7 @@ export default function CreateTaskPage() {
           {/* Main form */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Basic Information</h2>
+              <h2 className="text-lg font-bold text-[#0B1628] dark:text-slate-100 mb-4">Basic Information</h2>
               <div className="flex flex-col gap-4">
                 <Input
                   label="Title"
@@ -159,10 +162,11 @@ export default function CreateTaskPage() {
             </Card>
 
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Classification</h2>
+              <h2 className="text-lg font-bold text-[#0B1628] dark:text-slate-100 mb-4">Details</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Select
                   label="Priority"
+                  required
                   value={form.priority}
                   onChange={e => setForm(f => ({ ...f, priority: e.target.value as TaskPriority }))}
                 >
@@ -172,48 +176,6 @@ export default function CreateTaskPage() {
                   <option value="CRITICAL">Critical</option>
                 </Select>
 
-                <Select
-                  label="Category"
-                  value={form.category}
-                  onChange={e => setForm(f => ({ ...f, category: e.target.value as TaskCategory }))}
-                >
-                  <option value="OPERATIONS">Operations</option>
-                  <option value="ADMINISTRATION">Administration</option>
-                  <option value="FINANCE">Finance</option>
-                  <option value="HR">Human Resources</option>
-                  <option value="IT">IT</option>
-                  <option value="MAINTENANCE">Maintenance</option>
-                  <option value="CUSTOMER_SUPPORT">Customer Support</option>
-                  <option value="MARKETING">Marketing</option>
-                  <option value="DOCUMENTATION">Documentation</option>
-                  <option value="MANAGEMENT">Management</option>
-                  <option value="OTHER">Other</option>
-                </Select>
-
-                <Select
-                  label="Department"
-                  value={form.departmentId}
-                  onChange={e => setForm(f => ({ ...f, departmentId: e.target.value }))}
-                >
-                  <option value="">Select department</option>
-                  {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </Select>
-
-                <Select
-                  label="Team"
-                  value={form.teamId}
-                  onChange={e => setForm(f => ({ ...f, teamId: e.target.value }))}
-                  disabled={!form.departmentId}
-                >
-                  <option value="">Select team</option>
-                  {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </Select>
-              </div>
-            </Card>
-
-            <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Timeline</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   type="date"
                   label="Due Date"
@@ -231,78 +193,115 @@ export default function CreateTaskPage() {
                 />
               </div>
             </Card>
-
-            <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Tags</h2>
-              <div className="flex gap-2 mb-3">
-                <Input
-                  value={tagInput}
-                  onChange={e => setTagInput(e.target.value)}
-                  placeholder="Add tag..."
-                  onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                />
-                <Button type="button" onClick={addTag} icon={<Plus className="w-4 h-4" />}>Add</Button>
-              </div>
-              {form.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {form.tags.map(tag => (
-                    <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-teal-100 text-teal-700 rounded-md text-sm">
-                      {tag}
-                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-teal-900">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </Card>
-
-            <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Subtasks</h2>
-              <div className="flex gap-2 mb-3">
-                <Input
-                  value={subtaskInput}
-                  onChange={e => setSubtaskInput(e.target.value)}
-                  placeholder="Add subtask..."
-                  onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSubtask())}
-                />
-                <Button type="button" onClick={addSubtask} icon={<Plus className="w-4 h-4" />}>Add</Button>
-              </div>
-              {form.subtasks.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  {form.subtasks.map((sub, i) => (
-                    <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
-                      <span className="flex-1 text-sm text-slate-700 dark:text-slate-300">{sub}</span>
-                      <button type="button" onClick={() => removeSubtask(sub)} className="text-slate-400 hover:text-red-600">
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Card>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar: Assignees */}
           <div className="flex flex-col gap-6">
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Assignees</h2>
-              <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
-                {users.filter(u => u.role !== 'ADMIN').map(user => (
-                  <label key={user.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:bg-slate-900/50 dark:hover:bg-slate-700/50 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={form.assigneeIds.includes(user.id)}
-                      onChange={() => toggleAssignee(user.id)}
-                      className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500"
-                    />
-                    <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{user.firstName} {user.lastName}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+              <h2 className="text-lg font-bold text-[#0B1628] dark:text-slate-100 mb-1">Assignees</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                {form.assigneeIds.length} selected
+              </p>
+
+              {form.teamId && (
+                <div className="mb-3">
+                  <Select
+                    label="Filter by team"
+                    value={form.teamId}
+                    onChange={e => setForm(f => ({ ...f, teamId: e.target.value }))}
+                  >
+                    <option value="">All teams</option>
+                    {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  </Select>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1 max-h-[32rem] overflow-y-auto">
+                {activeTeamIds.map(teamId => {
+                  const team = teamMap.get(teamId);
+                  const members = teamedUsers.get(teamId) || [];
+                  if (members.length === 0) return null;
+                  const isExpanded = expandedTeams.has(teamId);
+                  const selectedCount = members.filter(m => form.assigneeIds.includes(m.id)).length;
+
+                  return (
+                    <div key={teamId} className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => toggleTeamExpand(teamId)}
+                        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
+                      >
+                        {isExpanded ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
+                        <Users className="w-4 h-4 text-[#e89b1a]" />
+                        <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">{team?.name || 'Team'}</span>
+                        {selectedCount > 0 && (
+                          <span className="text-xs bg-[#e89b1a]/10 text-[#e89b1a] px-1.5 py-0.5 rounded-full font-medium">{selectedCount}</span>
+                        )}
+                      </button>
+                      {isExpanded && (
+                        <div className="flex flex-col">
+                          {members.map(user => (
+                            <label key={user.id} className="flex items-center gap-3 pl-9 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={form.assigneeIds.includes(user.id)}
+                                onChange={() => toggleAssignee(user.id)}
+                                className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
+                              />
+                              <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
+                                <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </label>
-                ))}
+                  );
+                })}
+
+                {unassignedUsers.length > 0 && (
+                  <div className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => toggleTeamExpand('__unassigned__')}
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
+                    >
+                      {expandedTeams.has('__unassigned__') ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
+                      <Users className="w-4 h-4 text-slate-400" />
+                      <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">No Team</span>
+                      {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length > 0 && (
+                        <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
+                          {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length}
+                        </span>
+                      )}
+                    </button>
+                    {expandedTeams.has('__unassigned__') && (
+                      <div className="flex flex-col">
+                        {unassignedUsers.map(user => (
+                          <label key={user.id} className="flex items-center gap-3 pl-9 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                            <input
+                              type="checkbox"
+                              checked={form.assigneeIds.includes(user.id)}
+                              onChange={() => toggleAssignee(user.id)}
+                              className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
+                            />
+                            <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
+                              <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeTeamIds.length === 0 && unassignedUsers.length === 0 && (
+                  <p className="text-sm text-slate-400 text-center py-4">No users available.</p>
+                )}
               </div>
             </Card>
 
