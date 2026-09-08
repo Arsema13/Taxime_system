@@ -107,11 +107,11 @@ export interface CreateTaskPayload {
   title: string;
   description?: string;
   priority: TaskPriority;
-  dueDate?: string;
+  dueDate: string;
   startDate?: string;
   estimatedHours?: number;
-  teamId?: string;
-  assigneeIds?: string[];
+  teamId: string;
+  assigneeIds: string[];
   location?: string;
   vehicleReference?: string;
   customerReference?: string;

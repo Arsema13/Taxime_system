@@ -77,16 +77,28 @@ export default function CreateTaskPage() {
       error('Validation', 'Title is required');
       return;
     }
+    if (!form.dueDate) {
+      error('Validation', 'Due date is required');
+      return;
+    }
+    if (!form.teamId) {
+      error('Validation', 'Please select a team');
+      return;
+    }
+    if (form.assigneeIds.length === 0) {
+      error('Validation', 'Please assign at least one member');
+      return;
+    }
     setLoading(true);
     try {
       const payload: any = {
         title: form.title,
         description: form.description || undefined,
         priority: form.priority,
-        dueDate: form.dueDate ? new Date(form.dueDate + 'T00:00:00.000Z').toISOString() : undefined,
+        dueDate: new Date(form.dueDate + 'T00:00:00.000Z').toISOString(),
         estimatedHours: form.estimatedHours && Number(form.estimatedHours) > 0 ? Number(form.estimatedHours) : undefined,
-        teamId: form.teamId || undefined,
-        assigneeIds: form.assigneeIds.length > 0 ? form.assigneeIds : undefined,
+        teamId: form.teamId,
+        assigneeIds: form.assigneeIds,
       };
       const created = await taskService.createTask(payload);
       success('Created', 'Task created successfully');
@@ -123,8 +135,8 @@ export default function CreateTaskPage() {
 
   const activeTeamIds = useMemo(() => {
     if (form.teamId) return [form.teamId];
-    return Array.from(teamedUsers.keys());
-  }, [form.teamId, teamedUsers]);
+    return [];
+  }, [form.teamId]);
 
   return (
     <div>
@@ -179,6 +191,7 @@ export default function CreateTaskPage() {
                 <Input
                   type="date"
                   label="Due Date"
+                  required
                   value={form.dueDate}
                   onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))}
                 />
@@ -203,40 +216,37 @@ export default function CreateTaskPage() {
                 {form.assigneeIds.length} selected
               </p>
 
-              {form.teamId && (
-                <div className="mb-3">
-                  <Select
-                    label="Filter by team"
-                    value={form.teamId}
-                    onChange={e => setForm(f => ({ ...f, teamId: e.target.value }))}
-                  >
-                    <option value="">All teams</option>
-                    {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                  </Select>
-                </div>
-              )}
+              <div className="mb-3">
+                <Select
+                  label="Team"
+                  required
+                  value={form.teamId}
+                  onChange={e => setForm(f => ({ ...f, teamId: e.target.value, assigneeIds: [] }))}
+                >
+                  <option value="">Select a team</option>
+                  {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </Select>
+              </div>
 
               <div className="flex flex-col gap-1 max-h-[32rem] overflow-y-auto">
-                {unassignedUsers.length > 0 && (
-                  <div className="rounded-lg border border-slate-200 dark:border-slate-600/50 overflow-hidden mb-1">
-                    <button
-                      type="button"
-                      onClick={() => toggleTeamExpand('__unassigned__')}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
-                    >
-                      {expandedTeams.has('__unassigned__') ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
-                      <Users className="w-4 h-4 text-slate-500" />
-                      <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">No Team</span>
-                      {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length > 0 && (
-                        <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full font-medium">
-                          {unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length}
-                        </span>
-                      )}
-                    </button>
-                    {expandedTeams.has('__unassigned__') && (
+                {!form.teamId ? (
+                  <p className="text-sm text-slate-400 text-center py-6">Select a team first</p>
+                ) : activeTeamIds.map(teamId => {
+                  const team = teamMap.get(teamId);
+                  const members = teamedUsers.get(teamId) || [];
+
+                  return (
+                    <div key={teamId} className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-slate-50/50 dark:bg-slate-800/30">
+                        <Users className="w-4 h-4 text-[#e89b1a]" />
+                        <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">{team?.name || 'Team'}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">{members.length} members</span>
+                      </div>
                       <div className="flex flex-col">
-                        {unassignedUsers.map(user => (
-                          <label key={user.id} className="flex items-center gap-3 pl-9 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                        {members.length === 0 ? (
+                          <p className="text-xs text-slate-400 text-center py-4">No members in this team</p>
+                        ) : members.map(user => (
+                          <label key={user.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
                             <input
                               type="checkbox"
                               checked={form.assigneeIds.includes(user.id)}
@@ -251,55 +261,11 @@ export default function CreateTaskPage() {
                           </label>
                         ))}
                       </div>
-                    )}
-                  </div>
-                )}
-
-                {activeTeamIds.map(teamId => {
-                  const team = teamMap.get(teamId);
-                  const members = teamedUsers.get(teamId) || [];
-                  if (members.length === 0) return null;
-                  const isExpanded = expandedTeams.has(teamId);
-                  const selectedCount = members.filter(m => form.assigneeIds.includes(m.id)).length;
-
-                  return (
-                    <div key={teamId} className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-                      <button
-                        type="button"
-                        onClick={() => toggleTeamExpand(teamId)}
-                        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors text-left"
-                      >
-                        {isExpanded ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
-                        <Users className="w-4 h-4 text-[#e89b1a]" />
-                        <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">{team?.name || 'Team'}</span>
-                        {selectedCount > 0 && (
-                          <span className="text-xs bg-[#e89b1a]/10 text-[#e89b1a] px-1.5 py-0.5 rounded-full font-medium">{selectedCount}</span>
-                        )}
-                      </button>
-                      {isExpanded && (
-                        <div className="flex flex-col">
-                          {members.map(user => (
-                            <label key={user.id} className="flex items-center gap-3 pl-9 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
-                              <input
-                                type="checkbox"
-                                checked={form.assigneeIds.includes(user.id)}
-                                onChange={() => toggleAssignee(user.id)}
-                                className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
-                              />
-                              <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
-                                <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
-                              </div>
-                            </label>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
 
-                {activeTeamIds.length === 0 && unassignedUsers.length === 0 && (
+                {activeTeamIds.length === 0 && form.teamId && (
                   <p className="text-sm text-slate-400 text-center py-4">No users available.</p>
                 )}
               </div>
