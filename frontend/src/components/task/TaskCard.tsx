@@ -18,9 +18,9 @@ interface TaskCardProps {
 function formatDueDate(date: string) {
   const d = new Date(date);
   const now = new Date();
-  if (isAfter(now, d)) return { label: 'Overdue', className: 'text-red-600' };
+  if (isAfter(now, d)) return { label: 'Overdue', className: 'text-red-600 dark:text-red-400' };
   const diff = formatDistanceToNow(d, { addSuffix: true });
-  return { label: diff, className: 'text-slate-500' };
+  return { label: diff, className: 'text-slate-500 dark:text-slate-400' };
 }
 
 export function TaskCard({ task, onClick, onFavorite, compact = false, draggable = false }: TaskCardProps) {
@@ -35,8 +35,8 @@ export function TaskCard({ task, onClick, onFavorite, compact = false, draggable
       draggable={draggable}
       onClick={onClick}
       className={[
-        'bg-white rounded-xl border border-slate-200 shadow-sm transition-all duration-150 group',
-        onClick ? 'cursor-pointer hover:shadow-md hover:border-teal-200' : '',
+        'bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-150 group',
+        onClick ? 'cursor-pointer hover:shadow-md hover:border-[#e89b1a]/40 dark:hover:border-[#e89b1a]/40' : '',
         compact ? 'p-3' : 'p-4',
       ].join(' ')}
     >
@@ -50,7 +50,7 @@ export function TaskCard({ task, onClick, onFavorite, compact = false, draggable
           onClick={(e) => { e.stopPropagation(); onFavorite?.(); }}
           className={[
             'shrink-0 transition-colors',
-            task.isFavorite ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400',
+            task.isFavorite ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400',
           ].join(' ')}
         >
           <Star className="w-4 h-4" fill={task.isFavorite ? 'currentColor' : 'none'} />
@@ -58,13 +58,13 @@ export function TaskCard({ task, onClick, onFavorite, compact = false, draggable
       </div>
 
       {/* Title */}
-      <h3 className={`font-semibold text-slate-800 leading-snug mb-1 line-clamp-2 group-hover:text-teal-700 transition-colors ${compact ? 'text-sm' : 'text-sm'}`}>
+      <h3 className={`font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-1 line-clamp-2 group-hover:text-[#e89b1a] dark:group-hover:text-[#e89b1a] transition-colors ${compact ? 'text-sm' : 'text-sm'}`}>
         {task.title}
       </h3>
 
       {/* Description */}
       {!compact && task.description && (
-        <p className="text-xs text-slate-500 line-clamp-2 mb-2">{task.description}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-2">{task.description}</p>
       )}
 
       {/* Progress */}
@@ -75,8 +75,8 @@ export function TaskCard({ task, onClick, onFavorite, compact = false, draggable
       )}
 
       {/* Meta row */}
-      <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-slate-100">
-        <div className="flex items-center gap-3 text-xs text-slate-400">
+      <div className="flex items-center justify-between gap-2 mt-auto pt-2 border-t border-slate-100 dark:border-slate-700">
+        <div className="flex items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
           {task._count?.comments !== undefined && (
             <span className="flex items-center gap-1">
               <MessageSquare className="w-3.5 h-3.5" />

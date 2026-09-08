@@ -44,7 +44,15 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
     if (searchParams.get('toDate')) f.toDate = searchParams.get('toDate')!;
 
     // Mode-specific filters
-    if (myTasksMode) f.assigneeId = user?.id;
+    if (myTasksMode) {
+      if (user?.role === 'ADMIN') {
+        f.creatorId = user?.id;
+      } else if (user?.role === 'TEAM_LEAD' && user?.teamId) {
+        f.teamId = user.teamId;
+      } else {
+        f.assigneeId = user?.id;
+      }
+    }
     if (favoritesMode) f.isFavorite = true;
 
     return f;
@@ -83,6 +91,12 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
 
   const title = myTasksMode ? 'My Tasks' : favoritesMode ? 'Favorites' : 'All Tasks';
 
+  const myTasksDesc = user?.role === 'ADMIN'
+    ? 'Tasks you created'
+    : user?.role === 'TEAM_LEAD'
+      ? 'Tasks assigned to your team'
+      : 'Tasks assigned to you';
+
   if (error) return <ErrorState message="Could not load tasks." onRetry={load} />;
 
   const canCreateTask = user?.role === 'ADMIN' || user?.role === 'TEAM_LEAD';
@@ -91,7 +105,7 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
     <div>
       <PageHeader
         title={title}
-        description={myTasksMode ? 'Tasks assigned to you' : favoritesMode ? 'Your starred tasks' : 'Browse and manage all tasks'}
+        description={myTasksMode ? myTasksDesc : favoritesMode ? 'Your starred tasks' : 'Browse and manage all tasks'}
         actions={
           canCreateTask && (
             <Button size="sm" icon={<Plus className="w-4 h-4" />} onClick={() => navigate('/tasks/new')}>
@@ -106,7 +120,16 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
         <TaskFilters
           filters={filters}
           onChange={updateFilters}
-          onReset={() => updateFilters({ page: 1, limit: 12, ...(myTasksMode ? { assigneeId: user?.id } : {}), ...(favoritesMode ? { isFavorite: true } : {}) })}
+          onReset={() => {
+            const resetFilters: TaskQueryParams = { page: 1, limit: 12 };
+            if (myTasksMode) {
+              if (user?.role === 'ADMIN') resetFilters.creatorId = user?.id;
+              else if (user?.role === 'TEAM_LEAD' && user?.teamId) resetFilters.teamId = user.teamId;
+              else resetFilters.assigneeId = user?.id;
+            }
+            if (favoritesMode) resetFilters.isFavorite = true;
+            updateFilters(resetFilters);
+          }}
         />
       </div>
 
@@ -171,11 +194,11 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
 
 // ── Kanban View ───────────────────────────────────────────────────────────────
 const KANBAN_COLUMNS = [
-  { id: 'PENDING', label: 'Pending', color: 'bg-blue-50 border-blue-200' },
-  { id: 'ACCEPTED', label: 'Accepted', color: 'bg-indigo-50 border-indigo-200' },
-  { id: 'IN_PROGRESS', label: 'In Progress', color: 'bg-amber-50 border-amber-200' },
-  { id: 'SUBMITTED_FOR_REVIEW', label: 'Review', color: 'bg-purple-50 border-purple-200' },
-  { id: 'COMPLETED', label: 'Completed', color: 'bg-emerald-50 border-emerald-200' },
+  { id: 'PENDING', label: 'Pending', color: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50' },
+  { id: 'ACCEPTED', label: 'Accepted', color: 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/50' },
+  { id: 'IN_PROGRESS', label: 'In Progress', color: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50' },
+  { id: 'SUBMITTED_FOR_REVIEW', label: 'Review', color: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800/50' },
+  { id: 'COMPLETED', label: 'Completed', color: 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50' },
 ];
 
 function KanbanView({ tasks, onTaskClick }: { tasks: Task[]; onTaskClick: (id: string) => void }) {
@@ -190,14 +213,14 @@ function KanbanView({ tasks, onTaskClick }: { tasks: Task[]; onTaskClick: (id: s
       {groupedTasks.map((col) => (
         <div key={col.id} className={`flex-shrink-0 w-80 rounded-xl border p-3 ${col.color}`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-slate-700 dark:text-slate-300 text-sm">{col.label}</h3>
-            <span className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded-full text-xs font-medium text-slate-600">
+            <h3 className="font-semibold text-slate-700 dark:text-slate-200 text-sm">{col.label}</h3>
+            <span className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded-full text-xs font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               {col.tasks.length}
             </span>
           </div>
           <div className="flex flex-col gap-2 kanban-col">
             {col.tasks.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-6">No tasks</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 text-center py-6">No tasks</p>
             ) : (
               col.tasks.map((task) => (
                 <TaskCard key={task.id} task={task} onClick={() => onTaskClick(task.id)} compact />
