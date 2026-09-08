@@ -13,7 +13,7 @@ export function AuthLayout() {
 
       <div className="relative w-full max-w-md animate-fade-in z-10">
         <div className="text-center mb-6">
-          <img src="/image.png" alt="Taxime Logo" className="h-16 w-auto mb-3 hover:scale-105 transition-transform duration-200" />
+          <img src="/image.png" alt="Taxime Logo" className="h-16 w-auto mb-3 mx-auto hover:scale-105 transition-transform duration-200" />
           <h1 className="text-2xl sm:text-3xl font-black text-[#0B1628] dark:text-white tracking-tight">Taxime</h1>
           <p className="text-[#0B1628]/50 dark:text-white/40 mt-1 text-xs sm:text-sm font-medium">Logistics & Operations Management</p>
         </div>
