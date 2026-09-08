@@ -223,31 +223,44 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ── COLUMN 2: Department Performance & Recent Tasks (4 cols) ── */}
+        {/* ── COLUMN 2: Employee Workload & Recent Tasks (4 cols) ── */}
         <div className="lg:col-span-4 flex flex-col gap-6">
-          {/* Department Performance */}
+          {/* Employee Workload */}
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                  <Building2 size={11} />
+                  <Users size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Department Performance</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Employee Workload</h3>
               </div>
+              <Link to="/employees" className="text-xs text-[#e89b1a] hover:text-[#f4b728] font-semibold flex items-center gap-1">
+                View all <ArrowUpRight size={14} />
+              </Link>
             </div>
-            {data.departmentPerformance && data.departmentPerformance.length > 0 ? (
-              <div className="flex flex-col gap-4">
-                {safeSlice(data.departmentPerformance, 5).map((dept, i) => (
-                  <div key={i}>
-                    <div className="flex items-center justify-between text-xs font-semibold mb-1.5">
-                      <span className="text-slate-700 dark:text-slate-300 truncate">{dept.name}</span>
-                      <span className="text-slate-500 dark:text-slate-400 shrink-0 ml-2">{dept.completedTasks}/{dept.totalTasks} tasks</span>
+            {data.employeeWorkload && data.employeeWorkload.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {safeSlice(data.employeeWorkload, 5).map((emp, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-700/50 border border-slate-200/60 dark:border-slate-700/60">
+                    <div className="w-9 h-9 rounded-full bg-[#e89b1a]/10 border border-[#e89b1a]/20 flex items-center justify-center shrink-0 text-xs font-bold text-[#e89b1a]">
+                      {emp.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
                     </div>
-                    <TaskProgress progress={dept.completionRate} size="sm" showLabel />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{emp.name}</p>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 shrink-0">{emp.completed}/{emp.total}</span>
+                      </div>
+                      <TaskProgress progress={emp.total ? Math.round((emp.completed / emp.total) * 100) : 0} size="sm" showLabel />
+                    </div>
+                    {emp.overdue > 0 && (
+                      <span className="text-[10px] font-bold text-[#e89b1a] bg-[#e89b1a]/5 border border-[#e89b1a]/20 px-2 py-0.5 rounded-full shrink-0">
+                        {emp.overdue} overdue
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
-            ) : <p className="text-slate-400 dark:text-slate-400 text-center py-12 text-sm">No departments available</p>}
+            ) : <p className="text-slate-400 dark:text-slate-400 text-center py-12 text-sm">No employee data available</p>}
           </div>
 
           {/* Recent Tasks */}
