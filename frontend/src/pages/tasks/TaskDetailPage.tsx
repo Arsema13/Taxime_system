@@ -42,13 +42,16 @@ export default function TaskDetailPage() {
     if (!id) return;
     setLoading(true); setError(false);
     try {
-      const [t, c, a, act] = await Promise.all([
-        taskService.getTask(id),
-        taskService.getComments(id),
-        taskService.getAttachments(id),
-        taskService.getActivity(id),
+      const t = await taskService.getTask(id);
+      setTask(t);
+      const [c, a, act] = await Promise.allSettled([
+        taskService.getComments(id).catch(() => []),
+        taskService.getAttachments(id).catch(() => []),
+        taskService.getActivity(id).catch(() => []),
       ]);
-      setTask(t); setComments(c); setAttachments(a); setActivity(act);
+      setComments(c.status === 'fulfilled' ? c.value : []);
+      setAttachments(a.status === 'fulfilled' ? a.value : []);
+      setActivity(act.status === 'fulfilled' ? act.value : []);
     } catch { setError(true); }
     finally { setLoading(false); }
   };
