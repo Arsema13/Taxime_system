@@ -13,12 +13,7 @@ export function AuthLayout() {
 
       <div className="relative w-full max-w-md animate-fade-in z-10">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#0B1628] dark:bg-[#111d32] shadow-xl mb-3 hover:scale-105 transition-transform duration-200 border border-[#e89b1a]/20">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-9 h-9">
-              <path d="M10 12h4.5l5.5 12 5.5-12H30l-8.5 20h-3L10 12z" fill="#e89b1a"/>
-              <circle cx="33" cy="8" r="2.5" fill="#e89b1a" opacity="0.5"/>
-            </svg>
-          </div>
+          <img src="/image.png" alt="Taxime Logo" className="h-16 w-auto mb-3 hover:scale-105 transition-transform duration-200" />
           <h1 className="text-2xl sm:text-3xl font-black text-[#0B1628] dark:text-white tracking-tight">Taxime</h1>
           <p className="text-[#0B1628]/50 dark:text-white/40 mt-1 text-xs sm:text-sm font-medium">Logistics & Operations Management</p>
         </div>

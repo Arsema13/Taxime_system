@@ -148,8 +148,8 @@ export function ModernTrackingDashboard() {
     <div className="flex flex-col gap-6 animate-fade-in pb-10">
       {/* Toast Feedback Notification */}
       {contactFeedback && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-slate-700 animate-fade-in">
-          <Sparkles className="w-4 h-4 text-[#FF4D67]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0B1628] text-white px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 border border-slate-700 animate-fade-in">
+          <Sparkles className="w-4 h-4 text-[#e89b1a]" />
           <span className="text-xs font-medium">{contactFeedback}</span>
         </div>
       )}
@@ -158,11 +158,11 @@ export function ModernTrackingDashboard() {
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
         {/* Title + Date Pill */}
         <div className="flex flex-col gap-2.5 shrink-0">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1628] tracking-tight">
             Tracking Order Summary
           </h1>
-          <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D67]" />
+          <div className="inline-flex items-center gap-2 bg-[#0B1628] text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
             Tue, 10 October 2026
           </div>
         </div>
@@ -177,7 +177,7 @@ export function ModernTrackingDashboard() {
               </div>
               <div>
                 <p className="text-xs font-medium text-slate-500">Total Shipments</p>
-                <p className="text-2xl font-black text-slate-900 mt-0.5">876</p>
+                <p className="text-2xl font-black text-[#0B1628] mt-0.5">876</p>
               </div>
             </div>
             <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
@@ -188,15 +188,15 @@ export function ModernTrackingDashboard() {
           {/* Package Tracking */}
           <div className="bg-white rounded-[24px] p-4.5 border border-slate-200/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex items-center justify-between hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
-                <MapPin className="w-6 h-6 text-[#FF4D67]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#e89b1a]/5 border border-[#e89b1a]/20 flex items-center justify-center shrink-0">
+                <MapPin className="w-6 h-6 text-[#e89b1a]" />
               </div>
               <div>
                 <p className="text-xs font-medium text-slate-500">Package Tracking</p>
-                <p className="text-2xl font-black text-slate-900 mt-0.5">241</p>
+                <p className="text-2xl font-black text-[#0B1628] mt-0.5">241</p>
               </div>
             </div>
-            <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
+            <span className="text-[11px] font-bold text-[#e89b1a] bg-[#e89b1a]/5 border border-[#e89b1a]/20 px-2.5 py-1 rounded-full flex items-center gap-0.5">
               -2.95% ↘
             </span>
           </div>
@@ -209,7 +209,7 @@ export function ModernTrackingDashboard() {
               </div>
               <div>
                 <p className="text-xs font-medium text-slate-500">Total Delivered</p>
-                <p className="text-2xl font-black text-slate-900 mt-0.5">1,245</p>
+                <p className="text-2xl font-black text-[#0B1628] mt-0.5">1,245</p>
               </div>
             </div>
             <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
@@ -223,11 +223,11 @@ export function ModernTrackingDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
         {/* Database Title */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-xs">
+          <div className="w-9 h-9 rounded-full bg-[#0B1628] text-white flex items-center justify-center shadow-xs">
             <Box size={16} />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 leading-tight">Order List Database</h2>
+            <h2 className="text-sm font-bold text-[#0B1628] leading-tight">Order List Database</h2>
             <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
               <Calendar size={11} /> Tuesday, 10 October 2026
             </p>
@@ -254,7 +254,7 @@ export function ModernTrackingDashboard() {
           {/* Create Shipment / Task Button */}
           <button
             onClick={() => navigate('/tasks/new')}
-            className="inline-flex items-center gap-1.5 bg-[#FF4D67] text-white hover:bg-[#E83D58] px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-red-500/25 transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/25 transition-all active:scale-[0.98]"
           >
             <Plus size={15} />
             Create Shipment
@@ -274,13 +274,13 @@ export function ModernTrackingDashboard() {
                 onClick={() => setSelectedShipment(item)}
                 className={`p-5 rounded-[24px] cursor-pointer transition-all duration-200 ${
                   isSelected
-                    ? 'bg-white border-2 border-[#FF4D67] shadow-lg shadow-red-500/5 ring-4 ring-[#FF4D67]/5'
+                    ? 'bg-white border-2 border-[#e89b1a] shadow-lg shadow-[#e89b1a]/5 ring-4 ring-[#e89b1a]/5'
                     : 'bg-white border border-slate-200/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.02)] hover:border-slate-300'
                 }`}
               >
                 {/* ID Header & Badge Pills */}
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+                  <h3 className="text-base font-extrabold text-[#0B1628] tracking-tight">
                     ID: {item.code}
                   </h3>
                   <div className="flex items-center gap-1.5">
@@ -291,7 +291,7 @@ export function ModernTrackingDashboard() {
                           ? 'bg-sky-50 text-sky-600 border-sky-150'
                           : item.status === 'Delivered'
                           ? 'bg-emerald-50 text-emerald-600 border-emerald-150'
-                          : 'bg-rose-50 text-rose-600 border-rose-150'
+                          : 'bg-[#e89b1a]/5 text-[#e89b1a] border-[#e89b1a]/20'
                       }`}
                     >
                       {item.status}
@@ -305,7 +305,7 @@ export function ModernTrackingDashboard() {
 
                 {/* Date and Address bullet point */}
                 <div className="flex items-start gap-2 text-xs text-slate-600 mb-4 pl-0.5">
-                  <span className="w-2 h-2 rounded-full bg-[#FF4D67] shrink-0 mt-1" />
+                  <span className="w-2 h-2 rounded-full bg-[#e89b1a] shrink-0 mt-1" />
                   <div>
                     <p className="font-semibold text-slate-800">{item.date} · {item.time}</p>
                     <p className="text-slate-500 mt-0.5">{item.location}</p>
@@ -331,14 +331,14 @@ export function ModernTrackingDashboard() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={(e) => { e.stopPropagation(); handleContact('chat', item.courierName); }}
-                      className="w-8 h-8 rounded-full bg-rose-50 text-[#FF4D67] hover:bg-rose-100 flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-full bg-[#e89b1a]/5 text-[#e89b1a] hover:bg-[#e89b1a]/10 flex items-center justify-center transition-colors"
                       title="Send message"
                     >
                       <MessageSquare size={14} />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleContact('call', item.courierName); }}
-                      className="w-8 h-8 rounded-full bg-rose-50 text-[#FF4D67] hover:bg-rose-100 flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-full bg-[#e89b1a]/5 text-[#e89b1a] hover:bg-[#e89b1a]/10 flex items-center justify-center transition-colors"
                       title="Call courier"
                     >
                       <Phone size={14} />
@@ -390,8 +390,8 @@ export function ModernTrackingDashboard() {
                 <circle cx="190" cy="100" r="5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2" />
 
                 {/* Route End Point - Vibrant Red Pin */}
-                <circle cx="310" cy="90" r="9" fill="#FF4D67" stroke="#FFFFFF" strokeWidth="3" />
-                <circle cx="310" cy="90" r="16" fill="#FF4D67" opacity="0.25" className="animate-ping" />
+                <circle cx="310" cy="90" r="9" fill="#e89b1a" stroke="#FFFFFF" strokeWidth="3" />
+                <circle cx="310" cy="90" r="16" fill="#e89b1a" opacity="0.25" className="animate-ping" />
               </svg>
 
               {/* Floating Package Tracking Popover matching mockup */}
@@ -405,12 +405,12 @@ export function ModernTrackingDashboard() {
                   </span>
                 </div>
                 <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mb-2">
-                  <div className="bg-[#FF4D67] h-full rounded-full w-2/3" />
+                  <div className="bg-[#e89b1a] h-full rounded-full w-2/3" />
                 </div>
                 <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium">
                   <span>04 Oct, 2026</span>
                   <span>10 Oct, 2026</span>
-                  <button className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center hover:scale-105 transition-transform">
+                  <button className="w-5 h-5 rounded-full bg-[#0B1628] text-white flex items-center justify-center hover:scale-105 transition-transform">
                     <Play size={8} className="fill-white translate-x-0.5" />
                   </button>
                 </div>
@@ -420,7 +420,7 @@ export function ModernTrackingDashboard() {
             {/* Bottom Route Summary specs */}
             <div className="grid grid-cols-2 gap-4 mt-5 pt-4 border-t border-slate-100">
               <div className="flex items-start gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#0B1628] text-white flex items-center justify-center shrink-0">
                   <Navigation size={13} />
                 </div>
                 <div>
@@ -431,11 +431,11 @@ export function ModernTrackingDashboard() {
 
               <div className="text-right">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Total Packages</p>
-                <p className="text-base font-extrabold text-slate-900">{selectedShipment.packagesCount}</p>
+                <p className="text-base font-extrabold text-[#0B1628]">{selectedShipment.packagesCount}</p>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#0B1628] text-white flex items-center justify-center shrink-0">
                   <Clock size={13} />
                 </div>
                 <div>
@@ -446,7 +446,7 @@ export function ModernTrackingDashboard() {
 
               <div className="text-right">
                 <p className="text-[10px] font-bold text-slate-400 uppercase">Weight</p>
-                <p className="text-base font-extrabold text-slate-900">{selectedShipment.weight}</p>
+                <p className="text-base font-extrabold text-[#0B1628]">{selectedShipment.weight}</p>
               </div>
             </div>
           </div>
@@ -454,7 +454,7 @@ export function ModernTrackingDashboard() {
           {/* Package Status Milestone Stepper Card */}
           <div className="bg-white rounded-[26px] p-6 border border-slate-200/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-base font-extrabold text-slate-900">Package Status</h3>
+              <h3 className="text-base font-extrabold text-[#0B1628]">Package Status</h3>
               <button className="text-slate-400 hover:text-slate-600 p-1">
                 <MoreHorizontal size={18} />
               </button>
@@ -470,7 +470,7 @@ export function ModernTrackingDashboard() {
                   <div
                     className={`absolute -left-6 top-1 w-3.5 h-3.5 rounded-full border-2 border-white shadow-xs ${
                       step.completed
-                        ? 'bg-[#FF4D67] ring-2 ring-[#FF4D67]/20'
+                        ? 'bg-[#e89b1a] ring-2 ring-[#e89b1a]/20'
                         : 'bg-slate-300'
                     }`}
                   />
@@ -493,12 +493,12 @@ export function ModernTrackingDashboard() {
           <div className="bg-white rounded-[26px] p-6 border border-slate-200/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#FF4D67] text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#e89b1a] text-white flex items-center justify-center">
                   <Box size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900">Deigo Transportation</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628]">Deigo Transportation</h3>
               </div>
-              <button className="w-6 h-6 rounded-full bg-rose-50 text-[#FF4D67] hover:bg-rose-100 flex items-center justify-center transition-colors">
+              <button className="w-6 h-6 rounded-full bg-[#e89b1a]/5 text-[#e89b1a] hover:bg-[#e89b1a]/10 flex items-center justify-center transition-colors">
                 <Plus size={14} />
               </button>
             </div>
@@ -508,15 +508,15 @@ export function ModernTrackingDashboard() {
               <div className="space-y-3">
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">Payload</p>
-                  <p className="text-base font-black text-slate-900">2,415 lbs</p>
+                  <p className="text-base font-black text-[#0B1628]">2,415 lbs</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">Load Volume</p>
-                  <p className="text-base font-black text-slate-900">312 in</p>
+                  <p className="text-base font-black text-[#0B1628]">312 in</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold text-slate-400 uppercase">Load Length</p>
-                  <p className="text-base font-black text-slate-900">217 in</p>
+                  <p className="text-base font-black text-[#0B1628]">217 in</p>
                 </div>
               </div>
 
@@ -534,11 +534,11 @@ export function ModernTrackingDashboard() {
                   </div>
                   {/* Container Logo Branding */}
                   <div className="absolute inset-0 flex items-center justify-center gap-1.5 text-white font-black text-sm tracking-wider">
-                    <span className="w-3 h-3 rounded-full bg-[#FF4D67]" />
+                    <span className="w-3 h-3 rounded-full bg-[#e89b1a]" />
                     <span>DEIGO</span>
                   </div>
                   {/* Accent Stripes */}
-                  <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-[#FF4D67]/20 blur-md" />
+                  <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-[#e89b1a]/20 blur-md" />
                 </div>
               </div>
             </div>
@@ -547,7 +547,7 @@ export function ModernTrackingDashboard() {
           {/* Driver / Team Statistic Segmented Bar Card */}
           <div className="bg-white rounded-[26px] p-6 border border-slate-200/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-extrabold text-slate-900">Driver Statistic</h3>
+              <h3 className="text-base font-extrabold text-[#0B1628]">Driver Statistic</h3>
               <button className="text-slate-400 hover:text-slate-600 p-1">
                 <MoreHorizontal size={18} />
               </button>
@@ -566,7 +566,7 @@ export function ModernTrackingDashboard() {
                 {/* 28.32% Coral Pink Segment */}
                 <div
                   style={{ width: '28.32%' }}
-                  className="h-full bg-[#FFDFE5] text-[#FF4D67] px-2.5 flex items-center justify-start text-xs font-black"
+                  className="h-full bg-[#e89b1a]/5 text-[#e89b1a] px-2.5 flex items-center justify-start text-xs font-black"
                 >
                   28.32%
                 </div>
@@ -586,7 +586,7 @@ export function ModernTrackingDashboard() {
                   On The way
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#FFB3BE]" />
+                  <span className="w-2 h-2 rounded-full bg-[#e89b1a]/50" />
                   Unloading
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -600,7 +600,7 @@ export function ModernTrackingDashboard() {
           {/* Working Time Per Day Bar Chart Card */}
           <div className="bg-white rounded-[26px] p-6 border border-slate-200/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-extrabold text-slate-900">Working Time Per Day</h3>
+              <h3 className="text-base font-extrabold text-[#0B1628]">Working Time Per Day</h3>
               {/* Period selector pills */}
               <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-full text-xs font-bold">
                 {(['W', 'M', '6M', 'Y'] as const).map((period) => (
@@ -609,8 +609,8 @@ export function ModernTrackingDashboard() {
                     onClick={() => setTimePeriod(period)}
                     className={`px-2.5 py-0.5 rounded-full transition-all ${
                       timePeriod === period
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'text-slate-500 hover:text-slate-900'
+                        ? 'bg-[#0B1628] text-white shadow-xs'
+                        : 'text-slate-500 hover:text-[#0B1628]'
                     }`}
                   >
                     {period}
@@ -634,7 +634,7 @@ export function ModernTrackingDashboard() {
                       border: 'none',
                     }}
                   />
-                  <Bar dataKey="hours" fill="#FF4D67" radius={[8, 8, 8, 8]} />
+                  <Bar dataKey="hours" fill="#e89b1a" radius={[8, 8, 8, 8]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -642,7 +642,7 @@ export function ModernTrackingDashboard() {
             {/* Legend */}
             <div className="flex items-center justify-center gap-5 text-xs text-slate-500 pt-3 border-t border-slate-100">
               <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full bg-[#FF4D67]" />
+                <span className="w-2 h-2 rounded-full bg-[#e89b1a]" />
                 Working Time
               </span>
               <span className="flex items-center gap-1.5 font-medium">

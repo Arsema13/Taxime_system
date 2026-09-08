@@ -50,11 +50,11 @@ export default function MemberDashboard() {
       {/* ── TOP SECTION: Header & Date Pill ── */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
         <div className="flex flex-col gap-2.5 shrink-0">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1628] dark:text-slate-100 tracking-tight">
             Welcome back, {user?.firstName}
           </h1>
-          <div className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D67]" />
+          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-100 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
             {today}
           </div>
         </div>
@@ -65,12 +65,12 @@ export default function MemberDashboard() {
         {/* Assigned Tasks */}
         <div className="bg-white dark:bg-slate-800 rounded-[24px] p-4.5 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)] flex items-center justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 flex items-center justify-center shrink-0">
-              <CheckSquare className="w-6 h-6 text-[#FF4D67]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#e89b1a]/5 dark:bg-[#e89b1a]/10 border border-[#e89b1a]/20 dark:border-[#e89b1a]/20 flex items-center justify-center shrink-0">
+              <CheckSquare className="w-6 h-6 text-[#e89b1a]" />
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Assigned Tasks</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats.assignedTasks}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats.assignedTasks}</p>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function MemberDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">In Progress</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats.inProgressTasks}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats.inProgressTasks}</p>
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function MemberDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Completed</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats.completedTasks}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats.completedTasks}</p>
             </div>
           </div>
           <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
@@ -112,11 +112,11 @@ export default function MemberDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Overdue</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats.overdueTasks}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats.overdueTasks}</p>
             </div>
           </div>
           {data.stats.overdueTasks > 0 && (
-            <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
+            <span className="text-[11px] font-bold text-[#e89b1a] bg-[#e89b1a]/5 border border-[#e89b1a]/20 px-2.5 py-1 rounded-full flex items-center gap-0.5">
               Needs attention
             </span>
           )}
@@ -131,10 +131,10 @@ export default function MemberDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#FF4D67] text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#e89b1a] text-white flex items-center justify-center">
                   <CheckSquare size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">My Tasks by Status</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">My Tasks by Status</h3>
               </div>
             </div>
             {data.tasksByStatus && data.tasksByStatus.length > 0 ? (
@@ -166,7 +166,7 @@ export default function MemberDashboard() {
                         style={{ background: STATUS_COLORS[s.status] ?? '#14b8a6' }}
                       />
                       <span className="truncate">{s.status.replace(/_/g, ' ')}</span>
-                      <span className="ml-auto font-bold text-slate-900 dark:text-slate-100">{s.count}</span>
+                      <span className="ml-auto font-bold text-[#0B1628] dark:text-slate-100">{s.count}</span>
                     </div>
                   ))}
                 </div>
@@ -181,14 +181,14 @@ export default function MemberDashboard() {
                 <div className="w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center">
                   <Calendar size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Quick Actions</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Quick Actions</h3>
               </div>
             </div>
 
             <div className="flex flex-col gap-2.5">
               <Link
                 to="/my-tasks"
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#FF4D67] text-white hover:bg-[#E83D58] transition-colors"
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#e89b1a] text-white hover:bg-[#f4b728] transition-colors"
               >
                 <CheckSquare size={18} />
                 <span className="text-sm font-semibold">View All My Tasks</span>
@@ -213,9 +213,9 @@ export default function MemberDashboard() {
                 <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center">
                   <Calendar size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Upcoming Deadlines</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Upcoming Deadlines</h3>
               </div>
-              <Link to="/my-tasks" className="text-xs text-[#FF4D67] hover:text-[#E83D58] font-semibold flex items-center gap-1">
+              <Link to="/my-tasks" className="text-xs text-[#e89b1a] hover:text-[#f4b728] font-semibold flex items-center gap-1">
                 View all <ArrowUpRight size={14} />
               </Link>
             </div>
@@ -260,12 +260,12 @@ export default function MemberDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#FF4D67] text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#e89b1a] text-white flex items-center justify-center">
                   <Sparkles size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Recent Activity</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Recent Activity</h3>
               </div>
-              <Link to="/my-tasks" className="text-xs text-[#FF4D67] hover:text-[#E83D58] font-semibold flex items-center gap-1">
+              <Link to="/my-tasks" className="text-xs text-[#e89b1a] hover:text-[#f4b728] font-semibold flex items-center gap-1">
                 View tasks <ArrowUpRight size={14} />
               </Link>
             </div>
@@ -275,7 +275,7 @@ export default function MemberDashboard() {
               ) : (
                 data.recentActivity.slice(0, 5).map((a) => (
                   <div key={a.id} className="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-700/50 border border-slate-200/60 dark:border-slate-700/60">
-                    <div className="w-8 h-8 bg-rose-100 dark:bg-rose-500/20 rounded-lg flex items-center justify-center shrink-0 text-[#FF4D67]">
+                    <div className="w-8 h-8 bg-[#e89b1a]/10 dark:bg-[#e89b1a]/20 rounded-lg flex items-center justify-center shrink-0 text-[#e89b1a]">
                       {a.action.includes('CREATED') ? <Plus size={14} /> : a.action.includes('STATUS') ? <RefreshCw size={14} /> : <ClipboardList size={14} />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -285,7 +285,7 @@ export default function MemberDashboard() {
                           <>
                             {' '}
                             on{' '}
-                            <Link to={`/tasks/${a.taskId}`} className="text-[#FF4D67] hover:underline font-medium">
+                            <Link to={`/tasks/${a.taskId}`} className="text-[#e89b1a] hover:underline font-medium">
                               {a.taskTitle}
                             </Link>
                           </>

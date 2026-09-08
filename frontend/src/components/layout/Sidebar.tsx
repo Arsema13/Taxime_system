@@ -107,12 +107,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
           className="flex items-center gap-2 group"
           title="Taxime Operations"
         >
-          <div className="w-11 h-11 rounded-2xl bg-[#e89b1a] flex items-center justify-center shadow-lg shadow-[#e89b1a]/30 group-hover:scale-105 transition-all duration-200">
-            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
-              <path d="M10 12h4.5l5.5 12 5.5-12H30l-8.5 20h-3L10 12z" fill="white"/>
-              <circle cx="33" cy="8" r="2.5" fill="white" opacity="0.5"/>
-            </svg>
-          </div>
+          <img src="/image.png" alt="Taxime" className="h-9 w-auto" />
           {isExpanded && (
             <span className="text-base font-black text-white tracking-tight">Taxime</span>
           )}

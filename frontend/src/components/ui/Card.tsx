@@ -42,12 +42,12 @@ export function StatCard({ label, value, icon, iconBg = 'bg-slate-50 dark:bg-sla
         </div>
         <div>
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-0.5">{value}</p>
+          <p className="text-2xl font-bold tracking-tight text-[#0B1628] dark:text-slate-100 mt-0.5">{value}</p>
         </div>
       </div>
       {trend && (
         <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
-          trend.up ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800'
+            trend.up ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-[#e89b1a]/5 dark:bg-[#e89b1a]/10 text-[#e89b1a] dark:text-[#e89b1a]/70 border border-[#e89b1a]/20 dark:border-rose-800'
         }`}>
           {trend.up ? `+${trend.value}% ↗` : `-${trend.value}% ↘`}
         </span>

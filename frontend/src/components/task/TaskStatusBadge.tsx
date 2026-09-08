@@ -14,8 +14,8 @@ const CONFIG: Record<TaskStatus, { label: string; classes: string; dot: string }
   SUBMITTED_FOR_REVIEW:  { label: 'Review Ready',    classes: 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/50',    dot: 'bg-purple-500' },
   UNDER_REVIEW:          { label: 'Under Review',    classes: 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200/80 dark:border-violet-800/50',    dot: 'bg-violet-500' },
   COMPLETED:             { label: 'Delivered',       classes: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/50',  dot: 'bg-emerald-500' },
-  REJECTED:              { label: 'Issue Reported',  classes: 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/50',          dot: 'bg-rose-500' },
-  ON_HOLD:               { label: 'Waiting Courier', classes: 'bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/50',          dot: 'bg-rose-400' },
+  REJECTED:              { label: 'Issue Reported',  classes: 'bg-[#e89b1a]/5 dark:bg-[#e89b1a]/10 text-[#e89b1a] dark:text-[#e89b1a]/70 border border-[#e89b1a]/20 dark:border-rose-800/50',          dot: 'bg-[#e89b1a]' },
+  ON_HOLD:               { label: 'Waiting Courier', classes: 'bg-[#e89b1a]/5 dark:bg-[#e89b1a]/10 text-[#e89b1a] dark:text-[#e89b1a]/70 border border-[#e89b1a]/20 dark:border-rose-800/50',          dot: 'bg-[#e89b1a]/70' },
   CANCELLED:             { label: 'Cancelled',       classes: 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-600/60',       dot: 'bg-slate-400 dark:bg-slate-500' },
   OVERDUE:               { label: 'Delayed',         classes: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200/80 dark:border-red-800/50',             dot: 'bg-red-500' },
 };

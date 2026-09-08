@@ -32,7 +32,7 @@ export function PageLoader({ message = 'Loading...' }: { message?: string }) {
 
 export function FullPageLoader() {
   return (
-    <div className="fixed inset-0 bg-white dark:bg-slate-900 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-white dark:bg-[#0B1628] flex items-center justify-center z-[9999]">
       <div className="flex flex-col items-center gap-4">
         <div className="w-14 h-14 bg-teal-700 dark:bg-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
           <span className="text-white text-2xl font-bold">T</span>

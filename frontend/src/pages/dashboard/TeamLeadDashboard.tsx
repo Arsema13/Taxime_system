@@ -61,11 +61,11 @@ export default function TeamLeadDashboard() {
       {/* ── TOP SECTION: Header & Date Pill ── */}
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
         <div className="flex flex-col gap-2.5 shrink-0">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1628] dark:text-slate-100 tracking-tight">
             Team Overview, {user?.firstName}
           </h1>
-          <div className="inline-flex items-center gap-2 bg-slate-900 dark:bg-slate-100 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D67]" />
+          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-100 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
             {today}
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function TeamLeadDashboard() {
         <div className="flex items-center flex-wrap gap-2.5">
           <button
             onClick={() => navigate('/tasks/new')}
-            className="inline-flex items-center gap-1.5 bg-[#FF4D67] text-white hover:bg-[#E83D58] px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-red-500/25 dark:shadow-red-500/40 transition-all active:scale-[0.98]"
+            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/25 dark:shadow-[#e89b1a]/40 transition-all active:scale-[0.98]"
           >
             <Plus size={15} />
             Create Task
@@ -86,12 +86,12 @@ export default function TeamLeadDashboard() {
         {/* Total Tasks */}
         <div className="bg-white dark:bg-slate-800 rounded-[24px] p-4.5 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)] flex items-center justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 flex items-center justify-center shrink-0">
-              <CheckSquare className="w-6 h-6 text-[#FF4D67]" />
+            <div className="w-12 h-12 rounded-2xl bg-[#e89b1a]/5 dark:bg-[#e89b1a]/10 border border-[#e89b1a]/20 dark:border-[#e89b1a]/20 flex items-center justify-center shrink-0">
+              <CheckSquare className="w-6 h-6 text-[#e89b1a]" />
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Team Tasks</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats?.totalTasks ?? 0}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats?.totalTasks ?? 0}</p>
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function TeamLeadDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Completed</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats?.completedTasks ?? 0}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats?.completedTasks ?? 0}</p>
             </div>
           </div>
           <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
@@ -120,7 +120,7 @@ export default function TeamLeadDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Pending Review</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats?.pendingReview ?? 0}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats?.pendingReview ?? 0}</p>
             </div>
           </div>
         </div>
@@ -133,11 +133,11 @@ export default function TeamLeadDashboard() {
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Overdue</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-slate-100 mt-0.5">{data.stats?.overdueTasks ?? 0}</p>
+              <p className="text-2xl font-black text-[#0B1628] dark:text-slate-100 mt-0.5">{data.stats?.overdueTasks ?? 0}</p>
             </div>
           </div>
           {Number(data.stats?.overdueTasks) > 0 && (
-            <span className="text-[11px] font-bold text-rose-600 bg-rose-50 border border-rose-150 px-2.5 py-1 rounded-full flex items-center gap-0.5">
+            <span className="text-[11px] font-bold text-[#e89b1a] bg-[#e89b1a]/5 border border-[#e89b1a]/20 px-2.5 py-1 rounded-full flex items-center gap-0.5">
               Needs attention
             </span>
           )}
@@ -152,10 +152,10 @@ export default function TeamLeadDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#FF4D67] text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#e89b1a] text-white flex items-center justify-center">
                   <CheckSquare size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Tasks by Status</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Tasks by Status</h3>
               </div>
             </div>
             {tasksByStatus.length > 0 ? (
@@ -176,10 +176,10 @@ export default function TeamLeadDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-slate-900 dark:bg-slate-100 text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#0B1628] dark:bg-slate-100 text-white flex items-center justify-center">
                   <BarChart size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Member Workload</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Member Workload</h3>
               </div>
             </div>
             {memberWorkload.length > 0 ? (
@@ -206,9 +206,9 @@ export default function TeamLeadDashboard() {
                 <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
                   <Users size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Member Performance</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Member Performance</h3>
               </div>
-              <Link to="/teams" className="text-xs text-[#FF4D67] hover:text-[#E83D58] font-semibold flex items-center gap-1">
+              <Link to="/teams" className="text-xs text-[#e89b1a] hover:text-[#f4b728] font-semibold flex items-center gap-1">
                 View team <ArrowUpRight size={14} />
               </Link>
             </div>
@@ -224,7 +224,7 @@ export default function TeamLeadDashboard() {
                     <TaskProgress progress={m.total ? Math.round((m.completed / m.total) * 100) : 0} size="sm" showLabel />
                   </div>
                   {m.overdue > 0 && (
-                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-150 px-2 py-0.5 rounded-full shrink-0">
+                    <span className="text-[10px] font-bold text-[#e89b1a] bg-[#e89b1a]/5 border border-[#e89b1a]/20 px-2 py-0.5 rounded-full shrink-0">
                       {m.overdue} overdue
                     </span>
                   )}
@@ -241,7 +241,7 @@ export default function TeamLeadDashboard() {
                   <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center">
                     <Calendar size={11} />
                   </div>
-                  <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Upcoming Deadlines</h3>
+                  <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Upcoming Deadlines</h3>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
@@ -267,12 +267,12 @@ export default function TeamLeadDashboard() {
           <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.3)]">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-[#FF4D67] text-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[#e89b1a] text-white flex items-center justify-center">
                   <Sparkles size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Recent Activity</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Recent Activity</h3>
               </div>
-              <Link to="/activity" className="text-xs text-[#FF4D67] hover:text-[#E83D58] font-semibold flex items-center gap-1">
+              <Link to="/activity" className="text-xs text-[#e89b1a] hover:text-[#f4b728] font-semibold flex items-center gap-1">
                 View all <ArrowUpRight size={14} />
               </Link>
             </div>
@@ -284,7 +284,7 @@ export default function TeamLeadDashboard() {
                     <p className="text-sm text-slate-700 dark:text-slate-300">
                       <span className="font-semibold">{a.userName}</span>{' · '}
                       <span className="text-slate-500 dark:text-slate-400">{a.action.replace(/_/g, ' ').toLowerCase()}</span>
-                      {a.taskTitle && <> on <Link to={`/tasks/${a.taskId}`} className="text-[#FF4D67] hover:underline font-medium">{a.taskTitle}</Link></>}
+                      {a.taskTitle && <> on <Link to={`/tasks/${a.taskId}`} className="text-[#e89b1a] hover:underline font-medium">{a.taskTitle}</Link></>}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-slate-400 mt-0.5">{formatDistanceToNow(new Date(a.createdAt), { addSuffix: true })}</p>
                   </div>
@@ -300,14 +300,14 @@ export default function TeamLeadDashboard() {
                 <div className="w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center">
                   <Calendar size={11} />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Quick Actions</h3>
+                <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Quick Actions</h3>
               </div>
             </div>
 
             <div className="flex flex-col gap-2.5">
               <Link
                 to="/tasks/new"
-                className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#FF4D67] text-white hover:bg-[#E83D58] transition-colors"
+                className="flex items-center gap-3 p-3.5 rounded-2xl bg-[#e89b1a] text-white hover:bg-[#f4b728] transition-colors"
               >
                 <Plus size={18} />
                 <span className="text-sm font-semibold">Create New Task</span>

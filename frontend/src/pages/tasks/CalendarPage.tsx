@@ -15,7 +15,7 @@ import {
 } from 'date-fns';
 
 const PRIORITY_COLORS: Record<string, { bg: string; text: string; border: string; dot: string }> = {
-  CRITICAL: { bg: 'bg-rose-100', text: 'text-rose-700', border: 'border-rose-500', dot: 'bg-rose-500' },
+  CRITICAL: { bg: 'bg-[#e89b1a]/10', text: 'text-[#e89b1a]', border: 'border-[#e89b1a]', dot: 'bg-[#e89b1a]' },
   HIGH:     { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-500', dot: 'bg-orange-500' },
   MEDIUM:   { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-500', dot: 'bg-amber-500' },
   LOW:      { bg: 'bg-sky-100', text: 'text-sky-700', border: 'border-sky-500', dot: 'bg-sky-500' },
@@ -27,7 +27,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   IN_PROGRESS:            { bg: 'bg-amber-100',   text: 'text-amber-600' },
   SUBMITTED_FOR_REVIEW:   { bg: 'bg-purple-100',  text: 'text-purple-600' },
   COMPLETED:              { bg: 'bg-emerald-100', text: 'text-emerald-600' },
-  OVERDUE:                { bg: 'bg-rose-100',    text: 'text-rose-600' },
+  OVERDUE:                { bg: 'bg-[#e89b1a]/10',    text: 'text-[#e89b1a]' },
 };
 
 export default function CalendarPage() {
@@ -100,7 +100,7 @@ export default function CalendarPage() {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <p className="text-slate-500 mb-4">Could not load calendar.</p>
-          <button onClick={load} className="text-[#FF4D67] font-semibold text-sm hover:underline">
+          <button onClick={load} className="text-[#e89b1a] font-semibold text-sm hover:underline">
             Try again
           </button>
         </div>
@@ -125,7 +125,7 @@ export default function CalendarPage() {
           <div className="flex items-center space-x-6">
             <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200">Schedule Task</h1>
             <div className="flex items-center space-x-3">
-              <span className="text-xl font-semibold text-[#FF4D67]">
+              <span className="text-xl font-semibold text-[#e89b1a]">
                 {format(currentMonth, 'MMMM, yyyy')}
               </span>
               <div className="flex items-center bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm p-1">
@@ -161,7 +161,7 @@ export default function CalendarPage() {
               <button
                 onClick={() => setView('Month')}
                 className={`p-1.5 rounded transition-colors ${
-                  view === 'Month' ? 'bg-[#FF4D67] text-white' : 'text-slate-400 hover:text-slate-600'
+                  view === 'Month' ? 'bg-[#e89b1a] text-white' : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 <Grid size={16} />
@@ -169,7 +169,7 @@ export default function CalendarPage() {
               <button
                 onClick={() => setView('Week')}
                 className={`p-1.5 rounded transition-colors ${
-                  view === 'Week' ? 'bg-[#FF4D67] text-white' : 'text-slate-400 hover:text-slate-600'
+                  view === 'Week' ? 'bg-[#e89b1a] text-white' : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 <List size={16} />
@@ -201,12 +201,12 @@ export default function CalendarPage() {
                   onClick={() => setSelectedDay(day)}
                   className={`border-r border-b border-slate-50 dark:border-slate-700/30 p-1.5 flex flex-col justify-between min-h-[90px] relative cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-700/50 ${
                     !isCurrentMonth ? 'text-slate-300' : 'text-slate-600'
-                  } ${isSelected ? 'bg-rose-50/50' : ''}`}
+                  } ${isSelected ? 'bg-[#e89b1a]/5' : ''}`}
                 >
                   <div className="flex justify-between items-center text-xs font-medium">
                     <span>{format(day, 'd')}</span>
                     {isToday && (
-                      <span className="w-5 h-5 rounded-full bg-[#FF4D67] text-white flex items-center justify-center text-[10px] font-bold">
+                      <span className="w-5 h-5 rounded-full bg-[#e89b1a] text-white flex items-center justify-center text-[10px] font-bold">
                         {format(day, 'd')}
                       </span>
                     )}
@@ -260,7 +260,7 @@ export default function CalendarPage() {
               <button onClick={prevMonth} className="p-1 text-slate-400 hover:text-slate-600">
                 <ChevronLeft size={16} />
               </button>
-              <button onClick={nextMonth} className="p-1 bg-[#FF4D67] text-white rounded-md">
+              <button onClick={nextMonth} className="p-1 bg-[#e89b1a] text-white rounded-md">
                 <ChevronRight size={16} />
               </button>
             </div>
@@ -291,7 +291,7 @@ export default function CalendarPage() {
                       onClick={() => setSelectedDay(day)}
                       className={`h-6 w-6 mx-auto flex items-center justify-center rounded-full text-[11px] cursor-pointer transition-colors ${
                         isToday
-                          ? 'bg-[#FF4D67] text-white font-bold shadow-md shadow-rose-200'
+                          ? 'bg-[#e89b1a] text-white font-bold shadow-md shadow-[#e89b1a]/20'
                           : isCurrentMonth
                             ? 'hover:bg-slate-200/50'
                             : 'text-slate-300'
@@ -309,7 +309,7 @@ export default function CalendarPage() {
           {canCreateTask && (
             <button
               onClick={() => navigate('/tasks/new')}
-              className="w-full bg-[#FF4D67] hover:bg-[#E83D58] text-white font-semibold py-3 px-4 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-rose-200 transition-all"
+              className="w-full bg-[#e89b1a] hover:bg-[#f4b728] text-white font-semibold py-3 px-4 rounded-2xl flex items-center justify-center space-x-2 shadow-lg shadow-[#e89b1a]/20 transition-all"
             >
               <div className="bg-white/20 rounded-lg p-0.5">
                 <Plus size={16} />
@@ -331,7 +331,7 @@ export default function CalendarPage() {
               </div>
             </div>
 
-            <div className="bg-[#FF4D67] text-white p-3 rounded-2xl flex flex-col justify-between shadow-md shadow-rose-200">
+            <div className="bg-[#e89b1a] text-white p-3 rounded-2xl flex flex-col justify-between shadow-md shadow-[#e89b1a]/20">
               <div className="flex justify-between items-center text-white/70">
                 <span className="text-[11px] font-medium">Overdue</span>
                 <AlertTriangle size={14} />

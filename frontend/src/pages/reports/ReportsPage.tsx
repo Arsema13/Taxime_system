@@ -64,7 +64,7 @@ const DEPARTMENT_PERFORMANCE = [
 ];
 
 const AVG_COMPLETION_TIME = [
-  { team: 'Engineering', days: '3.2 days', color: '#FF4D67', widthPct: 32, tag: 'Fast' },
+  { team: 'Engineering', days: '3.2 days', color: '#e89b1a', widthPct: 32, tag: 'Fast' },
   { team: 'Design', days: '2.8 days', color: '#10b981', widthPct: 28, tag: 'Fastest' },
   { team: 'Marketing', days: '4.5 days', color: '#f59e0b', widthPct: 45, tag: 'Average' },
   { team: 'Operations', days: '5.1 days', color: '#f97316', widthPct: 51, tag: 'Average' },
@@ -112,11 +112,11 @@ export default function ReportsPage() {
       {/* ── TOP SECONDARY NAV TABS ── */}
       <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-black italic tracking-wider text-[#FF4D67] pr-3 border-r border-slate-200 dark:border-slate-700">
+          <span className="text-sm font-black italic tracking-wider text-[#e89b1a] pr-3 border-r border-slate-200 dark:border-slate-700">
             TAXIME
           </span>
           <div className="inline-flex items-center p-1 bg-white dark:bg-slate-800 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-            <button className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-[#FF4D67] text-white shadow-xs">
+            <button className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-[#e89b1a] text-white shadow-xs">
               <BarChart3 size={13} />
               Analytics
             </button>
@@ -144,7 +144,7 @@ export default function ReportsPage() {
           <button
             onClick={() => handleExport('PDF')}
             disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-[#FF4D67] text-white hover:bg-[#E83D58] px-4 py-1.5 rounded-full text-xs font-bold shadow-md shadow-red-500/20 transition-all"
+            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-4 py-1.5 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/20 transition-all"
           >
             <FileText size={13} />
             PDF Report
@@ -155,7 +155,7 @@ export default function ReportsPage() {
       {/* ── PAGE TITLE + DATE PICKER PILL ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Analytics</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0B1628] dark:text-slate-100 tracking-tight">Analytics</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Task performance metrics and team productivity insights</p>
         </div>
 
@@ -169,7 +169,7 @@ export default function ReportsPage() {
       {/* ── 5 KPI CARDS ROW ── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
         {/* Total Tasks */}
-        <div className="bg-[#FF4D67] text-white rounded-[22px] p-4.5 shadow-md shadow-red-500/10 flex flex-col justify-between">
+        <div className="bg-[#e89b1a] text-white rounded-[22px] p-4.5 shadow-md shadow-[#e89b1a]/10 flex flex-col justify-between">
           <p className="text-xs font-semibold text-white/80">Total Tasks</p>
           <div className="mt-3">
             <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none">1,248</p>
@@ -177,7 +177,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Completed */}
-        <div className="bg-[#E5F7E4] text-slate-900 dark:text-slate-100 rounded-[22px] p-4.5 border border-emerald-100 flex flex-col justify-between">
+        <div className="bg-[#E5F7E4] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-emerald-100 flex flex-col justify-between">
           <p className="text-xs font-bold text-slate-600">Completed</p>
           <div className="mt-3 flex items-baseline justify-between">
             <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">1,052</span>
@@ -186,7 +186,7 @@ export default function ReportsPage() {
         </div>
 
         {/* In Progress */}
-        <div className="bg-[#E5F5FC] text-slate-900 dark:text-slate-100 rounded-[22px] p-4.5 border border-sky-100 flex flex-col justify-between">
+        <div className="bg-[#E5F5FC] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-sky-100 flex flex-col justify-between">
           <p className="text-xs font-bold text-slate-600">In Progress</p>
           <div className="mt-3 flex items-baseline justify-between">
             <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">142</span>
@@ -195,7 +195,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Overdue */}
-        <div className="bg-[#FDEAE8] text-slate-900 dark:text-slate-100 rounded-[22px] p-4.5 border border-rose-100 flex flex-col justify-between">
+        <div className="bg-[#FDEAE8] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-[#e89b1a]/20 flex flex-col justify-between">
           <p className="text-xs font-bold text-slate-600">Overdue</p>
           <div className="mt-3 flex items-baseline justify-between">
             <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">54</span>
@@ -204,7 +204,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Completion Rate */}
-        <div className="bg-[#EBEBFD] text-slate-900 dark:text-slate-100 rounded-[22px] p-4.5 border border-indigo-100 flex flex-col justify-between col-span-2 lg:col-span-1">
+        <div className="bg-[#EBEBFD] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-indigo-100 flex flex-col justify-between col-span-2 lg:col-span-1">
           <p className="text-xs font-bold text-slate-600">Completion Rate</p>
           <div className="mt-3 flex items-baseline justify-between">
             <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">84%</span>
@@ -218,7 +218,7 @@ export default function ReportsPage() {
         {/* ── CARD LEFT: Task Completion Stacked Bar Chart ── */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-slate-900 dark:text-slate-100">Task Completion</h2>
+            <h2 className="text-lg font-black text-[#0B1628] dark:text-slate-100">Task Completion</h2>
             <div className="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-700/50 rounded-full text-xs font-bold">
               {(['Week', 'Month', 'Year'] as const).map((period) => (
                 <button
@@ -226,8 +226,8 @@ export default function ReportsPage() {
                   onClick={() => setTaskPeriod(period)}
                   className={`px-3 py-1 rounded-full transition-all ${
                     taskPeriod === period
-                      ? 'bg-[#FF4D67] text-white shadow-xs'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                      ? 'bg-[#e89b1a] text-white shadow-xs'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-[#0B1628] dark:hover:text-slate-100'
                   }`}
                 >
                   {period}
@@ -261,8 +261,8 @@ export default function ReportsPage() {
                               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-sky-400" /> Created</span>
                               <span className="font-bold">{created} ({Math.round((Number(created)/total)*100)}%)</span>
                             </div>
-                            <div className="flex items-center justify-between text-rose-300">
-                              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-400" /> Overdue</span>
+                            <div className="flex items-center justify-between text-[#e89b1a]/50">
+                              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#e89b1a]/70" /> Overdue</span>
                               <span className="font-bold">{overdue} ({Math.round((Number(overdue)/total)*100)}%)</span>
                             </div>
                           </div>
@@ -284,7 +284,7 @@ export default function ReportsPage() {
               onClick={() => setActiveTaskFilter('all')}
               className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
                 activeTaskFilter === 'all'
-                  ? 'bg-[#FF4D67] text-white shadow-xs'
+                  ? 'bg-[#e89b1a] text-white shadow-xs'
                   : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600/50'
               }`}
             >
@@ -316,11 +316,11 @@ export default function ReportsPage() {
               onClick={() => setActiveTaskFilter('overdue')}
               className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeTaskFilter === 'overdue'
-                  ? 'bg-rose-100 text-rose-800 font-bold border border-rose-200'
+                  ? 'bg-[#e89b1a]/10 text-[#e89b1a] font-bold border border-[#e89b1a]/20'
                   : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-rose-400" />
+              <span className="w-2 h-2 rounded-full bg-[#e89b1a]/70" />
               Overdue
             </button>
           </div>
@@ -329,7 +329,7 @@ export default function ReportsPage() {
         {/* ── CARD RIGHT: Productivity Trend Line Chart ── */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-slate-900 dark:text-slate-100">Productivity Trend</h2>
+            <h2 className="text-lg font-black text-[#0B1628] dark:text-slate-100">Productivity Trend</h2>
             <div className="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-700/50 rounded-full text-xs font-bold">
               {(['Week', 'Month', 'Year'] as const).map((period) => (
                 <button
@@ -337,8 +337,8 @@ export default function ReportsPage() {
                   onClick={() => setTrendPeriod(period)}
                   className={`px-3 py-1 rounded-full transition-all ${
                     trendPeriod === period
-                      ? 'bg-[#FF4D67] text-white shadow-xs'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                      ? 'bg-[#e89b1a] text-white shadow-xs'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-[#0B1628] dark:hover:text-slate-100'
                   }`}
                 >
                   {period}
@@ -377,10 +377,10 @@ export default function ReportsPage() {
                 <Line
                   type="monotone"
                   dataKey="tasks"
-                  stroke="#FF4D67"
+                  stroke="#e89b1a"
                   strokeWidth={2.5}
-                  dot={{ r: 3.5, fill: '#FF4D67', strokeWidth: 1 }}
-                  activeDot={{ r: 6, fill: '#FF4D67', stroke: '#FFFFFF', strokeWidth: 2 }}
+                  dot={{ r: 3.5, fill: '#e89b1a', strokeWidth: 1 }}
+                  activeDot={{ r: 6, fill: '#e89b1a', stroke: '#FFFFFF', strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -393,7 +393,7 @@ export default function ReportsPage() {
                 onClick={() => setActivePriorityFilter(priority)}
                 className={`px-3 py-1 rounded-full whitespace-nowrap transition-all ${
                   activePriorityFilter === priority
-                    ? 'bg-[#FF4D67] text-white font-bold shadow-xs'
+                    ? 'bg-[#e89b1a] text-white font-bold shadow-xs'
                     : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 font-medium'
                 }`}
               >
@@ -409,7 +409,7 @@ export default function ReportsPage() {
         {/* ── CARD 1: Priority Distribution Donut Chart ── */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Priority Distribution</h3>
+            <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Priority Distribution</h3>
           </div>
 
           <div className="flex items-center justify-between gap-4 mt-2">
@@ -441,7 +441,7 @@ export default function ReportsPage() {
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
                     <span className="truncate">{cat.name}</span>
                   </span>
-                  <span className="font-bold text-slate-900 dark:text-slate-100 ml-2">{cat.value}%</span>
+                  <span className="font-bold text-[#0B1628] dark:text-slate-100 ml-2">{cat.value}%</span>
                 </div>
               ))}
             </div>
@@ -451,7 +451,7 @@ export default function ReportsPage() {
         {/* ── CARD 2: Department Performance ── */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Team Performance</h3>
+            <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Team Performance</h3>
           </div>
 
           <div className="space-y-3 mt-3">
@@ -462,12 +462,12 @@ export default function ReportsPage() {
                     <span className="w-2 h-2 rounded-full shrink-0 bg-slate-300" />
                     {dept.name}
                   </span>
-                  <span className="font-extrabold text-slate-900 dark:text-slate-100">{dept.rate}%</span>
+                  <span className="font-extrabold text-[#0B1628] dark:text-slate-100">{dept.rate}%</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-700/50 rounded-full h-2 overflow-hidden">
                   <div
                     style={{ width: `${dept.rate}%` }}
-                    className="bg-[#FF4D67] h-full rounded-full transition-all duration-500"
+                    className="bg-[#e89b1a] h-full rounded-full transition-all duration-500"
                   />
                 </div>
               </div>
@@ -479,7 +479,7 @@ export default function ReportsPage() {
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-extrabold text-slate-900 dark:text-slate-100">Avg. Completion Time</h3>
+              <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Avg. Completion Time</h3>
             </div>
 
             <div className="space-y-3 mt-3">
@@ -492,7 +492,7 @@ export default function ReportsPage() {
                       className="h-full rounded-full transition-all duration-500"
                     />
                   </div>
-                  <span className="w-16 text-right font-extrabold text-slate-900 dark:text-slate-100 shrink-0">{item.days}</span>
+                  <span className="w-16 text-right font-extrabold text-[#0B1628] dark:text-slate-100 shrink-0">{item.days}</span>
                 </div>
               ))}
             </div>
@@ -505,7 +505,7 @@ export default function ReportsPage() {
             <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">
               Average
             </span>
-            <span className="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full">
+            <span className="bg-[#e89b1a]/10 text-[#e89b1a] px-2.5 py-1 rounded-full">
               Slow
             </span>
           </div>
