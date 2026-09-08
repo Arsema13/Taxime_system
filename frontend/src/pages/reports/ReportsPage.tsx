@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar, ChevronDown, Download, FileText, BarChart3, FileSpreadsheet,
 } from 'lucide-react';
@@ -7,99 +7,209 @@ import {
   XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell
 } from 'recharts';
 import { useToast } from '@/contexts';
+import { dashboardService } from '@/services/dashboard.service';
 import { reportService, downloadBlob } from '@/services/report.service';
+import type { CommanderDashboard } from '@/types';
+import { format, startOfWeek, startOfMonth, startOfYear } from 'date-fns';
 
-const TASK_COMPLETION_DATA_YEAR = [
-  { month: 'Mar', completed: 45, created: 52, overdue: 8 },
-  { month: 'Apr', completed: 58, created: 61, overdue: 12 },
-  { month: 'May', completed: 62, created: 55, overdue: 6 },
-  { month: 'Jun', completed: 48, created: 50, overdue: 9 },
-  { month: 'Jul', completed: 71, created: 65, overdue: 5 },
-  { month: 'Aug', completed: 68, created: 72, overdue: 11 },
-  { month: 'Sep', completed: 75, created: 60, overdue: 4 },
+interface DateRange {
+  fromDate: string;
+  toDate: string;
+}
+
+const DATE_PRESETS = [
+  { label: 'Today', value: 'today' },
+  { label: 'This Week', value: 'week' },
+  { label: 'This Month', value: 'month' },
+  { label: 'This Year', value: 'year' },
+  { label: 'All Time', value: 'all' },
+  { label: 'Custom', value: 'custom' },
 ];
 
-const TASK_COMPLETION_DATA_MONTH = [
-  { month: 'W1', completed: 18, created: 20, overdue: 3 },
-  { month: 'W2', completed: 22, created: 19, overdue: 2 },
-  { month: 'W3', completed: 19, created: 24, overdue: 4 },
-  { month: 'W4', completed: 24, created: 18, overdue: 1 },
-];
+function getPresetRange(preset: string): DateRange {
+  const now = new Date();
+  const today = format(now, 'yyyy-MM-dd');
+  switch (preset) {
+    case 'today':
+      return { fromDate: today, toDate: today };
+    case 'week':
+      return { fromDate: format(startOfWeek(now, { weekStartsOn: 1 }), 'yyyy-MM-dd'), toDate: today };
+    case 'month':
+      return { fromDate: format(startOfMonth(now), 'yyyy-MM-dd'), toDate: today };
+    case 'year':
+      return { fromDate: format(startOfYear(now), 'yyyy-MM-dd'), toDate: today };
+    default:
+      return { fromDate: '', toDate: '' };
+  }
+}
 
-const TASK_COMPLETION_DATA_WEEK = [
-  { month: 'Mon', completed: 8, created: 10, overdue: 2 },
-  { month: 'Tue', completed: 11, created: 9, overdue: 1 },
-  { month: 'Wed', completed: 14, created: 12, overdue: 1 },
-  { month: 'Thu', completed: 10, created: 11, overdue: 2 },
-  { month: 'Fri', completed: 15, created: 13, overdue: 1 },
-  { month: 'Sat', completed: 6, created: 5, overdue: 0 },
-  { month: 'Sun', completed: 4, created: 3, overdue: 0 },
-];
+const PRIORITY_COLORS: Record<string, string> = {
+  CRITICAL: '#ef4444',
+  HIGH: '#f97316',
+  MEDIUM: '#f59e0b',
+  LOW: '#10b981',
+};
 
-const PRODUCTIVITY_TREND_DATA = [
-  { month: 'Jan', tasks: 120 },
-  { month: 'Feb', tasks: 145 },
-  { month: 'Mar', tasks: 168 },
-  { month: 'Apr', tasks: 195, highlight: true },
-  { month: 'May', tasks: 172 },
-  { month: 'Jun', tasks: 188 },
-  { month: 'Jul', tasks: 210 },
-  { month: 'Aug', tasks: 198 },
-  { month: 'Sep', tasks: 225 },
-];
-
-const PRIORITY_DISTRIBUTION = [
-  { name: 'Critical', value: 12, color: '#ef4444' },
-  { name: 'High', value: 28, color: '#f97316' },
-  { name: 'Medium', value: 42, color: '#f59e0b' },
-  { name: 'Low', value: 18, color: '#10b981' },
-];
-
-const DEPARTMENT_PERFORMANCE = [
-  { name: 'Engineering', tasks: 85, completed: 72, rate: 85 },
-  { name: 'Marketing', tasks: 62, completed: 55, rate: 89 },
-  { name: 'Operations', tasks: 78, completed: 68, rate: 87 },
-  { name: 'Design', tasks: 45, completed: 41, rate: 91 },
-  { name: 'Sales', tasks: 58, completed: 48, rate: 83 },
-];
-
-const AVG_COMPLETION_TIME = [
-  { team: 'Engineering', days: '3.2 days', color: '#e89b1a', widthPct: 32, tag: 'Fast' },
-  { team: 'Design', days: '2.8 days', color: '#10b981', widthPct: 28, tag: 'Fastest' },
-  { team: 'Marketing', days: '4.5 days', color: '#f59e0b', widthPct: 45, tag: 'Average' },
-  { team: 'Operations', days: '5.1 days', color: '#f97316', widthPct: 51, tag: 'Average' },
-  { team: 'Sales', days: '6.2 days', color: '#ef4444', widthPct: 62, tag: 'Slow' },
-];
+const PRIORITY_LABELS: Record<string, string> = {
+  CRITICAL: 'Critical',
+  HIGH: 'High',
+  MEDIUM: 'Medium',
+  LOW: 'Low',
+};
 
 export default function ReportsPage() {
   const { success, error } = useToast();
-  const [taskPeriod, setTaskPeriod] = useState<'Week' | 'Month' | 'Year'>('Year');
-  const [trendPeriod, setTrendPeriod] = useState<'Week' | 'Month' | 'Year'>('Year');
-  const [activeTaskFilter, setActiveTaskFilter] = useState<'all' | 'completed' | 'created' | 'overdue'>('all');
-  const [activePriorityFilter, setActivePriorityFilter] = useState<string>('All');
-  const [dateRange] = useState('Jan 01, 2026 - Sep 20, 2026');
+  const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
 
-  const getTaskData = () => {
-    if (taskPeriod === 'Week') return TASK_COMPLETION_DATA_WEEK;
-    if (taskPeriod === 'Month') return TASK_COMPLETION_DATA_MONTH;
-    return TASK_COMPLETION_DATA_YEAR;
+  // Date range
+  const [datePreset, setDatePreset] = useState('all');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Data
+  const [dashboard, setDashboard] = useState<CommanderDashboard | null>(null);
+  const [taskSummary, setTaskSummary] = useState<any>(null);
+  const [teamPerformance, setTeamPerformance] = useState<any[]>([]);
+  const [completionTimeline, setCompletionTimeline] = useState<any[]>([]);
+
+  // Chart filters
+  const [taskPeriod, setTaskPeriod] = useState<'Week' | 'Month' | 'Year'>('Month');
+
+  const dateRange = useMemo<DateRange>(() => {
+    if (datePreset === 'custom') {
+      return { fromDate: customFrom, toDate: customTo };
+    }
+    return getPresetRange(datePreset);
+  }, [datePreset, customFrom, customTo]);
+
+  const dateLabel = useMemo(() => {
+    if (datePreset === 'custom' && customFrom && customTo) {
+      return `${format(new Date(customFrom), 'MMM d, yyyy')} - ${format(new Date(customTo), 'MMM d, yyyy')}`;
+    }
+    const found = DATE_PRESETS.find(p => p.value === datePreset);
+    return found?.label || 'All Time';
+  }, [datePreset, customFrom, customTo]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const params: Record<string, string> = {};
+      if (dateRange.fromDate) params.dateFrom = dateRange.fromDate;
+      if (dateRange.toDate) params.dateTo = dateRange.toDate;
+
+      const [dashData, summaryData, teamData, timelineData] = await Promise.all([
+        dashboardService.getCommanderDashboard(),
+        reportService.getReport('task-summary', params),
+        reportService.getReport('team-performance'),
+        reportService.getReport('completion-timeline', params),
+      ]);
+
+      setDashboard(dashData);
+      setTaskSummary(summaryData);
+      setTeamPerformance(teamData?.data || []);
+      setCompletionTimeline(timelineData?.data || []);
+    } catch {
+      error('Error', 'Failed to load analytics data');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadData(); }, [dateRange.fromDate, dateRange.toDate]);
+
+  // ── Derived chart data ──────────────────────────────────────────────────
+
+  const kpis = useMemo(() => {
+    if (!dashboard) return { total: 0, completed: 0, inProgress: 0, overdue: 0, rate: 0 };
+    const s = dashboard.stats;
+    return {
+      total: s.totalTasks,
+      completed: s.completedTasks,
+      inProgress: s.inProgressTasks,
+      overdue: s.overdueTasks,
+      rate: s.completionRate,
+    };
+  }, [dashboard]);
+
+  const taskChartData = useMemo(() => {
+    if (!completionTimeline.length) return [];
+    const data = completionTimeline;
+    if (taskPeriod === 'Week') {
+      const last7 = data.slice(-7);
+      return last7.map(d => ({
+        month: format(new Date(d.date), 'EEE'),
+        completed: d.count,
+        created: 0,
+        overdue: 0,
+      }));
+    }
+    if (taskPeriod === 'Month') {
+      const last4 = data.slice(-4);
+      return last4.map(d => ({
+        month: format(new Date(d.date), 'MMM d'),
+        completed: d.count,
+        created: 0,
+        overdue: 0,
+      }));
+    }
+    // Year: group by month
+    const monthly: Record<string, number> = {};
+    data.forEach(d => {
+      const key = format(new Date(d.date), 'MMM');
+      monthly[key] = (monthly[key] || 0) + d.count;
+    });
+    return Object.entries(monthly).map(([month, completed]) => ({
+      month, completed, created: 0, overdue: 0,
+    }));
+  }, [completionTimeline, taskPeriod]);
+
+  const priorityData = useMemo(() => {
+    if (!taskSummary?.byPriority) return [];
+    const total = taskSummary.byPriority.reduce((s: number, p: any) => s + p.count, 0);
+    return taskSummary.byPriority.map((p: any) => ({
+      name: PRIORITY_LABELS[p.priority] || p.priority,
+      value: total > 0 ? Math.round((p.count / total) * 100) : 0,
+      count: p.count,
+      color: PRIORITY_COLORS[p.priority] || '#94a3b8',
+    }));
+  }, [taskSummary]);
+
+  const teamData = useMemo(() => {
+    return teamPerformance.map((t: any) => ({
+      name: t.name,
+      tasks: t.totalTasks,
+      completed: t.completedTasks,
+      rate: t.completionRate,
+      avgDays: t.avgCompletionTimeHours ? (t.avgCompletionTimeHours / 24).toFixed(1) : 'N/A',
+      avgHours: t.avgCompletionTimeHours,
+    }));
+  }, [teamPerformance]);
+
+  // ── Export handlers ─────────────────────────────────────────────────────
 
   const handleExport = async (format: 'PDF' | 'Excel' | 'Word') => {
     setIsExporting(true);
     try {
+      const params: Record<string, string> = {};
+      if (dateRange.fromDate) params.dateFrom = dateRange.fromDate;
+      if (dateRange.toDate) params.dateTo = dateRange.toDate;
+
+      let blob: Blob;
+      const ext = format === 'PDF' ? 'pdf' : format === 'Excel' ? 'xlsx' : 'docx';
+      const filename = `taxime-analytics-${datePreset}-${format(new Date(), 'yyyy-MM-dd')}.${ext}`;
+
       if (format === 'PDF') {
-        const blob = await reportService.exportAnalyticsPdf();
-        downloadBlob(blob, 'analytics-report.pdf');
+        blob = await reportService.exportAnalyticsPdf(params);
       } else if (format === 'Excel') {
-        const blob = await reportService.exportAnalyticsExcel();
-        downloadBlob(blob, 'analytics-report.xlsx');
+        blob = await reportService.exportAnalyticsExcel(params);
       } else {
-        const blob = await reportService.exportAnalyticsWord();
-        downloadBlob(blob, 'analytics-report.docx');
+        blob = await reportService.exportAnalyticsWord(params);
       }
-      success('Report Exported', `Analytics summary exported as ${format.toUpperCase()}`);
+      downloadBlob(blob, filename);
+      success('Exported', `Analytics report exported as ${format.toUpperCase()}`);
     } catch {
       error('Export Failed', `Could not export report as ${format}`);
     } finally {
@@ -107,9 +217,19 @@ export default function ReportsPage() {
     }
   };
 
+  // ── Loading state ───────────────────────────────────────────────────────
+
+  if (loading && !dashboard) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e89b1a]" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6 animate-fade-in pb-12 font-sans">
-      {/* ── TOP SECONDARY NAV TABS ── */}
+      {/* ── TOP NAV TABS ── */}
       <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
         <div className="flex items-center gap-2">
           <span className="text-sm font-black italic tracking-wider text-[#e89b1a] pr-3 border-r border-slate-200 dark:border-slate-700">
@@ -123,12 +243,11 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Export Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleExport('Excel')}
             disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-all"
+            className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
           >
             <FileSpreadsheet size={13} className="text-slate-400" />
             Export Excel
@@ -136,7 +255,7 @@ export default function ReportsPage() {
           <button
             onClick={() => handleExport('Word')}
             disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-all"
+            className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
           >
             <Download size={13} className="text-slate-400" />
             Export Word
@@ -144,7 +263,7 @@ export default function ReportsPage() {
           <button
             onClick={() => handleExport('PDF')}
             disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-4 py-1.5 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/20 transition-all"
+            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-4 py-1.5 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/20 transition-all disabled:opacity-50"
           >
             <FileText size={13} />
             PDF Report
@@ -152,70 +271,123 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* ── PAGE TITLE + DATE PICKER PILL ── */}
+      {/* ── TITLE + DATE PICKER ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#0B1628] dark:text-slate-100 tracking-tight">Analytics</h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Task performance metrics and team productivity insights</p>
         </div>
 
-        <div className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-xs text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors self-start sm:self-auto">
-          <Calendar size={14} className="text-slate-400" />
-          <span>{dateRange}</span>
-          <ChevronDown size={14} className="text-slate-400" />
+        <div className="relative self-start sm:self-auto">
+          <button
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-xs text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+          >
+            <Calendar size={14} className="text-slate-400" />
+            <span>{dateLabel}</span>
+            <ChevronDown size={14} className="text-slate-400" />
+          </button>
+
+          {showDatePicker && (
+            <div className="absolute right-0 top-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-4 z-50 w-72 animate-fade-in">
+              <div className="space-y-1">
+                {DATE_PRESETS.map(preset => (
+                  <button
+                    key={preset.value}
+                    onClick={() => {
+                      setDatePreset(preset.value);
+                      if (preset.value !== 'custom') setShowDatePicker(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      datePreset === preset.value
+                        ? 'bg-[#e89b1a] text-white'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+
+              {datePreset === 'custom' && (
+                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">From</label>
+                    <input
+                      type="date"
+                      value={customFrom}
+                      onChange={e => setCustomFrom(e.target.value)}
+                      className="w-full mt-1 px-3 py-1.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase">To</label>
+                    <input
+                      type="date"
+                      value={customTo}
+                      onChange={e => setCustomTo(e.target.value)}
+                      className="w-full mt-1 px-3 py-1.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-300"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setShowDatePicker(false)}
+                    disabled={!customFrom || !customTo}
+                    className="w-full py-1.5 text-sm font-bold bg-[#e89b1a] text-white rounded-lg disabled:opacity-50"
+                  >
+                    Apply
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ── 5 KPI CARDS ROW ── */}
+      {/* ── 5 KPI CARDS ── */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        {/* Total Tasks */}
         <div className="bg-[#e89b1a] text-white rounded-[22px] p-4.5 shadow-md shadow-[#e89b1a]/10 flex flex-col justify-between">
           <p className="text-xs font-semibold text-white/80">Total Tasks</p>
           <div className="mt-3">
-            <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none">1,248</p>
+            <p className="text-2xl sm:text-3xl font-black tracking-tight leading-none">{kpis.total.toLocaleString()}</p>
           </div>
         </div>
 
-        {/* Completed */}
         <div className="bg-[#E5F7E4] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-emerald-100 flex flex-col justify-between">
           <p className="text-xs font-bold text-slate-600">Completed</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">1,052</span>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">84% of total</span>
+            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">{kpis.completed.toLocaleString()}</span>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{kpis.total > 0 ? Math.round((kpis.completed / kpis.total) * 100) : 0}% of total</span>
           </div>
         </div>
 
-        {/* In Progress */}
         <div className="bg-[#E5F5FC] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-sky-100 flex flex-col justify-between">
           <p className="text-xs font-bold text-slate-600">In Progress</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">142</span>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">11% of total</span>
+            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">{kpis.inProgress.toLocaleString()}</span>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{kpis.total > 0 ? Math.round((kpis.inProgress / kpis.total) * 100) : 0}% of total</span>
           </div>
         </div>
 
-        {/* Overdue */}
         <div className="bg-[#FDEAE8] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-[#e89b1a]/20 flex flex-col justify-between">
           <p className="text-xs font-bold text-slate-600">Overdue</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">54</span>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">4% of total</span>
+            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">{kpis.overdue.toLocaleString()}</span>
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">{kpis.total > 0 ? Math.round((kpis.overdue / kpis.total) * 100) : 0}% of total</span>
           </div>
         </div>
 
-        {/* Completion Rate */}
         <div className="bg-[#EBEBFD] text-[#0B1628] dark:text-slate-100 rounded-[22px] p-4.5 border border-indigo-100 flex flex-col justify-between col-span-2 lg:col-span-1">
           <p className="text-xs font-bold text-slate-600">Completion Rate</p>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">84%</span>
-            <span className="text-[11px] font-semibold text-emerald-600">+5% this month</span>
+            <span className="text-2xl sm:text-3xl font-black tracking-tight leading-none">{kpis.rate}%</span>
+            <span className="text-[11px] font-semibold text-emerald-600">overall</span>
           </div>
         </div>
       </div>
 
-      {/* ── MIDDLE ROW: 2 BIG ANALYTICAL CHARTS ── */}
+      {/* ── MIDDLE ROW: 2 CHARTS ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* ── CARD LEFT: Task Completion Stacked Bar Chart ── */}
+        {/* Task Completion Bar Chart */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-black text-[#0B1628] dark:text-slate-100">Task Completion</h2>
@@ -238,7 +410,7 @@ export default function ReportsPage() {
 
           <div className="w-full h-64 pt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={getTaskData()} barSize={26}>
+              <BarChart data={taskChartData} barSize={26}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94A3B8' }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94A3B8' }} />
@@ -246,24 +418,13 @@ export default function ReportsPage() {
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       const completed = payload.find((p) => p.dataKey === 'completed')?.value ?? 0;
-                      const created = payload.find((p) => p.dataKey === 'created')?.value ?? 0;
-                      const overdue = payload.find((p) => p.dataKey === 'overdue')?.value ?? 0;
-                      const total = Number(completed) + Number(created) + Number(overdue);
                       return (
-                        <div className="bg-slate-900 text-white rounded-2xl p-3 shadow-xl text-xs min-w-[150px] animate-fade-in">
+                        <div className="bg-slate-900 text-white rounded-2xl p-3 shadow-xl text-xs min-w-[140px] animate-fade-in">
                           <p className="font-bold text-slate-200 mb-1.5">{label}</p>
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-emerald-300">
                               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Completed</span>
-                              <span className="font-bold">{completed} ({Math.round((Number(completed)/total)*100)}%)</span>
-                            </div>
-                            <div className="flex items-center justify-between text-sky-300">
-                              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-sky-400" /> Created</span>
-                              <span className="font-bold">{created} ({Math.round((Number(created)/total)*100)}%)</span>
-                            </div>
-                            <div className="flex items-center justify-between text-[#e89b1a]/50">
-                              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-[#e89b1a]/70" /> Overdue</span>
-                              <span className="font-bold">{overdue} ({Math.round((Number(overdue)/total)*100)}%)</span>
+                              <span className="font-bold">{completed}</span>
                             </div>
                           </div>
                         </div>
@@ -272,97 +433,36 @@ export default function ReportsPage() {
                     return null;
                   }}
                 />
-                <Bar dataKey="overdue" stackId="a" fill="#F8A5B0" radius={[0, 0, 8, 8]} />
-                <Bar dataKey="created" stackId="a" fill="#88D3F8" />
-                <Bar dataKey="completed" stackId="a" fill="#A1E7A0" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="completed" fill="#A1E7A0" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
           <div className="flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-slate-700/50 flex-wrap">
-            <button
-              onClick={() => setActiveTaskFilter('all')}
-              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                activeTaskFilter === 'all'
-                  ? 'bg-[#e89b1a] text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600/50'
-              }`}
-            >
-              ● All
-            </button>
-            <button
-              onClick={() => setActiveTaskFilter('completed')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                activeTaskFilter === 'completed'
-                  ? 'bg-emerald-100 text-emerald-800 font-bold border border-emerald-200'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              Completed
-            </button>
-            <button
-              onClick={() => setActiveTaskFilter('created')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                activeTaskFilter === 'created'
-                  ? 'bg-sky-100 text-sky-800 font-bold border border-sky-200'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-sky-400" />
-              Created
-            </button>
-            <button
-              onClick={() => setActiveTaskFilter('overdue')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                activeTaskFilter === 'overdue'
-                  ? 'bg-[#e89b1a]/10 text-[#e89b1a] font-bold border border-[#e89b1a]/20'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50'
-              }`}
-            >
-              <span className="w-2 h-2 rounded-full bg-[#e89b1a]/70" />
-              Overdue
-            </button>
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-emerald-700 bg-emerald-100">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" /> Completed Tasks
+            </span>
           </div>
         </div>
 
-        {/* ── CARD RIGHT: Productivity Trend Line Chart ── */}
+        {/* Productivity Trend Line Chart */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-[#0B1628] dark:text-slate-100">Productivity Trend</h2>
-            <div className="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-700/50 rounded-full text-xs font-bold">
-              {(['Week', 'Month', 'Year'] as const).map((period) => (
-                <button
-                  key={period}
-                  onClick={() => setTrendPeriod(period)}
-                  className={`px-3 py-1 rounded-full transition-all ${
-                    trendPeriod === period
-                      ? 'bg-[#e89b1a] text-white shadow-xs'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-[#0B1628] dark:hover:text-slate-100'
-                  }`}
-                >
-                  {period}
-                </button>
-              ))}
-            </div>
+            <h2 className="text-lg font-black text-[#0B1628] dark:text-slate-100">Completion Trend</h2>
           </div>
 
           <div className="w-full h-64 pt-2 relative">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={PRODUCTIVITY_TREND_DATA}>
+              <LineChart data={taskChartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 11, fill: '#94A3B8' }}
-                />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94A3B8' }} />
                 <Tooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       return (
                         <div className="bg-slate-900 text-white rounded-2xl p-3 shadow-xl text-xs min-w-[140px] animate-fade-in">
-                          <p className="text-[10px] text-slate-400 uppercase font-bold">Month</p>
+                          <p className="text-[10px] text-slate-400 uppercase font-bold">Period</p>
                           <p className="font-bold text-white mb-1.5">{label}</p>
                           <div className="space-y-0.5">
                             <p className="text-[10px] text-slate-400">Tasks Completed</p>
@@ -376,7 +476,7 @@ export default function ReportsPage() {
                 />
                 <Line
                   type="monotone"
-                  dataKey="tasks"
+                  dataKey="completed"
                   stroke="#e89b1a"
                   strokeWidth={2.5}
                   dot={{ r: 3.5, fill: '#e89b1a', strokeWidth: 1 }}
@@ -387,127 +487,129 @@ export default function ReportsPage() {
           </div>
 
           <div className="flex items-center gap-1.5 pt-4 border-t border-slate-100 dark:border-slate-700/50 flex-wrap overflow-x-auto text-xs">
-            {['All', 'Critical', 'High', 'Medium', 'Low'].map((priority) => (
-              <button
-                key={priority}
-                onClick={() => setActivePriorityFilter(priority)}
-                className={`px-3 py-1 rounded-full whitespace-nowrap transition-all ${
-                  activePriorityFilter === priority
-                    ? 'bg-[#e89b1a] text-white font-bold shadow-xs'
-                    : 'bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 font-medium'
-                }`}
-              >
-                {priority}
-              </button>
-            ))}
+            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-amber-700 bg-amber-100">
+              <span className="w-2 h-2 rounded-full bg-[#e89b1a]" /> Completion Over Time
+            </span>
           </div>
         </div>
       </div>
 
       {/* ── BOTTOM ROW: 3 INSIGHT CARDS ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* ── CARD 1: Priority Distribution Donut Chart ── */}
+        {/* Priority Distribution Donut */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Priority Distribution</h3>
           </div>
 
-          <div className="flex items-center justify-between gap-4 mt-2">
-            <div className="relative w-36 h-36 shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={PRIORITY_DISTRIBUTION}
-                    dataKey="value"
-                    innerRadius={44}
-                    outerRadius={65}
-                    paddingAngle={3}
-                  >
-                    {PRIORITY_DISTRIBUTION.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">All<br />Priorities</span>
+          {priorityData.length > 0 ? (
+            <div className="flex items-center justify-between gap-4 mt-2">
+              <div className="relative w-36 h-36 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={priorityData}
+                      dataKey="value"
+                      innerRadius={44}
+                      outerRadius={65}
+                      paddingAngle={3}
+                    >
+                      {priorityData.map((entry, i) => (
+                        <Cell key={i} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+                  <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">All<br />Priorities</span>
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-1.5 text-xs">
+                {priorityData.map((cat, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-slate-600 truncate font-medium">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
+                      <span className="truncate">{cat.name}</span>
+                    </span>
+                    <span className="font-bold text-[#0B1628] dark:text-slate-100 ml-2">{cat.count} ({cat.value}%)</span>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div className="flex-1 space-y-1.5 text-xs">
-              {PRIORITY_DISTRIBUTION.map((cat, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-slate-600 truncate font-medium">
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
-                    <span className="truncate">{cat.name}</span>
-                  </span>
-                  <span className="font-bold text-[#0B1628] dark:text-slate-100 ml-2">{cat.value}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          ) : (
+            <div className="text-center py-8 text-slate-400 text-sm">No data available</div>
+          )}
         </div>
 
-        {/* ── CARD 2: Department Performance ── */}
+        {/* Team Performance */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Team Performance</h3>
           </div>
 
-          <div className="space-y-3 mt-3">
-            {DEPARTMENT_PERFORMANCE.map((dept, i) => (
-              <div key={i} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-1.5 text-slate-600 font-medium">
-                    <span className="w-2 h-2 rounded-full shrink-0 bg-slate-300" />
-                    {dept.name}
-                  </span>
-                  <span className="font-extrabold text-[#0B1628] dark:text-slate-100">{dept.rate}%</span>
+          {teamData.length > 0 ? (
+            <div className="space-y-3 mt-3">
+              {teamData.map((dept, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1.5 text-slate-600 font-medium">
+                      <span className="w-2 h-2 rounded-full shrink-0 bg-slate-300" />
+                      {dept.name}
+                    </span>
+                    <span className="font-extrabold text-[#0B1628] dark:text-slate-100">{dept.rate}%</span>
+                  </div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-700/50 rounded-full h-2 overflow-hidden">
+                    <div
+                      style={{ width: `${dept.rate}%` }}
+                      className="bg-[#e89b1a] h-full rounded-full transition-all duration-500"
+                    />
+                  </div>
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-700/50 rounded-full h-2 overflow-hidden">
-                  <div
-                    style={{ width: `${dept.rate}%` }}
-                    className="bg-[#e89b1a] h-full rounded-full transition-all duration-500"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-slate-400 text-sm">No data available</div>
+          )}
         </div>
 
-        {/* ── CARD 3: Avg Completion Time ── */}
+        {/* Avg Completion Time */}
         <div className="bg-white dark:bg-slate-800 rounded-[26px] p-6 border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.03)] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-base font-extrabold text-[#0B1628] dark:text-slate-100">Avg. Completion Time</h3>
             </div>
 
-            <div className="space-y-3 mt-3">
-              {AVG_COMPLETION_TIME.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 text-xs">
-                  <span className="w-20 text-slate-600 font-medium truncate shrink-0">{item.team}</span>
-                  <div className="flex-1 bg-slate-100 dark:bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
-                    <div
-                      style={{ width: `${item.widthPct}%`, background: item.color }}
-                      className="h-full rounded-full transition-all duration-500"
-                    />
-                  </div>
-                  <span className="w-16 text-right font-extrabold text-[#0B1628] dark:text-slate-100 shrink-0">{item.days}</span>
-                </div>
-              ))}
-            </div>
+            {teamData.length > 0 ? (
+              <div className="space-y-3 mt-3">
+                {teamData.sort((a, b) => (a.avgHours || 999) - (b.avgHours || 999)).map((item, i) => {
+                  const maxHours = Math.max(...teamData.filter(t => t.avgHours).map(t => t.avgHours));
+                  const widthPct = maxHours > 0 && item.avgHours ? Math.round((item.avgHours / maxHours) * 100) : 0;
+                  return (
+                    <div key={i} className="flex items-center gap-3 text-xs">
+                      <span className="w-20 text-slate-600 font-medium truncate shrink-0">{item.name}</span>
+                      <div className="flex-1 bg-slate-100 dark:bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
+                        <div
+                          style={{ width: `${widthPct}%` }}
+                          className="bg-[#e89b1a] h-full rounded-full transition-all duration-500"
+                        />
+                      </div>
+                      <span className="w-16 text-right font-extrabold text-[#0B1628] dark:text-slate-100 shrink-0">
+                        {item.avgDays !== 'N/A' ? `${item.avgDays}d` : 'N/A'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-400 text-sm">No data available</div>
+            )}
           </div>
 
           <div className="flex items-center justify-between gap-1.5 pt-4 border-t border-slate-100 dark:border-slate-700/50 mt-4 text-[11px] font-bold">
-            <span className="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">
-              Fast
-            </span>
-            <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">
-              Average
-            </span>
-            <span className="bg-[#e89b1a]/10 text-[#e89b1a] px-2.5 py-1 rounded-full">
-              Slow
-            </span>
+            <span className="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Fast</span>
+            <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">Average</span>
+            <span className="bg-red-100 text-red-700 px-2.5 py-1 rounded-full">Slow</span>
           </div>
         </div>
       </div>
