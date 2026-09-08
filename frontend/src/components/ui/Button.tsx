@@ -14,11 +14,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANTS: Record<Variant, string> = {
-  primary:   'bg-[#FF4D67] text-white hover:bg-[#E83D58] shadow-md shadow-red-500/20 active:scale-[0.98]',
-  secondary: 'bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 border border-slate-200/80 dark:border-slate-600/80 shadow-xs active:scale-[0.98]',
+  primary:   'bg-[#e89b1a] text-[#0B1628] hover:bg-[#f4b728] shadow-md shadow-[#e89b1a]/20 active:scale-[0.98] font-bold',
+  secondary: 'bg-white dark:bg-[#111d32] text-[#0B1628] dark:text-white hover:bg-[#F0F2F7] dark:hover:bg-white/5 border border-[#0B1628]/10 dark:border-white/10 shadow-xs active:scale-[0.98]',
   danger:    'bg-red-500 text-white hover:bg-red-600 shadow-sm active:scale-[0.98]',
-  ghost:     'text-slate-600 dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-700/70 border border-transparent',
-  outline:   'bg-transparent text-slate-700 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-slate-700/50 border border-slate-300 dark:border-slate-600 shadow-xs',
+  ghost:     'text-[#0B1628]/60 dark:text-white/60 hover:bg-[#0B1628]/5 dark:hover:bg-white/5 border border-transparent',
+  outline:   'bg-transparent text-[#0B1628] dark:text-white hover:bg-white/80 dark:hover:bg-white/5 border border-[#0B1628]/20 dark:border-white/10 shadow-xs',
   success:   'bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm active:scale-[0.98]',
 };
 
@@ -47,7 +47,7 @@ export function Button({
       {...props}
       disabled={isDisabled}
       className={[
-        'inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/40 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
+        'inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/40 focus:ring-offset-2 dark:focus:ring-offset-[#0B1628]',
         VARIANTS[variant],
         SIZES[size],
         fullWidth ? 'w-full' : '',

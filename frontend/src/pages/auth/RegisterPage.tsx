@@ -67,8 +67,8 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col">
       <div className="mb-6 text-center sm:text-left">
-        <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Create an account</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-1">
+        <h2 className="text-2xl font-black text-[#0B1628] dark:text-white tracking-tight">Create an account</h2>
+        <p className="text-[#0B1628]/50 dark:text-white/40 text-xs sm:text-sm mt-1">
           Join Taxime to manage tasks and collaborate with your team
         </p>
       </div>
@@ -76,137 +76,137 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+            <label className="text-xs font-bold text-[#0B1628] dark:text-white/70 uppercase tracking-wider">
               First Name
             </label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0B1628]/30 dark:text-white/30" />
               <input
                 type="text"
                 placeholder="John"
                 autoComplete="given-name"
                 value={form.firstName}
                 onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                className={`w-full rounded-2xl border bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67] ${
-                  errors.firstName ? 'border-rose-400 focus:ring-rose-400/20' : 'border-slate-200/80 dark:border-slate-600/80'
+                className={`w-full rounded-2xl border bg-white dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 text-sm text-[#0B1628] dark:text-white placeholder:text-[#0B1628]/30 dark:placeholder:text-white/20 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] ${
+                  errors.firstName ? 'border-[#e89b1a] focus:ring-[#e89b1a]/20' : 'border-[#0B1628]/10 dark:border-white/10'
                 }`}
               />
             </div>
-            {errors.firstName && <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.firstName}</p>}
+            {errors.firstName && <p className="text-[11px] text-[#e89b1a] font-medium pl-1">{errors.firstName}</p>}
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+            <label className="text-xs font-bold text-[#0B1628] dark:text-white/70 uppercase tracking-wider">
               Last Name
             </label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0B1628]/30 dark:text-white/30" />
               <input
                 type="text"
                 placeholder="Doe"
                 autoComplete="family-name"
                 value={form.lastName}
                 onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-                className={`w-full rounded-2xl border bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67] ${
-                    errors.lastName ? 'border-rose-400 focus:ring-rose-400/20' : 'border-slate-200/80 dark:border-slate-600/80'
+                className={`w-full rounded-2xl border bg-white dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 text-sm text-[#0B1628] dark:text-white placeholder:text-[#0B1628]/30 dark:placeholder:text-white/20 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] ${
+                    errors.lastName ? 'border-[#e89b1a] focus:ring-[#e89b1a]/20' : 'border-[#0B1628]/10 dark:border-white/10'
                   }`}
               />
             </div>
-            {errors.lastName && <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.lastName}</p>}
+            {errors.lastName && <p className="text-[11px] text-[#e89b1a] font-medium pl-1">{errors.lastName}</p>}
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-[#0B1628] dark:text-white/70 uppercase tracking-wider">
             Work Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0B1628]/30 dark:text-white/30" />
             <input
               type="email"
               placeholder="you@gmail.com"
               autoComplete="email"
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              className={`w-full rounded-2xl border bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67] ${
-                  errors.email ? 'border-rose-400 focus:ring-rose-400/20' : 'border-slate-200/80 dark:border-slate-600/80'
+              className={`w-full rounded-2xl border bg-white dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 text-sm text-[#0B1628] dark:text-white placeholder:text-[#0B1628]/30 dark:placeholder:text-white/20 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] ${
+                  errors.email ? 'border-[#e89b1a] focus:ring-[#e89b1a]/20' : 'border-[#0B1628]/10 dark:border-white/10'
                 }`}
             />
           </div>
-          {errors.email && <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.email}</p>}
+          {errors.email && <p className="text-[11px] text-[#e89b1a] font-medium pl-1">{errors.email}</p>}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-            Phone <span className="text-slate-400 dark:text-slate-500 normal-case">(optional)</span>
+          <label className="text-xs font-bold text-[#0B1628] dark:text-white/70 uppercase tracking-wider">
+            Phone <span className="text-[#0B1628]/30 dark:text-white/20 normal-case">(optional)</span>
           </label>
           <div className="relative">
-            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0B1628]/30 dark:text-white/30" />
             <input
               type="tel"
               placeholder="+1 (555) 000-0000"
               autoComplete="tel"
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-              className="w-full rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67]"
+              className="w-full rounded-2xl border border-[#0B1628]/10 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 text-sm text-[#0B1628] dark:text-white placeholder:text-[#0B1628]/30 dark:placeholder:text-white/20 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a]"
             />
           </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-[#0B1628] dark:text-white/70 uppercase tracking-wider">
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0B1628]/30 dark:text-white/30" />
             <input
               type={showPw ? 'text' : 'password'}
               placeholder="••••••••••••"
               autoComplete="new-password"
               value={form.password}
               onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              className={`w-full rounded-2xl border bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 py-3 pl-11 pr-11 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67] ${
-                  errors.password ? 'border-rose-400 focus:ring-rose-400/20' : 'border-slate-200/80 dark:border-slate-600/80'
+              className={`w-full rounded-2xl border bg-white dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 text-sm text-[#0B1628] dark:text-white placeholder:text-[#0B1628]/30 dark:placeholder:text-white/20 py-3 pl-11 pr-11 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] ${
+                  errors.password ? 'border-[#e89b1a] focus:ring-[#e89b1a]/20' : 'border-[#0B1628]/10 dark:border-white/10'
                 }`}
             />
             <button
               type="button"
               onClick={() => setShowPw((s) => !s)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 p-1 transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#0B1628]/30 dark:text-white/30 hover:text-[#0B1628] dark:hover:text-white p-1 transition-colors"
             >
               {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          {errors.password && <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.password}</p>}
+          {errors.password && <p className="text-[11px] text-[#e89b1a] font-medium pl-1">{errors.password}</p>}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+          <label className="text-xs font-bold text-[#0B1628] dark:text-white/70 uppercase tracking-wider">
             Confirm Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#0B1628]/30 dark:text-white/30" />
             <input
               type={showPw ? 'text' : 'password'}
               placeholder="••••••••••••"
               autoComplete="new-password"
               value={form.confirmPassword}
               onChange={(e) => setForm((f) => ({ ...f, confirmPassword: e.target.value }))}
-              className={`w-full rounded-2xl border bg-slate-50/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#FF4D67]/20 focus:border-[#FF4D67] ${
-                  errors.confirmPassword ? 'border-rose-400 focus:ring-rose-400/20' : 'border-slate-200/80 dark:border-slate-600/80'
+              className={`w-full rounded-2xl border bg-white dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 focus:bg-white dark:focus:bg-white/10 text-sm text-[#0B1628] dark:text-white placeholder:text-[#0B1628]/30 dark:placeholder:text-white/20 py-3 pl-11 pr-4 shadow-2xs transition-all focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] ${
+                  errors.confirmPassword ? 'border-[#e89b1a] focus:ring-[#e89b1a]/20' : 'border-[#0B1628]/10 dark:border-white/10'
                 }`}
             />
           </div>
-          {errors.confirmPassword && <p className="text-[11px] text-rose-500 font-medium pl-1">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className="text-[11px] text-[#e89b1a] font-medium pl-1">{errors.confirmPassword}</p>}
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 py-3 px-6 rounded-full bg-[#FF4D67] text-white hover:bg-[#E83D58] font-bold text-sm shadow-lg shadow-red-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full mt-2 py-3 px-6 rounded-full bg-[#e89b1a] text-[#0B1628] hover:bg-[#f4b728] font-bold text-sm shadow-lg shadow-[#e89b1a]/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? (
-            <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <span className="inline-block w-5 h-5 border-2 border-[#0B1628] border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
               <span>Create Account</span>
@@ -216,9 +216,9 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-500 dark:text-slate-400 mt-6">
+      <p className="text-center text-sm text-[#0B1628]/40 dark:text-white/30 mt-6">
         Already have an account?{' '}
-        <Link to="/login" className="text-[#FF4D67] hover:text-[#E83D58] font-semibold hover:underline">
+        <Link to="/login" className="text-[#e89b1a] hover:text-[#f4b728] font-semibold hover:underline">
           Sign in
         </Link>
       </p>

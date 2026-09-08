@@ -35,7 +35,7 @@ export function MainLayout() {
   const title = usePageTitle(location.pathname);
 
   return (
-    <div className="flex h-screen bg-[#F4F5F9] dark:bg-[#0B1120] text-slate-800 dark:text-slate-100 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#F0F2F7] dark:bg-[#0B1628] text-[#0B1628] dark:text-white overflow-hidden font-sans">
       <Sidebar
         collapsed={collapsed}
         onToggle={() => setCollapsed((c) => !c)}

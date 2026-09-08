@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, CheckSquare, Calendar, Users, Building2,
   BarChart3, Bell, Activity, Settings, LogOut,
-  X, AlertTriangle, Plus, Flame, ClipboardList,
+  X, AlertTriangle, Plus, ClipboardList,
   FileText, Send, ClipboardCheck, Star, Shield,
 } from 'lucide-react';
 import { useAuth } from '@/contexts';
@@ -104,14 +104,22 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
       <div className="flex items-center justify-center py-4 shrink-0">
         <NavLink
           to="/dashboard"
-          className="w-11 h-11 rounded-full bg-[#FF4D67] text-white flex items-center justify-center shadow-lg shadow-red-500/30 hover:scale-105 transition-all duration-200"
+          className="flex items-center gap-2 group"
           title="Taxime Operations"
         >
-          <Flame size={22} className="fill-white/20 stroke-white" />
+          <div className="w-11 h-11 rounded-2xl bg-[#e89b1a] flex items-center justify-center shadow-lg shadow-[#e89b1a]/30 group-hover:scale-105 transition-all duration-200">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
+              <path d="M10 12h4.5l5.5 12 5.5-12H30l-8.5 20h-3L10 12z" fill="white"/>
+              <circle cx="33" cy="8" r="2.5" fill="white" opacity="0.5"/>
+            </svg>
+          </div>
+          {isExpanded && (
+            <span className="text-base font-black text-white tracking-tight">Taxime</span>
+          )}
         </NavLink>
       </div>
 
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 min-h-0">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 min-h-0 overscroll-contain">
         <div className="flex flex-col items-center gap-1.5">
           {allowedNav.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/dashboard' && location.pathname.startsWith(item.to));
@@ -129,8 +137,8 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
                       : 'w-11 h-11 rounded-full justify-center'
                   } ${
                     isActive
-                      ? 'bg-[#FF4D67] text-white shadow-md shadow-red-500/30'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/70'
+                      ? 'bg-[#e89b1a] text-[#0B1628] shadow-md shadow-[#e89b1a]/30 font-bold'
+                      : 'text-white/50 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <span className="shrink-0">{item.icon}</span>
@@ -138,8 +146,8 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
                     <span className="text-sm font-semibold truncate">{item.label}</span>
                   )}
                   {item.badge != null && item.badge > 0 && (
-                    <span className={`absolute -top-1 -right-1 min-w-[17px] h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none border-2 border-white dark:border-slate-800 ${
-                      isActive ? 'bg-slate-900' : 'bg-[#FF4D67]'
+                    <span className={`absolute -top-1 -right-1 min-w-[17px] h-4 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none border-2 border-[#0B1628] ${
+                      isActive ? 'bg-[#0B1628]' : 'bg-[#e89b1a]'
                     }`}>
                       {item.badge > 9 ? '9+' : item.badge}
                     </span>
@@ -147,9 +155,9 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
                 </NavLink>
 
                 {!isExpanded && hoveredItem === item.label && (
-                  <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs font-semibold rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
+                  <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0B1628] dark:bg-white text-white dark:text-[#0B1628] text-xs font-semibold rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
                     {item.label}
-                    <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-slate-900 dark:bg-slate-700 rotate-45" />
+                    <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#0B1628] dark:bg-white rotate-45" />
                   </div>
                 )}
               </div>
@@ -163,7 +171,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
   const SidebarFooter = () => {
     const canCreateTask = user?.role === 'ADMIN' || user?.role === 'TEAM_LEAD';
     return (
-    <div className="flex flex-col items-center gap-2 px-2 py-3 border-t border-slate-100 dark:border-slate-700/50 shrink-0">
+    <div className="flex flex-col items-center gap-2 px-2 py-3 border-t border-white/10 shrink-0">
       {canCreateTask && (
         <NavLink
           to="/tasks/new"
@@ -173,13 +181,13 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
           title="Create New Task"
           className={`flex items-center transition-all duration-200 ${
             isExpanded
-              ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 dark:hover:bg-slate-600'
-              : 'w-10 h-10 rounded-full justify-center bg-slate-900 dark:bg-slate-700 text-white hover:bg-slate-800 dark:hover:bg-slate-600 hover:scale-105'
+              ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start bg-[#e89b1a] text-[#0B1628] hover:bg-[#f4b728] font-bold'
+              : 'w-10 h-10 rounded-full justify-center bg-[#e89b1a] text-[#0B1628] hover:bg-[#f4b728] hover:scale-105'
           }`}
         >
           <Plus size={18} />
           {isExpanded && (
-            <span className="text-sm font-semibold">Create Task</span>
+            <span className="text-sm font-bold">Create Task</span>
           )}
         </NavLink>
       )}
@@ -191,8 +199,8 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
         title="Sign out"
         className={`flex items-center transition-all duration-200 ${
           isExpanded
-            ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20'
-            : 'w-10 h-10 rounded-full justify-center text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20'
+            ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start text-white/50 hover:text-white hover:bg-white/10'
+            : 'w-10 h-10 rounded-full justify-center text-white/50 hover:text-white hover:bg-white/10'
         }`}
       >
         <LogOut size={19} />
@@ -209,27 +217,27 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-xs"
+            className="absolute inset-0 bg-[#0B1628]/40 dark:bg-black/60 backdrop-blur-xs"
             onClick={() => setShowLogoutConfirm(false)}
           />
-          <div className="relative bg-white dark:bg-slate-800 rounded-[26px] shadow-2xl w-full max-w-sm mx-auto p-6 text-center animate-fade-in border border-slate-100 dark:border-slate-700">
-            <div className="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-900/30 text-[#FF4D67] flex items-center justify-center mx-auto mb-4 border border-rose-100 dark:border-rose-800/50">
+          <div className="relative bg-white dark:bg-[#111d32] rounded-[26px] shadow-2xl w-full max-w-sm mx-auto p-6 text-center animate-fade-in border border-slate-200/70 dark:border-white/5">
+            <div className="w-14 h-14 rounded-full bg-[#e89b1a]/10 text-[#e89b1a] flex items-center justify-center mx-auto mb-4 border border-[#e89b1a]/20">
               <AlertTriangle className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1">Sign Out</h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">
+            <h3 className="text-lg font-bold text-[#0B1628] dark:text-white mb-1">Sign Out</h3>
+            <p className="text-slate-500 dark:text-white/40 text-sm mb-6">
               Are you sure you want to sign out of your Taxime account?
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="flex-1 px-4 py-2.5 rounded-full border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm"
+                className="flex-1 px-4 py-2.5 rounded-full border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/70 font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleLogout}
-                className="flex-1 px-4 py-2.5 rounded-full bg-[#FF4D67] text-white font-semibold hover:bg-[#E83D58] transition-colors shadow-md shadow-red-500/20 text-sm"
+                className="flex-1 px-4 py-2.5 rounded-full bg-[#e89b1a] text-[#0B1628] font-bold hover:bg-[#f4b728] transition-colors shadow-md shadow-[#e89b1a]/20 text-sm"
               >
                 Yes, Sign Out
               </button>
@@ -239,7 +247,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
       )}
 
       <aside
-        className={`hidden lg:flex flex-col h-[calc(100vh-2rem)] my-auto ml-4 bg-white dark:bg-slate-800 rounded-[28px] border border-slate-200/70 dark:border-slate-700/70 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_25px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 ease-in-out shrink-0 overflow-hidden ${
+        className={`hidden lg:flex flex-col h-[calc(100vh-2rem)] my-auto ml-4 bg-[#0B1628] rounded-[28px] border border-white/5 shadow-[0_4px_25px_-4px_rgba(0,0,0,0.15)] transition-all duration-300 ease-in-out shrink-0 overflow-hidden ${
           isExpanded ? 'w-56' : 'w-[72px]'
         }`}
         onMouseEnter={handleMouseEnter}
@@ -251,11 +259,11 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
 
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-xs" onClick={onMobileClose} />
-          <aside className="relative w-64 h-full bg-white dark:bg-slate-800 flex flex-col shadow-2xl py-4 z-10 border-r border-slate-200/80 dark:border-slate-700/70 overflow-hidden">
+          <div className="absolute inset-0 bg-[#0B1628]/40 dark:bg-black/60 backdrop-blur-xs" onClick={onMobileClose} />
+          <aside className="relative w-64 h-full bg-[#0B1628] flex flex-col shadow-2xl py-4 z-10 border-r border-white/5 overflow-hidden overscroll-contain">
             <button
               onClick={onMobileClose}
-              className="absolute right-2 top-3 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1 z-10"
+              className="absolute right-2 top-3 text-white/50 hover:text-white p-1 z-10"
             >
               <X className="w-5 h-5" />
             </button>
