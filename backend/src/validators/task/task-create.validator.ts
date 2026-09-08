@@ -9,7 +9,7 @@ export const createTaskSchema = z.object({
   dueDate: z.string().datetime('Due date is required'),
   startDate: z.string().datetime().optional(),
   estimatedHours: z.number().positive().optional(),
-  teamId: z.string().uuid('Team is required'),
+  teamId: z.string().uuid().nullable().optional(),
   assigneeIds: z.array(z.string().uuid()).min(1, 'At least one assignee is required'),
   primaryAssigneeId: z.string().uuid().optional(),
   location: z.string().optional(),

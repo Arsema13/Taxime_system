@@ -80,7 +80,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
           className={[
             'w-full rounded-xl border bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-y min-h-[80px]',
-            'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 px-3 py-2',
+            'transition-colors focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] px-3 py-2',
             error ? 'border-red-400' : 'border-white/40 dark:border-slate-600/60',
             props.disabled ? 'bg-slate-50 dark:bg-[#0B1628] opacity-60 cursor-not-allowed' : '',
             className,
@@ -118,7 +118,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           {...props}
           className={[
             'w-full rounded-xl border bg-white/60 dark:bg-slate-800/60 backdrop-blur-md text-sm text-slate-800 dark:text-slate-200',
-            'transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 px-3 py-2',
+            'transition-colors focus:outline-none focus:ring-2 focus:ring-[#e89b1a]/20 focus:border-[#e89b1a] px-3 py-2',
             error ? 'border-red-400' : 'border-white/40 dark:border-slate-600/60',
             props.disabled ? 'bg-slate-50 dark:bg-[#0B1628] opacity-60 cursor-not-allowed' : '',
             className,

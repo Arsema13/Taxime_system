@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, ChevronDown, ChevronRight, Users, X } from 'lucide-react';
+import { ArrowLeft, Save, ChevronDown, ChevronRight, Users, CheckSquare } from 'lucide-react';
 import { taskService, userService, teamService } from '@/services';
 import type { TaskPriority, User } from '@/types';
 import type { Team } from '@/types/department.types';
@@ -34,7 +34,7 @@ export default function CreateTaskPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     Promise.all([
@@ -48,7 +48,7 @@ export default function CreateTaskPage() {
 
   useEffect(() => {
     if (form.teamId) {
-      setExpandedTeams(new Set([form.teamId]));
+      setExpandedSections(new Set([form.teamId]));
     }
   }, [form.teamId]);
 
@@ -81,10 +81,6 @@ export default function CreateTaskPage() {
       error('Validation', 'Due date is required');
       return;
     }
-    if (!form.teamId) {
-      error('Validation', 'Please select a team');
-      return;
-    }
     if (form.assigneeIds.length === 0) {
       error('Validation', 'Please assign at least one member');
       return;
@@ -97,7 +93,7 @@ export default function CreateTaskPage() {
         priority: form.priority,
         dueDate: new Date(form.dueDate + 'T00:00:00.000Z').toISOString(),
         estimatedHours: form.estimatedHours && Number(form.estimatedHours) > 0 ? Number(form.estimatedHours) : undefined,
-        teamId: form.teamId,
+        teamId: form.teamId || undefined,
         assigneeIds: form.assigneeIds,
       };
       const created = await taskService.createTask(payload);
@@ -120,23 +116,56 @@ export default function CreateTaskPage() {
     }));
   };
 
-  const toggleTeamExpand = (teamId: string) => {
-    setExpandedTeams(prev => {
+  const toggleAllInTeam = (teamId: string) => {
+    const members = teamedUsers.get(teamId) || [];
+    const memberIds = members.map(m => m.id);
+    const allSelected = memberIds.every(id => form.assigneeIds.includes(id));
+    setForm(f => ({
+      ...f,
+      assigneeIds: allSelected
+        ? f.assigneeIds.filter(id => !memberIds.includes(id))
+        : [...new Set([...f.assigneeIds, ...memberIds])],
+    }));
+  };
+
+  const toggleAllUnassigned = () => {
+    const ids = unassignedUsers.map(u => u.id);
+    const allSelected = ids.every(id => form.assigneeIds.includes(id));
+    setForm(f => ({
+      ...f,
+      assigneeIds: allSelected
+        ? f.assigneeIds.filter(id => !ids.includes(id))
+        : [...new Set([...f.assigneeIds, ...ids])],
+    }));
+  };
+
+  const toggleSection = (id: string) => {
+    setExpandedSections(prev => {
       const next = new Set(prev);
-      if (next.has(teamId)) next.delete(teamId);
-      else next.add(teamId);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
-  const selectedUsers = useMemo(() => {
-    return allUsers.filter(u => form.assigneeIds.includes(u.id));
-  }, [allUsers, form.assigneeIds]);
+  const getTeamSelectionState = (teamId: string) => {
+    const members = teamedUsers.get(teamId) || [];
+    if (members.length === 0) return 'none';
+    const selectedCount = members.filter(m => form.assigneeIds.includes(m.id)).length;
+    if (selectedCount === 0) return 'none';
+    if (selectedCount === members.length) return 'all';
+    return 'some';
+  };
 
-  const activeTeamIds = useMemo(() => {
-    if (form.teamId) return [form.teamId];
-    return [];
-  }, [form.teamId]);
+  const getUnassignedSelectionState = () => {
+    if (unassignedUsers.length === 0) return 'none';
+    const selectedCount = unassignedUsers.filter(u => form.assigneeIds.includes(u.id)).length;
+    if (selectedCount === 0) return 'none';
+    if (selectedCount === unassignedUsers.length) return 'all';
+    return 'some';
+  };
+
+  const visibleTeams = form.teamId ? teams.filter(t => t.id === form.teamId) : teams;
 
   return (
     <div>
@@ -218,54 +247,101 @@ export default function CreateTaskPage() {
 
               <div className="mb-3">
                 <Select
-                  label="Team"
-                  required
+                  label="Team (optional)"
                   value={form.teamId}
-                  onChange={e => setForm(f => ({ ...f, teamId: e.target.value, assigneeIds: [] }))}
+                  onChange={e => setForm(f => ({ ...f, teamId: e.target.value }))}
                 >
-                  <option value="">Select a team</option>
+                  <option value="">All teams</option>
                   {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </Select>
               </div>
 
               <div className="flex flex-col gap-1 max-h-[32rem] overflow-y-auto">
-                {!form.teamId ? (
-                  <p className="text-sm text-slate-400 text-center py-6">Select a team first</p>
-                ) : activeTeamIds.map(teamId => {
-                  const team = teamMap.get(teamId);
-                  const members = teamedUsers.get(teamId) || [];
+                {unassignedUsers.length > 0 && (
+                  <div className="rounded-lg border border-slate-200 dark:border-slate-600/50 overflow-hidden mb-1">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50/50 dark:bg-slate-800/30">
+                      <Users className="w-4 h-4 text-slate-500" />
+                      <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">No Team</span>
+                      <button
+                        type="button"
+                        onClick={toggleAllUnassigned}
+                        className="text-xs text-[#e89b1a] hover:text-[#d48a15] font-medium"
+                      >
+                        {getUnassignedSelectionState() === 'all' ? 'Deselect all' : 'Select all'}
+                      </button>
+                    </div>
+                    <div className="flex flex-col">
+                      {unassignedUsers.map(user => (
+                        <label key={user.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={form.assigneeIds.includes(user.id)}
+                            onChange={() => toggleAssignee(user.id)}
+                            className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
+                          />
+                          <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
+                            <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {visibleTeams.map(team => {
+                  const members = teamedUsers.get(team.id) || [];
+                  if (members.length === 0 && form.teamId) return null;
+                  const isExpanded = expandedSections.has(team.id);
+                  const selectionState = getTeamSelectionState(team.id);
+                  const selectedCount = members.filter(m => form.assigneeIds.includes(m.id)).length;
 
                   return (
-                    <div key={teamId} className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+                    <div key={team.id} className="rounded-lg border border-slate-100 dark:border-slate-700/50 overflow-hidden">
                       <div className="flex items-center gap-2 px-3 py-2 bg-slate-50/50 dark:bg-slate-800/30">
+                        <button type="button" onClick={() => toggleSection(team.id)} className="shrink-0">
+                          {isExpanded ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
+                        </button>
                         <Users className="w-4 h-4 text-[#e89b1a]" />
-                        <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">{team?.name || 'Team'}</span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">{members.length} members</span>
+                        <span className="flex-1 text-sm font-semibold text-slate-700 dark:text-slate-300">{team.name}</span>
+                        {selectedCount > 0 && (
+                          <span className="text-xs bg-[#e89b1a]/10 text-[#e89b1a] px-1.5 py-0.5 rounded-full font-medium">{selectedCount}</span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => toggleAllInTeam(team.id)}
+                          className="text-xs text-[#e89b1a] hover:text-[#d48a15] font-medium"
+                        >
+                          {selectionState === 'all' ? 'Deselect all' : 'Select all'}
+                        </button>
                       </div>
-                      <div className="flex flex-col">
-                        {members.length === 0 ? (
-                          <p className="text-xs text-slate-400 text-center py-4">No members in this team</p>
-                        ) : members.map(user => (
-                          <label key={user.id} className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
-                            <input
-                              type="checkbox"
-                              checked={form.assigneeIds.includes(user.id)}
-                              onChange={() => toggleAssignee(user.id)}
-                              className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
-                            />
-                            <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
-                              <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
-                            </div>
-                          </label>
-                        ))}
-                      </div>
+                      {isExpanded && (
+                        <div className="flex flex-col">
+                          {members.length === 0 ? (
+                            <p className="text-xs text-slate-400 text-center py-4">No members in this team</p>
+                          ) : members.map(user => (
+                            <label key={user.id} className="flex items-center gap-3 pl-10 pr-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={form.assigneeIds.includes(user.id)}
+                                onChange={() => toggleAssignee(user.id)}
+                                className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
+                              />
+                              <Avatar src={user.avatar} name={`${user.firstName} ${user.lastName}`} size="sm" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{user.firstName} {user.lastName}</p>
+                                <p className="text-xs text-slate-400 truncate">{user.position || user.email}</p>
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
 
-                {activeTeamIds.length === 0 && form.teamId && (
+                {visibleTeams.length === 0 && unassignedUsers.length === 0 && (
                   <p className="text-sm text-slate-400 text-center py-4">No users available.</p>
                 )}
               </div>
