@@ -281,7 +281,7 @@ export default function ReviewReportsPage() {
                   onClick={() => setPeriod(opt.value)}
                   className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
                     period === opt.value
-                      ? 'bg-teal-600 text-white'
+                      ? 'bg-[#e89b1a] text-white'
                       : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
