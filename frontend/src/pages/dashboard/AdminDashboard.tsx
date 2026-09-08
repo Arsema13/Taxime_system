@@ -11,6 +11,8 @@ import { dashboardService } from '@/services';
 import type { CommanderDashboard as TCommanderDashboard } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
 import { ErrorState } from '@/components/ui/Card';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { Button } from '@/components/ui/Button';
 import { TaskProgress } from '@/components/task/TaskProgress';
 import { TaskStatusBadge } from '@/components/task/TaskStatusBadge';
 import { useAuth } from '@/contexts';
@@ -62,26 +64,25 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in pb-8">
-      {/* ── TOP SECTION: Header & Date Pill ── */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6">
-        <div className="flex flex-col gap-2.5 shrink-0">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1628] dark:text-slate-100 tracking-tight">
-            {greeting()}, {user?.firstName}
-          </h1>
-          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-700 text-white dark:text-slate-200 px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
-            {today}
-          </div>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-2.5">
-          <button
+      {/* ── PAGE HEADER ── */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        <PageHeader
+          title={`${greeting()}, ${user?.firstName}`}
+          description={
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
+              {today}
+            </span>
+          }
+        />
+        <div className="flex items-center gap-2.5 shrink-0">
+          <Button
+            size="sm"
+            icon={<Plus className="w-4 h-4" />}
             onClick={() => navigate('/tasks/new')}
-            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-5 py-2 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/25 dark:shadow-[#e89b1a]/40 transition-all active:scale-[0.98]"
           >
-            <Plus size={15} />
             Create Task
-          </button>
+          </Button>
         </div>
       </div>
 

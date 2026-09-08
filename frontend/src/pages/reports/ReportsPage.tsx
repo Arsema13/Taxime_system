@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Calendar, ChevronDown, Download, FileText, BarChart3, FileSpreadsheet,
+  Calendar, ChevronDown, Download, FileText, FileSpreadsheet,
 } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, LineChart, Line,
@@ -9,6 +9,8 @@ import {
 import { useToast } from '@/contexts';
 import { dashboardService } from '@/services/dashboard.service';
 import { reportService, downloadBlob } from '@/services/report.service';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { Button } from '@/components/ui/Button';
 import type { CommanderDashboard } from '@/types';
 import { format, startOfWeek, startOfMonth, startOfYear } from 'date-fns';
 
@@ -229,56 +231,48 @@ export default function ReportsPage() {
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in pb-12 font-sans">
-      {/* ── TOP NAV TABS ── */}
-      <div className="flex items-center justify-between flex-wrap gap-4 pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-black italic tracking-wider text-[#e89b1a] pr-3 border-r border-slate-200 dark:border-slate-700">
-            TAXIME
-          </span>
-          <div className="inline-flex items-center p-1 bg-white dark:bg-slate-800 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
-            <button className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-[#e89b1a] text-white shadow-xs">
-              <BarChart3 size={13} />
-              Analytics
-            </button>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleExport('Excel')}
-            disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
-          >
-            <FileSpreadsheet size={13} className="text-slate-400" />
-            Export Excel
-          </button>
-          <button
-            onClick={() => handleExport('Word')}
-            disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 border border-slate-200/80 dark:border-slate-700/80 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-all disabled:opacity-50"
-          >
-            <Download size={13} className="text-slate-400" />
-            Export Word
-          </button>
-          <button
-            onClick={() => handleExport('PDF')}
-            disabled={isExporting}
-            className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white hover:bg-[#f4b728] px-4 py-1.5 rounded-full text-xs font-bold shadow-md shadow-[#e89b1a]/20 transition-all disabled:opacity-50"
-          >
-            <FileText size={13} />
-            PDF Report
-          </button>
-        </div>
+      {/* ── PAGE HEADER ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PageHeader
+          title="Analytics"
+          description="Task performance metrics and team productivity insights"
+          breadcrumbs={[{ label: 'Reports', to: '/reports' }, { label: 'Analytics' }]}
+          actions={
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                icon={<FileSpreadsheet className="w-3.5 h-3.5" />}
+                onClick={() => handleExport('Excel')}
+                disabled={isExporting}
+              >
+                Excel
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                icon={<Download className="w-3.5 h-3.5" />}
+                onClick={() => handleExport('Word')}
+                disabled={isExporting}
+              >
+                Word
+              </Button>
+              <Button
+                size="sm"
+                icon={<FileText className="w-3.5 h-3.5" />}
+                onClick={() => handleExport('PDF')}
+                disabled={isExporting}
+              >
+                PDF Report
+              </Button>
+            </div>
+          }
+        />
       </div>
 
-      {/* ── TITLE + DATE PICKER ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0B1628] dark:text-slate-100 tracking-tight">Analytics</h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">Task performance metrics and team productivity insights</p>
-        </div>
-
-        <div className="relative self-start sm:self-auto">
+      {/* ── DATE RANGE FILTER ── */}
+      <div className="flex items-center justify-end">
+        <div className="relative">
           <button
             onClick={() => setShowDatePicker(!showDatePicker)}
             className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-full border border-slate-200/80 dark:border-slate-700/80 shadow-xs text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
