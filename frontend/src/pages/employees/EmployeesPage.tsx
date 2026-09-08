@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Search, Filter, Download, UserPlus, Mail, Phone, Building2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, Download, UserPlus, Mail, Phone } from 'lucide-react';
 import { userService, departmentService } from '@/services';
 import type { User, UserRole, PaginatedResponse, Department } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
@@ -13,7 +12,6 @@ import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { Modal, ConfirmDialog } from '@/components/ui/Modal';
 import { useToast } from '@/contexts';
-import { Table } from '@/components/ui/Table';
 
 interface EmployeeFilters {
   search?: string;
@@ -35,7 +33,6 @@ interface EmployeeFormData {
 }
 
 export default function EmployeesPage() {
-  const navigate = useNavigate();
   const { success, error } = useToast();
 
   const [data, setData] = useState<PaginatedResponse<User> | null>(null);
@@ -158,6 +155,16 @@ export default function EmployeesPage() {
     }
   };
 
+  const getRoleLabel = (role: UserRole) => {
+    switch (role) {
+      case 'SUPER_ADMIN': return 'Super Admin';
+      case 'ADMIN': return 'Admin';
+      case 'TEAM_LEAD': return 'Team Lead';
+      case 'EMPLOYEE': return 'Member';
+      default: return role.replace(/_/g, ' ');
+    }
+  };
+
   if (loadError) return <ErrorState message="Could not load employees." onRetry={load} />;
 
   return (
@@ -181,7 +188,7 @@ export default function EmployeesPage() {
       <Card padding="md" className="mb-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex-1 min-w-[200px]">
+            <div className="w-64">
               <Input
                 placeholder="Search by name or email..."
                 value={filters.search ?? ''}
@@ -209,25 +216,27 @@ export default function EmployeesPage() {
               <Select
                 value={filters.role ?? ''}
                 onChange={e => setFilters(f => ({ ...f, role: e.target.value as UserRole || undefined, page: 1 }))}
+                className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
               >
                 <option value="">All Roles</option>
-                <option value="SUPER_ADMIN">Super Admin</option>
                 <option value="ADMIN">Admin</option>
                 <option value="TEAM_LEAD">Team Lead</option>
-                <option value="EMPLOYEE">Employee</option>
+                <option value="EMPLOYEE">Member</option>
               </Select>
 
               <Select
                 value={filters.departmentId ?? ''}
                 onChange={e => setFilters(f => ({ ...f, departmentId: e.target.value || undefined, page: 1 }))}
+                className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
               >
-                <option value="">All Departments</option>
+                <option value="">All Teams</option>
                 {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
               </Select>
 
               <Select
                 value={filters.isActive === undefined ? '' : filters.isActive ? 'true' : 'false'}
                 onChange={e => setFilters(f => ({ ...f, isActive: e.target.value === '' ? undefined : e.target.value === 'true', page: 1 }))}
+                className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
               >
                 <option value="">All Status</option>
                 <option value="true">Active</option>
@@ -257,7 +266,7 @@ export default function EmployeesPage() {
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Employee</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Role</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Department</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Team</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Contact</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Actions</th>
@@ -277,7 +286,7 @@ export default function EmployeesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <Badge variant={getRoleBadgeVariant(user.role)}>
-                        {user.role.replace(/_/g, ' ')}
+                        {getRoleLabel(user.role)}
                       </Badge>
                     </td>
                     <td className="px-4 py-3">
@@ -288,16 +297,16 @@ export default function EmployeesPage() {
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex flex-col gap-1 text-xs text-slate-600">
+                      <div className="flex flex-col gap-1 text-xs text-slate-700 dark:text-slate-200">
                         {user.email && (
                           <div className="flex items-center gap-1">
-                            <Mail className="w-3 h-3 text-slate-400" />
+                            <Mail className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                             <span>{user.email}</span>
                           </div>
                         )}
                         {user.phone && (
                           <div className="flex items-center gap-1">
-                            <Phone className="w-3 h-3 text-slate-400" />
+                            <Phone className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                             <span>{user.phone}</span>
                           </div>
                         )}
@@ -386,19 +395,20 @@ export default function EmployeesPage() {
             label="Role"
             value={formData.role}
             onChange={e => setFormData(f => ({ ...f, role: e.target.value as UserRole }))}
+            className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
           >
-            <option value="EMPLOYEE">Employee</option>
-            <option value="TEAM_LEAD">Team Lead</option>
             <option value="ADMIN">Admin</option>
-            <option value="SUPER_ADMIN">Super Admin</option>
+            <option value="TEAM_LEAD">Team Lead</option>
+            <option value="EMPLOYEE">Member</option>
           </Select>
 
           <Select
-            label="Department"
+            label="Team"
             value={formData.departmentId}
             onChange={e => setFormData(f => ({ ...f, departmentId: e.target.value }))}
+            className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
           >
-            <option value="">No Department</option>
+            <option value="">No Team</option>
             {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
           </Select>
 
@@ -407,7 +417,7 @@ export default function EmployeesPage() {
               type="checkbox"
               checked={formData.isActive}
               onChange={e => setFormData(f => ({ ...f, isActive: e.target.checked }))}
-              className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-2 focus:ring-teal-500"
+              className="w-4 h-4 text-[#e89b1a] rounded border-slate-300 focus:ring-2 focus:ring-[#e89b1a]"
             />
             <span className="text-sm text-slate-700 dark:text-slate-300">Active</span>
           </label>

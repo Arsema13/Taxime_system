@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/Button';
 import { Input, Textarea, Select } from '@/components/ui/Input';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card, EmptyState, ErrorState } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { Pagination } from '@/components/ui/Pagination';
 import { Modal, ConfirmDialog } from '@/components/ui/Modal';
 import { Avatar, AvatarGroup } from '@/components/ui/Avatar';
@@ -154,8 +153,9 @@ export default function TeamsPage() {
           <Select
             value={filters.departmentId ?? ''}
             onChange={e => setFilters(f => ({ ...f, departmentId: e.target.value || undefined, page: 1 }))}
+            className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
           >
-            <option value="">All Departments</option>
+            <option value="">All Teams</option>
             {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
           </Select>
         </div>
@@ -280,12 +280,13 @@ export default function TeamsPage() {
           />
 
           <Select
-            label="Department"
+            label="Team"
             required
             value={formData.departmentId}
             onChange={e => setFormData(f => ({ ...f, departmentId: e.target.value }))}
+            className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
           >
-            <option value="">Select Department</option>
+            <option value="">Select Team</option>
             {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
           </Select>
 
@@ -293,6 +294,7 @@ export default function TeamsPage() {
             label="Team Lead"
             value={formData.leadId}
             onChange={e => setFormData(f => ({ ...f, leadId: e.target.value }))}
+            className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
           >
             <option value="">No Lead</option>
             {Array.isArray(users) && users.map(u => (
