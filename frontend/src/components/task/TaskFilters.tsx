@@ -1,8 +1,8 @@
 import React from 'react';
-import { Search, X, SlidersHorizontal } from 'lucide-react';
+import { Search, X, Calendar } from 'lucide-react';
 import { Input, Select } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import type { TaskQueryParams, TaskStatus, TaskPriority, TaskCategory } from '@/types';
+import type { TaskQueryParams } from '@/types';
 
 interface TaskFiltersProps {
   filters: TaskQueryParams;
@@ -63,7 +63,7 @@ export function TaskFilters({ filters, onChange, onReset, departments = [], team
     <div className="flex flex-col gap-3">
       {/* Search bar */}
       <div className="flex items-center gap-2">
-        <div className="flex-1">
+        <div className="w-full max-w-sm">
           <Input
             placeholder="Search tasks…"
             value={filters.search ?? ''}
@@ -125,6 +125,7 @@ export function TaskFilters({ filters, onChange, onReset, departments = [], team
               value={filters.fromDate ?? ''}
               onChange={(e) => set('fromDate', e.target.value)}
               placeholder="From"
+              icon={<Calendar className="w-4 h-4" />}
             />
           </div>
           <div className="flex gap-2">
@@ -133,6 +134,7 @@ export function TaskFilters({ filters, onChange, onReset, departments = [], team
               value={filters.toDate ?? ''}
               onChange={(e) => set('toDate', e.target.value)}
               placeholder="To"
+              icon={<Calendar className="w-4 h-4" />}
             />
           </div>
         </div>
