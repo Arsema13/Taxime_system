@@ -20,9 +20,9 @@ services:
           name: taxime-db
           property: connectionString
       - key: JWT_SECRET
-        generateValue: true
+        value: 80620aa415e3d2d695de415a07656d062ef14399d3d103e2094ba58c29e57eea64b20daccf6b78af5fa411fc19db4157ac152797cd2be32795c09fded071c2fa
       - key: JWT_REFRESH_SECRET
-        generateValue: true
+        value: 6a85fc3a481ace1c35eabdefd3ab0b91a98c0d8abfa12d89a8be25eb42aefaf25a306b5d8b540f9a95920361bf760a47972153ac2c15ac22f3660fe0e0a17edb
       - key: JWT_EXPIRES_IN
         value: 15m
       - key: JWT_REFRESH_EXPIRES_IN

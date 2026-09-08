@@ -151,11 +151,44 @@ startJobScheduler();
 
 const PORT = config.port;
 
-httpServer.listen(PORT, () => {
+async function autoSeed() {
+  try {
+    const userCount = await prisma.user.count();
+    if (userCount > 0) return;
+
+    console.log('[Seed] No users found, seeding database...');
+    const hashedPassword = await bcrypt.hash('password123', 12);
+
+    const management = await prisma.department.create({ data: { name: 'Management', description: 'Executive management' } });
+    const operations = await prisma.department.create({ data: { name: 'Operations', description: 'Transport operations' } });
+    const finance = await prisma.department.create({ data: { name: 'Finance', description: 'Financial operations' } });
+    const hr = await prisma.department.create({ data: { name: 'Human Resources', description: 'HR management' } });
+    const technology = await prisma.department.create({ data: { name: 'Technology', description: 'IT and software' } });
+    const marketing = await prisma.department.create({ data: { name: 'Marketing', description: 'Marketing and outreach' } });
+
+    const dispatch = await prisma.team.create({ data: { name: 'Dispatch', departmentId: operations.id } });
+    const fleetOps = await prisma.team.create({ data: { name: 'Fleet Operations', departmentId: operations.id } });
+    const customerSupport = await prisma.team.create({ data: { name: 'Customer Support', departmentId: operations.id } });
+    const softwareTeam = await prisma.team.create({ data: { name: 'Software', departmentId: technology.id } });
+
+    await prisma.user.create({ data: { email: 'commander@gmail.com', password: hashedPassword, firstName: 'Abebe', lastName: 'Kebede', role: 'ADMIN', position: 'Operations Director', departmentId: management.id, status: 'ACTIVE', emailVerified: true } });
+    await prisma.user.create({ data: { email: 'hana@gmail.com', password: hashedPassword, firstName: 'Hana', lastName: 'Tadesse', role: 'TEAM_LEAD', position: 'Team Lead - Operations', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE', emailVerified: true } });
+    await prisma.user.create({ data: { email: 'arsema@gmail.com', password: hashedPassword, firstName: 'Arsema', lastName: 'Mulugeta', role: 'MEMBER', position: 'Operations Specialist', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE', emailVerified: true } });
+    await prisma.user.create({ data: { email: 'sara@gmail.com', password: hashedPassword, firstName: 'Sara', lastName: 'Bekele', role: 'MEMBER', position: 'Fleet Coordinator', departmentId: operations.id, teamId: fleetOps.id, status: 'ACTIVE', emailVerified: true } });
+    await prisma.user.create({ data: { email: 'meron@gmail.com', password: hashedPassword, firstName: 'Meron', lastName: 'Abebe', role: 'MEMBER', position: 'Software Developer', departmentId: technology.id, teamId: softwareTeam.id, status: 'ACTIVE', emailVerified: true } });
+
+    console.log('[Seed] Database seeded successfully!');
+  } catch (error: any) {
+    console.error('[Seed] Auto-seed failed:', error.message);
+  }
+}
+
+httpServer.listen(PORT, async () => {
   console.log(`Taxime API server running on port ${PORT}`);
   console.log(`Environment: ${config.nodeEnv}`);
   console.log(`Socket.IO initialized`);
   console.log(`Background jobs started`);
+  await autoSeed();
 });
 
 export default app;
