@@ -184,6 +184,7 @@ async function autoSeed() {
 httpServer.listen(PORT, async () => {
   console.log(`Taxime API server running on port ${PORT}`);
   console.log(`Environment: ${config.nodeEnv}`);
+  console.log(`Database: ${process.env.DATABASE_URL ? process.env.DATABASE_URL.split('@')[1]?.split('/')[0] ?? 'connected' : 'LOCAL (no DATABASE_URL set!)'}`);
   console.log(`Socket.IO initialized`);
   console.log(`Background jobs started`);
   await autoSeed();
