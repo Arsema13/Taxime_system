@@ -54,6 +54,7 @@ export interface ChangePasswordPayload {
 export interface AuthResponse {
   user: AuthUser;
   accessToken: string;
+  refreshToken?: string;
 }
 
 export interface UserSession {

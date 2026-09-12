@@ -36,6 +36,10 @@ export class AuthSessionController {
     try {
       const token = req.body.token || req.cookies?.refreshToken;
       const result = await authService.refreshToken(token);
+      res.cookie('refreshToken', result.refreshToken, {
+        httpOnly: true, secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none', maxAge: 7 * 24 * 60 * 60 * 1000, path: '/',
+      });
       res.json(successResponse('Token refreshed', result));
     } catch (error) { next(error); }
   }

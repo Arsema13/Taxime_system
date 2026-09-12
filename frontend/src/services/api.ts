@@ -47,13 +47,18 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
+        const storedRefreshToken = localStorage.getItem('refreshToken');
         const { data } = await axios.post(
           `${BASE_URL}/auth/refresh-token`,
-          {},
+          { token: storedRefreshToken },
           { withCredentials: true },
         );
         const newToken: string = data.data?.accessToken ?? data.accessToken;
+        const newRefreshToken: string = data.data?.refreshToken ?? data.refreshToken;
         localStorage.setItem('accessToken', newToken);
+        if (newRefreshToken) {
+          localStorage.setItem('refreshToken', newRefreshToken);
+        }
         api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
         processQueue(null, newToken);
         original.headers.Authorization = `Bearer ${newToken}`;
@@ -61,6 +66,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         window.dispatchEvent(new CustomEvent('auth:logout'));
         return Promise.reject(refreshError);
       } finally {

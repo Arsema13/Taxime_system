@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       setUser(null);
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
     }
   }, []);
 
@@ -61,8 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (payload: LoginPayload) => {
     try {
-      const { user: u, accessToken } = await authService.login(payload);
+      const { user: u, accessToken, refreshToken } = await authService.login(payload);
       localStorage.setItem('accessToken', accessToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       setUser(u);
     } catch (err) {
       throw err;
@@ -72,6 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     try { await authService.logout(); } catch { /* ignore */ }
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     setUser(null);
   }, []);
 
