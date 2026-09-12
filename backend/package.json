@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "postinstall": "npx prisma generate",
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "npx prisma migrate deploy && node dist/app.js",
     "lint": "eslint src --ext .ts",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
