@@ -33,7 +33,10 @@ router.post('/:id/approve', authorize('ADMIN', 'TEAM_LEAD'), taskController.appr
 router.post('/:id/reject', authorize('ADMIN', 'TEAM_LEAD'), taskController.rejectTask);
 
 // Subtasks
+router.get('/:id/subtasks', taskController.getSubtasks);
 router.post('/:id/subtasks', validate(subtaskSchema), taskController.addSubtask);
+router.put('/:id/subtasks/:subtaskId', taskController.updateSubtask);
+router.delete('/:id/subtasks/:subtaskId', taskController.deleteSubtask);
 router.put('/subtasks/:subtaskId/toggle', taskController.toggleSubtask);
 
 // Dependencies

@@ -4,7 +4,7 @@ import type { Notification, NotificationPreferences, PaginatedResponse } from '@
 export const notificationService = {
   async getNotifications(params: { page?: number; limit?: number; unreadOnly?: boolean } = {}): Promise<PaginatedResponse<Notification>> {
     const { data } = await api.get('/notifications', { params });
-    return data;
+    return data.data ?? data;
   },
 
   async getUnreadCount(): Promise<{ count: number }> {

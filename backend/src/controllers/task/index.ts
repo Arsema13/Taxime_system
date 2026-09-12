@@ -28,7 +28,10 @@ export class TaskController {
   approveTask = this.statusCtrl.approveTask.bind(this.statusCtrl);
   rejectTask = this.statusCtrl.rejectTask.bind(this.statusCtrl);
   addSubtask = this.subtaskCtrl.addSubtask.bind(this.subtaskCtrl);
+  getSubtasks = this.subtaskCtrl.getSubtasks.bind(this.subtaskCtrl);
+  updateSubtask = this.subtaskCtrl.updateSubtask.bind(this.subtaskCtrl);
   toggleSubtask = this.subtaskCtrl.toggleSubtask.bind(this.subtaskCtrl);
+  deleteSubtask = this.subtaskCtrl.deleteSubtask.bind(this.subtaskCtrl);
   addDependency = this.dependencyCtrl.addDependency.bind(this.dependencyCtrl);
   removeDependency = this.dependencyCtrl.removeDependency.bind(this.dependencyCtrl);
   toggleFavorite = this.extraCtrl.toggleFavorite.bind(this.extraCtrl);

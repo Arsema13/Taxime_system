@@ -106,41 +106,41 @@ export const taskService = {
 
   // ── Comments ───────────────────────────────────────────────────────────────
   async getComments(taskId: string): Promise<Comment[]> {
-    const { data } = await api.get(`/tasks/${taskId}/comments`);
+    const { data } = await api.get(`/comments/task/${taskId}`);
     return data.data ?? data;
   },
 
   async createComment(taskId: string, content: string, parentId?: string): Promise<Comment> {
-    const { data } = await api.post(`/tasks/${taskId}/comments`, { content, parentId });
+    const { data } = await api.post(`/comments/task/${taskId}`, { content, parentId });
     return data.data ?? data;
   },
 
   async updateComment(taskId: string, commentId: string, content: string): Promise<Comment> {
-    const { data } = await api.put(`/tasks/${taskId}/comments/${commentId}`, { content });
+    const { data } = await api.put(`/comments/${commentId}`, { content });
     return data.data ?? data;
   },
 
   async deleteComment(taskId: string, commentId: string): Promise<void> {
-    await api.delete(`/tasks/${taskId}/comments/${commentId}`);
+    await api.delete(`/comments/${commentId}`);
   },
 
   // ── Attachments ────────────────────────────────────────────────────────────
   async getAttachments(taskId: string): Promise<Attachment[]> {
-    const { data } = await api.get(`/tasks/${taskId}/attachments`);
+    const { data } = await api.get(`/attachments/task/${taskId}`);
     return data.data ?? data;
   },
 
   async uploadAttachment(taskId: string, file: File): Promise<Attachment> {
     const form = new FormData();
     form.append('file', file);
-    const { data } = await api.post(`/tasks/${taskId}/attachments`, form, {
+    const { data } = await api.post(`/attachments/task/${taskId}`, form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return data.data ?? data;
   },
 
   async deleteAttachment(taskId: string, attachmentId: string): Promise<void> {
-    await api.delete(`/tasks/${taskId}/attachments/${attachmentId}`);
+    await api.delete(`/attachments/${attachmentId}`);
   },
 
   // ── Subtasks ───────────────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ export const taskService = {
 
   // ── Activity ───────────────────────────────────────────────────────────────
   async getActivity(taskId: string): Promise<ActivityLog[]> {
-    const { data } = await api.get(`/tasks/${taskId}/activity`);
+    const { data } = await api.get(`/activity/task/${taskId}`);
     return data.data ?? data;
   },
 
