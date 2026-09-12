@@ -99,6 +99,8 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
     }, 200);
   };
 
+  const showExpanded = isExpanded || mobileOpen;
+
   const SidebarNav = () => (
     <>
       <div className="flex items-center justify-center py-4 shrink-0">
@@ -107,8 +109,8 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
           className="flex items-center gap-2 group"
           title="Taxime Operations"
         >
-          <img src="/image.png" alt="Taxime" className="h-9 w-auto" />
-          {isExpanded && (
+          <img src="/image.png" alt="Taxime" className="h-9 w-9 rounded-full object-cover" />
+          {showExpanded && (
             <span className="text-base font-black text-white tracking-tight">Taxime</span>
           )}
         </NavLink>
@@ -127,7 +129,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
                   onMouseEnter={() => setHoveredItem(item.label)}
                   onMouseLeave={() => setHoveredItem(null)}
                   className={`relative flex items-center transition-all duration-200 ${
-                    isExpanded
+                    showExpanded
                       ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start'
                       : 'w-11 h-11 rounded-full justify-center'
                   } ${
@@ -137,7 +139,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
                   }`}
                 >
                   <span className="shrink-0">{item.icon}</span>
-                  {isExpanded && (
+                  {showExpanded && (
                     <span className="text-sm font-semibold truncate">{item.label}</span>
                   )}
                   {item.badge != null && item.badge > 0 && (
@@ -149,7 +151,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
                   )}
                 </NavLink>
 
-                {!isExpanded && hoveredItem === item.label && (
+                {!showExpanded && hoveredItem === item.label && (
                   <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#0B1628] dark:bg-white text-white dark:text-[#0B1628] text-xs font-semibold rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
                     {item.label}
                     <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-2 h-2 bg-[#0B1628] dark:bg-white rotate-45" />
@@ -175,13 +177,13 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
           onMouseLeave={() => setHoveredItem(null)}
           title="Create New Task"
           className={`flex items-center transition-all duration-200 ${
-            isExpanded
+            showExpanded
               ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start bg-[#e89b1a] text-[#0B1628] hover:bg-[#f4b728] font-bold'
               : 'w-10 h-10 rounded-full justify-center bg-[#e89b1a] text-[#0B1628] hover:bg-[#f4b728] hover:scale-105'
           }`}
         >
           <Plus size={18} />
-          {isExpanded && (
+          {showExpanded && (
             <span className="text-sm font-bold">Create Task</span>
           )}
         </NavLink>
@@ -193,13 +195,13 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
         onMouseLeave={() => setHoveredItem(null)}
         title="Sign out"
         className={`flex items-center transition-all duration-200 ${
-          isExpanded
+          showExpanded
             ? 'w-full px-3 py-2.5 rounded-xl gap-3 justify-start text-white/50 hover:text-white hover:bg-white/10'
             : 'w-10 h-10 rounded-full justify-center text-white/50 hover:text-white hover:bg-white/10'
         }`}
       >
         <LogOut size={19} />
-        {isExpanded && (
+        {showExpanded && (
           <span className="text-sm font-semibold">Sign Out</span>
         )}
       </button>
