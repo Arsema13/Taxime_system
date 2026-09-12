@@ -51,9 +51,14 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Seed endpoint (supports ?force=true to reset & reseed)
+// Seed endpoint — protected by SEED_SECRET env var (only for initial setup)
 app.get('/api/seed', async (req, res) => {
   try {
+    const secret = process.env.SEED_SECRET;
+    if (!secret || req.query.secret !== secret) {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
     const force = req.query.force === 'true';
     const userCount = await prisma.user.count();
     if (userCount > 0 && !force) {
@@ -61,7 +66,6 @@ app.get('/api/seed', async (req, res) => {
     }
 
     if (force) {
-      // Clean up in reverse dependency order
       await prisma.auditLog.deleteMany().catch(() => {});
       await prisma.activityLog.deleteMany().catch(() => {});
       await prisma.notification.deleteMany().catch(() => {});
@@ -91,26 +95,20 @@ app.get('/api/seed', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash('password123', 12);
+    const management  = await prisma.department.create({ data: { name: 'Management',      description: 'Executive management' } });
+    const operations  = await prisma.department.create({ data: { name: 'Operations',      description: 'Transport operations' } });
+    const technology  = await prisma.department.create({ data: { name: 'Technology',      description: 'IT and software' } });
+    const dispatch    = await prisma.team.create({ data: { name: 'Dispatch',       departmentId: operations.id } });
+    const fleetOps    = await prisma.team.create({ data: { name: 'Fleet Operations', departmentId: operations.id } });
+    const softwareTeam = await prisma.team.create({ data: { name: 'Software',      departmentId: technology.id } });
 
-    const management = await prisma.department.create({ data: { name: 'Management', description: 'Executive management' } });
-    const operations = await prisma.department.create({ data: { name: 'Operations', description: 'Transport operations' } });
-    const finance = await prisma.department.create({ data: { name: 'Finance', description: 'Financial operations' } });
-    const hr = await prisma.department.create({ data: { name: 'Human Resources', description: 'HR management' } });
-    const technology = await prisma.department.create({ data: { name: 'Technology', description: 'IT and software' } });
-    const marketing = await prisma.department.create({ data: { name: 'Marketing', description: 'Marketing and outreach' } });
+    await prisma.user.create({ data: { email: 'commander@gmail.com', password: hashedPassword, firstName: 'Abebe',  lastName: 'Kebede',   role: 'ADMIN' as any,     position: 'Operations Director',      departmentId: management.id,  status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'hana@gmail.com',      password: hashedPassword, firstName: 'Hana',   lastName: 'Tadesse',  role: 'TEAM_LEAD' as any, position: 'Team Lead - Operations',   departmentId: operations.id,  teamId: dispatch.id,    status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'arsema@gmail.com',    password: hashedPassword, firstName: 'Arsema', lastName: 'Mulugeta', role: 'MEMBER' as any,    position: 'Operations Specialist',    departmentId: operations.id,  teamId: dispatch.id,    status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'sara@gmail.com',      password: hashedPassword, firstName: 'Sara',   lastName: 'Bekele',   role: 'MEMBER' as any,    position: 'Fleet Coordinator',        departmentId: operations.id,  teamId: fleetOps.id,    status: 'ACTIVE' as any, emailVerified: true } });
+    await prisma.user.create({ data: { email: 'meron@gmail.com',     password: hashedPassword, firstName: 'Meron',  lastName: 'Abebe',    role: 'MEMBER' as any,    position: 'Software Developer',       departmentId: technology.id,  teamId: softwareTeam.id, status: 'ACTIVE' as any, emailVerified: true } });
 
-    const dispatch = await prisma.team.create({ data: { name: 'Dispatch', departmentId: operations.id } });
-    const fleetOps = await prisma.team.create({ data: { name: 'Fleet Operations', departmentId: operations.id } });
-    const customerSupport = await prisma.team.create({ data: { name: 'Customer Support', departmentId: operations.id } });
-    const softwareTeam = await prisma.team.create({ data: { name: 'Software', departmentId: technology.id } });
-
-    await prisma.user.create({ data: { email: 'commander@gmail.com', password: hashedPassword, firstName: 'Abebe', lastName: 'Kebede', role: 'ADMIN' as any, position: 'Operations Director', departmentId: management.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'hana@gmail.com', password: hashedPassword, firstName: 'Hana', lastName: 'Tadesse', role: 'TEAM_LEAD' as any, position: 'Team Lead - Operations', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'arsema@gmail.com', password: hashedPassword, firstName: 'Arsema', lastName: 'Mulugeta', role: 'MEMBER' as any, position: 'Operations Specialist', departmentId: operations.id, teamId: dispatch.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'sara@gmail.com', password: hashedPassword, firstName: 'Sara', lastName: 'Bekele', role: 'MEMBER' as any, position: 'Fleet Coordinator', departmentId: operations.id, teamId: fleetOps.id, status: 'ACTIVE' as any, emailVerified: true } });
-    await prisma.user.create({ data: { email: 'meron@gmail.com', password: hashedPassword, firstName: 'Meron', lastName: 'Abebe', role: 'MEMBER' as any, position: 'Software Developer', departmentId: technology.id, teamId: softwareTeam.id, status: 'ACTIVE' as any, emailVerified: true } });
-
-    res.json({ message: 'Database seeded successfully! You can now login with commander@gmail.com, hana@gmail.com, arsema@gmail.com / password123' });
+    res.json({ message: 'Database seeded successfully!' });
   } catch (error: any) {
     res.status(500).json({ message: 'Seeding failed', error: error.message });
   }
