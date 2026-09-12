@@ -8,6 +8,7 @@ router.use(authenticate);
 
 router.get('/task/:taskId', activityController.getByTask);
 router.get('/recent', activityController.getRecentActivity);
+router.get('/export', authorize('ADMIN', 'TEAM_LEAD'), activityController.exportActivities);
 router.get('/audit', authorize('ADMIN'), activityController.getAuditLogs);
 
 export default router;

@@ -15,16 +15,84 @@ export class ActivityController {
 
   async getRecentActivity(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const limit = parseInt(req.query.limit as string) || 20;
+      const { page, limit, userId, action, search, fromDate, toDate } = req.query as any;
+      const take = parseInt(limit) || 50;
+      const skip = ((parseInt(page) || 1) - 1) * take;
+
+      const where: any = {};
+      if (userId) where.userId = userId;
+      if (action) where.action = action;
+      if (search) where.OR = [
+        { action: { contains: search, mode: 'insensitive' } },
+        { task: { title: { contains: search, mode: 'insensitive' } } },
+      ];
+      if (fromDate || toDate) {
+        where.createdAt = {};
+        if (fromDate) where.createdAt.gte = new Date(fromDate);
+        if (toDate)   where.createdAt.lte = new Date(toDate);
+      }
+
+      const [logs, total] = await Promise.all([
+        prisma.activityLog.findMany({
+          where, skip, take,
+          include: {
+            user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+            task: { select: { id: true, title: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.activityLog.count({ where }),
+      ]);
+
+      res.json(successResponse('Activity logs', {
+        data: logs,
+        pagination: { total, page: parseInt(page) || 1, limit: take, totalPages: Math.ceil(total / take) },
+      }));
+    } catch (error) { next(error); }
+  }
+
+  async exportActivities(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { userId, action, search, fromDate, toDate } = req.query as any;
+      const where: any = {};
+      if (userId) where.userId = userId;
+      if (action) where.action = action;
+      if (search) where.OR = [
+        { action: { contains: search, mode: 'insensitive' } },
+        { task: { title: { contains: search, mode: 'insensitive' } } },
+      ];
+      if (fromDate || toDate) {
+        where.createdAt = {};
+        if (fromDate) where.createdAt.gte = new Date(fromDate);
+        if (toDate)   where.createdAt.lte = new Date(toDate);
+      }
+
       const logs = await prisma.activityLog.findMany({
+        where, take: 5000,
         include: {
-          user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
-          task: { select: { id: true, title: true } },
+          user: { select: { firstName: true, lastName: true } },
+          task: { select: { title: true } },
         },
         orderBy: { createdAt: 'desc' },
-        take: limit,
       });
-      res.json(successResponse('Recent activity', logs));
+
+      // Build clean CSV
+      const rows = [
+        ['Date & Time', 'User', 'Action', 'Task', 'Details'],
+        ...logs.map((l: any) => [
+          new Date(l.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }),
+          l.user ? `${l.user.firstName} ${l.user.lastName}` : 'System',
+          l.action.replace(/_/g, ' '),
+          l.task?.title || '—',
+          l.details ? Object.entries(l.details as object).map(([k, v]) => `${k.replace(/_/g, ' ')}: ${v}`).join('; ') : '—',
+        ]),
+      ];
+
+      const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="activity-log-${new Date().toISOString().split('T')[0]}.csv"`);
+      res.send(csv);
     } catch (error) { next(error); }
   }
 
