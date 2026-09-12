@@ -132,7 +132,9 @@ export default function EmployeesPage() {
 
   const resetFilters = () => {
     setFilters({ page: 1, limit: 20 });
-  }; = (role: UserRole) => {
+  };
+
+  const getRoleBadgeVariant = (role: UserRole) => {
     switch (role) {
       case 'SUPER_ADMIN': return 'danger';
       case 'ADMIN': return 'warning';
