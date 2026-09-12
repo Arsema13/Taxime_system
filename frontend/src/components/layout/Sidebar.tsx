@@ -104,17 +104,26 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
       <div className="flex items-center justify-center py-4 shrink-0">
         <NavLink
           to="/dashboard"
-          className="flex items-center gap-2 group"
+          className="flex items-center gap-2.5 group"
           title="Taxime Operations"
         >
-          <img src="/image.png" alt="Taxime" className="h-9 w-9 rounded-full object-cover" />
+          <div className="relative shrink-0">
+            <img
+              src="/image.png"
+              alt="Taxime"
+              className="h-9 w-9 rounded-xl object-cover ring-2 ring-[#e89b1a]/40 group-hover:ring-[#e89b1a] transition-all duration-200"
+            />
+          </div>
           {showExpanded && (
-            <span className="text-base font-black text-white tracking-tight">Taxime</span>
+            <div className="flex flex-col leading-none">
+              <span className="text-base font-black text-white tracking-tight">Taxime</span>
+              <span className="text-[9px] font-semibold text-[#e89b1a]/70 tracking-widest uppercase">Operations</span>
+            </div>
           )}
         </NavLink>
       </div>
 
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 min-h-0 overscroll-contain">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 min-h-0 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div className="flex flex-col items-center gap-1.5">
           {allowedNav.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/dashboard' && location.pathname.startsWith(item.to));

@@ -6,15 +6,15 @@ export async function findAllTask(query: {
   page?: number; limit?: number; search?: string; status?: string; priority?: string;
   category?: string; departmentId?: string; teamId?: string; assigneeId?: string;
   creatorId?: string; dueDateFrom?: string; dueDateTo?: string; isArchived?: string;
-  tags?: string; sortBy?: string; sortOrder?: string; userId?: string; userRole?: string;
+  isFavorite?: string; tags?: string; sortBy?: string; sortOrder?: string; userId?: string; userRole?: string;
 }): Promise<PaginatedResponse<any>> {
   const {
     page = 1, limit = 20, search, status, priority, category, departmentId,
-    teamId, assigneeId, creatorId, dueDateFrom, dueDateTo, isArchived,
+    teamId, assigneeId, creatorId, dueDateFrom, dueDateTo, isArchived, isFavorite,
     tags, sortBy = 'createdAt', sortOrder = 'desc', userId, userRole,
   } = query;
   const skip = (page - 1) * limit;
-  const where: any = buildWhereClause({ userRole, userId, search, status, priority, category, departmentId, teamId, assigneeId, creatorId, isArchived, dueDateFrom, dueDateTo, tags });
+  const where: any = buildWhereClause({ userRole, userId, search, status, priority, category, departmentId, teamId, assigneeId, creatorId, isArchived, isFavorite, dueDateFrom, dueDateTo, tags });
 
   const [tasks, total] = await Promise.all([
     prisma.task.findMany({
@@ -47,7 +47,7 @@ export async function findAllTask(query: {
 }
 
 function buildWhereClause(filters: any): any {
-  const { userRole, userId, search, status, priority, category, departmentId, teamId, assigneeId, creatorId, isArchived, dueDateFrom, dueDateTo, tags } = filters;
+  const { userRole, userId, search, status, priority, category, departmentId, teamId, assigneeId, creatorId, isArchived, isFavorite, dueDateFrom, dueDateTo, tags } = filters;
   const where: any = {};
 
   if (userRole === 'TEAM_LEAD' && userId) {
@@ -69,6 +69,7 @@ function buildWhereClause(filters: any): any {
   if (assigneeId) where.assignees = { some: { userId: assigneeId } };
   if (creatorId) where.creatorId = creatorId;
   if (isArchived !== undefined) where.isArchived = isArchived === 'true';
+  if (isFavorite !== undefined) where.isFavorite = isFavorite === 'true';
   if (dueDateFrom || dueDateTo) {
     where.dueDate = {};
     if (dueDateFrom) where.dueDate.gte = new Date(dueDateFrom);

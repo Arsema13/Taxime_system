@@ -36,10 +36,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     if (!isAuthenticated) return;
     setIsLoading(true);
     try {
-      const res  = await notificationService.getNotifications({ limit: 20 });
-      const data = res.data ?? [];
-      setNotifications(data);
-      setUnreadCount(data.filter((n) => !n.isRead).length);
+      const res = await notificationService.getNotifications({ limit: 20 });
+      // backend returns plain array wrapped in { data: [...] }
+      const list: Notification[] = Array.isArray(res) ? res : ((res as any).data ?? []);
+      setNotifications(list);
+      setUnreadCount(list.filter((n) => !n.isRead).length);
     } catch {
       // silently ignore — don't break UI
     } finally {

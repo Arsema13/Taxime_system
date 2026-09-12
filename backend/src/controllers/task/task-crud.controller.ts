@@ -7,12 +7,12 @@ export class TaskCrudController {
   async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { page, limit, search, status, priority, category, departmentId, teamId,
-        assigneeId, creatorId, dueDateFrom, dueDateTo, isArchived, tags,
+        assigneeId, creatorId, dueDateFrom, dueDateTo, isArchived, isFavorite, tags,
         sortBy, sortOrder } = req.query as any;
       const result = await taskService.findAll({
         page: parseInt(page) || 1, limit: parseInt(limit) || 20, search, status, priority,
         category, departmentId, teamId, assigneeId, creatorId, dueDateFrom, dueDateTo,
-        isArchived, tags, sortBy, sortOrder,
+        isArchived, isFavorite, tags, sortBy, sortOrder,
         userId: req.user!.id, userRole: req.user!.role,
       });
       res.json(successResponse('Tasks retrieved', result));

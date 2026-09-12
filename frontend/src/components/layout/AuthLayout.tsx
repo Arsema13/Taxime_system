@@ -13,9 +13,18 @@ export function AuthLayout() {
 
       <div className="relative w-full max-w-md animate-fade-in z-10">
         <div className="text-center mb-6">
-          <img src="/image.png" alt="Taxime Logo" className="h-16 w-16 rounded-full object-cover mb-3 mx-auto hover:scale-105 transition-transform duration-200" />
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0B1628] dark:text-white tracking-tight">Taxime</h1>
-          <p className="text-[#0B1628]/50 dark:text-white/40 mt-1 text-xs sm:text-sm font-medium">Logistics & Operations Management</p>
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <img
+              src="/image.png"
+              alt="Taxime Logo"
+              className="h-14 w-14 rounded-2xl object-cover ring-4 ring-[#e89b1a]/30 shadow-lg shadow-[#e89b1a]/10 hover:scale-105 transition-transform duration-200"
+            />
+            <div className="text-left">
+              <h1 className="text-3xl font-black text-[#0B1628] dark:text-white tracking-tight leading-none">Taxime</h1>
+              <p className="text-[10px] font-bold text-[#e89b1a] tracking-widest uppercase mt-0.5">Operations</p>
+            </div>
+          </div>
+          <p className="text-[#0B1628]/50 dark:text-white/40 text-xs sm:text-sm font-medium">Logistics & Operations Management</p>
         </div>
 
         <div className="bg-white dark:bg-[#111d32] rounded-[28px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.06)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] border border-slate-200/70 dark:border-white/5 p-6 sm:p-8">
