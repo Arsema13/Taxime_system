@@ -17,7 +17,7 @@ export function AuthLayout() {
             <img
               src="/image.png"
               alt="Taxime Logo"
-              className="h-14 w-14 rounded-2xl object-cover ring-4 ring-[#e89b1a]/30 shadow-lg shadow-[#e89b1a]/10 hover:scale-105 transition-transform duration-200"
+              className="h-14 w-14 rounded-2xl object-contain bg-white ring-4 ring-[#e89b1a]/30 shadow-lg shadow-[#e89b1a]/10 hover:scale-105 transition-transform duration-200"
             />
             <div className="text-left">
               <h1 className="text-3xl font-black text-[#0B1628] dark:text-white tracking-tight leading-none">Taxime</h1>

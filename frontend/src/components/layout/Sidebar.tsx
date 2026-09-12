@@ -111,7 +111,7 @@ export function Sidebar({ collapsed: _collapsed, onToggle: _onToggle, mobileOpen
             <img
               src="/image.png"
               alt="Taxime"
-              className="h-9 w-9 rounded-xl object-cover ring-2 ring-[#e89b1a]/40 group-hover:ring-[#e89b1a] transition-all duration-200"
+              className="h-9 w-9 rounded-xl object-contain bg-white ring-2 ring-[#e89b1a]/40 group-hover:ring-[#e89b1a] transition-all duration-200"
             />
           </div>
           {showExpanded && (
