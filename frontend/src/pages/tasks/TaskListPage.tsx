@@ -29,8 +29,17 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
   const [error, setError] = useState(false);
   const [view, setView] = useState<'list' | 'kanban'>('list');
 
+  // Build mode-specific filters based on user role
+  const getModeFilters = useCallback((u: typeof user): Partial<TaskQueryParams> => {
+    if (!myTasksMode || !u) return {};
+    if (u.role === 'ADMIN') return { creatorId: u.id };
+    if (u.role === 'TEAM_LEAD' && u.teamId) return { teamId: u.teamId };
+    // MEMBER: show tasks assigned to them
+    return { assigneeId: u.id };
+  }, [myTasksMode]);
+
   // Parse filters from URL
-  const getFiltersFromURL = (): TaskQueryParams => {
+  const getFiltersFromURL = useCallback((u: typeof user): TaskQueryParams => {
     const f: TaskQueryParams = { page: 1, limit: 12 };
     if (searchParams.get('page')) f.page = Number(searchParams.get('page'));
     if (searchParams.get('search')) f.search = searchParams.get('search')!;
@@ -43,20 +52,19 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
     if (searchParams.get('fromDate')) f.fromDate = searchParams.get('fromDate')!;
     if (searchParams.get('toDate')) f.toDate = searchParams.get('toDate')!;
 
-    // Mode-specific filters
-    if (myTasksMode) {
-      if (user?.role === 'ADMIN') {
-        f.creatorId = user?.id;
-      } else if (user?.role === 'TEAM_LEAD' && user?.teamId) {
-        f.teamId = user.teamId;
-      }
-    }
+    Object.assign(f, getModeFilters(u));
     if (favoritesMode) f.isFavorite = true;
 
     return f;
-  };
+  }, [searchParams, getModeFilters, favoritesMode]);
 
-  const [filters, setFilters] = useState<TaskQueryParams>(getFiltersFromURL());
+  const [filters, setFilters] = useState<TaskQueryParams>(() => getFiltersFromURL(user));
+
+  // Re-apply mode filters when user loads (e.g. after page reload restores session)
+  useEffect(() => {
+    if (!myTasksMode && !favoritesMode) return;
+    setFilters(prev => ({ ...prev, ...getModeFilters(user) }));
+  }, [user, myTasksMode, favoritesMode, getModeFilters]);
 
   // Update URL when filters change
   const updateFilters = useCallback((newFilters: TaskQueryParams) => {
@@ -125,11 +133,7 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
           filters={filters}
           onChange={updateFilters}
           onReset={() => {
-            const resetFilters: TaskQueryParams = { page: 1, limit: 12 };
-            if (myTasksMode) {
-              if (user?.role === 'ADMIN') resetFilters.creatorId = user?.id;
-              else if (user?.role === 'TEAM_LEAD' && user?.teamId) resetFilters.teamId = user.teamId;
-            }
+            const resetFilters: TaskQueryParams = { page: 1, limit: 12, ...getModeFilters(user) };
             if (favoritesMode) resetFilters.isFavorite = true;
             updateFilters(resetFilters);
           }}
