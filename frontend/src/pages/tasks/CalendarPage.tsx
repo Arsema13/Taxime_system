@@ -86,32 +86,32 @@ export default function CalendarPage() {
       <div className="flex-1 flex flex-col bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-          <div className="flex items-center gap-3">
-            <button onClick={prevMonth} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+        <div className="flex flex-wrap items-center justify-between px-3 sm:px-5 py-2.5 sm:py-4 border-b border-slate-100 dark:border-slate-700 gap-2">
+          <div className="flex items-center gap-1 sm:gap-3">
+            <button onClick={prevMonth} className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" aria-label="Previous month">
               <ChevronLeft className="w-4 h-4 text-slate-500" />
             </button>
-            <h2 className="text-lg font-black text-slate-800 dark:text-slate-100 min-w-[160px] text-center">
+            <h2 className="text-sm sm:text-lg font-black text-slate-800 dark:text-slate-100 min-w-[120px] sm:min-w-[160px] text-center">
               {format(currentMonth, 'MMMM yyyy')}
             </h2>
-            <button onClick={nextMonth} className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+            <button onClick={nextMonth} className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" aria-label="Next month">
               <ChevronRight className="w-4 h-4 text-slate-500" />
             </button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={goToday}
-              className="px-4 py-2 text-sm font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+              className="px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
             >
               Today
             </button>
             {canCreateTask && (
               <button
                 onClick={() => navigate('/tasks/new')}
-                className="inline-flex items-center gap-1.5 bg-[#e89b1a] text-white px-4 py-2 rounded-xl text-sm font-bold shadow hover:bg-[#f4b728] transition-colors"
+                className="inline-flex items-center gap-1 sm:gap-1.5 bg-[#e89b1a] text-white px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold shadow hover:bg-[#f4b728] transition-colors"
               >
-                <Plus size={15} /> New Task
+                <Plus size={14} /> <span>New</span>
               </button>
             )}
           </div>
@@ -120,19 +120,20 @@ export default function CalendarPage() {
         {/* Day name headers */}
         <div className="grid grid-cols-7 border-b border-slate-100 dark:border-slate-700">
           {DAYS_OF_WEEK.map(d => (
-            <div key={d} className="py-2 text-center text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-              {d}
+            <div key={d} className="py-2 text-center text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              <span className="hidden sm:inline">{d}</span>
+              <span className="sm:hidden">{d.slice(0, 1)}</span>
             </div>
           ))}
         </div>
 
         {/* Calendar grid */}
         {loading ? (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 flex items-center justify-center min-h-[300px]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e89b1a]" />
           </div>
         ) : (
-          <div className="flex-1 grid grid-cols-7 grid-rows-6 overflow-hidden">
+          <div className="flex-1 grid grid-cols-7 grid-rows-6 overflow-hidden min-h-[360px] sm:min-h-[500px]">
             {days.slice(0, 42).map((day, idx) => {
               const dayTasks       = getTasksForDay(day);
               const isCurrentMonth = isSameMonth(day, currentMonth);
@@ -144,7 +145,7 @@ export default function CalendarPage() {
                   key={idx}
                   onClick={() => { setSelectedDay(day); setShowDayPanel(true); }}
                   className={[
-                    'border-r border-b border-slate-100 dark:border-slate-700/50 p-1.5 flex flex-col cursor-pointer transition-colors',
+                    'border-r border-b border-slate-100 dark:border-slate-700/50 p-1 sm:p-1.5 flex flex-col cursor-pointer transition-colors min-h-[52px] sm:min-h-[70px]',
                     !isCurrentMonth ? 'bg-slate-50/50 dark:bg-slate-900/20' : 'hover:bg-[#e89b1a]/5',
                     isSelected ? 'ring-1 ring-inset ring-[#e89b1a]/40 bg-[#e89b1a]/5' : '',
                   ].join(' ')}

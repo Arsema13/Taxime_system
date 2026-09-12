@@ -555,27 +555,27 @@ export function ModernTrackingDashboard() {
 
             {/* Segmented Progress Bar */}
             <div className="space-y-3">
-              <div className="flex items-center gap-1.5 h-11 w-full">
+              <div className="flex items-center gap-1.5 h-10 sm:h-11 w-full overflow-hidden">
                 {/* 67.86% Black Segment */}
                 <div
-                  style={{ width: '67.86%' }}
-                  className="h-full bg-slate-950 text-white rounded-l-xl px-3 flex items-center justify-start text-xs font-black"
+                  style={{ flex: 68 }}
+                  className="h-full bg-slate-950 text-white rounded-l-xl px-2 sm:px-3 flex items-center justify-start text-[11px] sm:text-xs font-black min-w-0"
                 >
-                  67.86%
+                  <span className="truncate">67.8%</span>
                 </div>
-                {/* 28.32% Coral Pink Segment */}
+                {/* 22.32% Coral Pink Segment */}
                 <div
-                  style={{ width: '28.32%' }}
-                  className="h-full bg-[#e89b1a]/5 text-[#e89b1a] px-2.5 flex items-center justify-start text-xs font-black"
+                  style={{ flex: 22 }}
+                  className="h-full bg-[#e89b1a]/10 text-[#e89b1a] px-1.5 sm:px-2.5 flex items-center justify-start text-[11px] sm:text-xs font-black min-w-0"
                 >
-                  28.32%
+                  <span className="truncate">22.3%</span>
                 </div>
-                {/* 17.67% Soft Gray Segment */}
+                {/* 9.82% Soft Gray Segment */}
                 <div
-                  style={{ width: '17.67%' }}
-                  className="h-full bg-slate-100 text-slate-600 rounded-r-xl px-2 flex items-center justify-start text-xs font-black"
+                  style={{ flex: 10 }}
+                  className="h-full bg-slate-100 text-slate-600 rounded-r-xl px-1 sm:px-2 flex items-center justify-center text-[10px] sm:text-xs font-black min-w-0"
                 >
-                  17.67%
+                  <span className="truncate">9.9%</span>
                 </div>
               </div>
 

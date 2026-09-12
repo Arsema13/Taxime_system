@@ -4,17 +4,20 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <NotificationProvider>
-            <AppRouter />
-          </NotificationProvider>
-        </AuthProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <AppRouter />
+            </NotificationProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

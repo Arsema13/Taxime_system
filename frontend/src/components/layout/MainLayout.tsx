@@ -47,8 +47,8 @@ export function MainLayout() {
           title={title}
         />
 
-        <main className="flex-1 overflow-y-auto overscroll-contain px-6 pb-6 pt-1">
-          <div className="max-w-[1700px] mx-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-3 sm:px-6 pb-6 pt-1">
+          <div className="max-w-[1700px] mx-auto w-full">
             <Outlet />
           </div>
         </main>

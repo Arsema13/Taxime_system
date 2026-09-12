@@ -53,7 +53,7 @@ export default function MemberDashboard() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0B1628] dark:text-slate-100 tracking-tight">
             Welcome back, {user?.firstName}
           </h1>
-          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-100 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
+          <div className="inline-flex items-center gap-2 bg-[#0B1628] dark:bg-slate-100 text-white dark:text-[#0B1628] px-3.5 py-1.5 rounded-full text-xs font-semibold w-fit shadow-xs dark:shadow-slate-100/10">
             <span className="w-1.5 h-1.5 rounded-full bg-[#e89b1a]" />
             {today}
           </div>

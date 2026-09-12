@@ -30,6 +30,15 @@ import savedFilterRoutes from './routes/savedFilter.routes';
 import timeTrackingRoutes from './routes/timeTracking.routes';
 import searchRoutes from './routes/search.routes';
 
+// Process crash guards to prevent server downtime
+process.on('unhandledRejection', (reason: any) => {
+  console.error('[Process] Unhandled Rejection:', reason?.message || reason);
+});
+
+process.on('uncaughtException', (err: Error) => {
+  console.error('[Process] Uncaught Exception:', err.message, err.stack);
+});
+
 const app = express();
 const httpServer = createServer(app);
 

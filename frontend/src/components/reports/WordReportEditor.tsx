@@ -91,6 +91,9 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
   const [showSendModal, setShowSendModal] = useState(false);
   const [adminNote, setAdminNote] = useState('');
 
+  // Responsive: disable zoom transform on narrow screens to prevent overflow
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+
   // Live document statistics
   const [stats, setStats] = useState({ words: 0, characters: 0, readingTime: 1 });
 
@@ -281,6 +284,13 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
       editorRef.current.innerHTML = generateInitialHtml();
       updateStats();
     }
+  }, []);
+
+  // Keep isMobile in sync with actual viewport width on resize
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const updateStats = () => {
@@ -647,48 +657,49 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
   };
 
   return (
-    <div className={`flex flex-col bg-[#e5e7eb] dark:bg-[#0f172a] select-none ${isFullscreen ? 'fixed inset-0 z-50 overflow-hidden' : 'min-h-screen'}`}>
+    <div className={`flex flex-col bg-[#e5e7eb] dark:bg-[#0f172a] select-none overflow-x-hidden min-w-0 ${isFullscreen ? 'fixed inset-0 z-50 overflow-hidden' : 'min-h-screen'}`}>
       
       {/* ── MS WORD TOP TITLE BAR ── */}
-      <div className="bg-[#0b1628] text-white px-4 py-2.5 flex items-center justify-between border-b border-slate-700 shrink-0">
-        <div className="flex items-center space-x-3">
+      <div className="bg-[#0b1628] text-white px-2 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between border-b border-slate-700 shrink-0 gap-1.5 sm:gap-2 min-w-0">
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
           {onBack && (
             <button
               onClick={onBack}
-              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-slate-300 hover:text-white"
+              className="p-1 sm:p-1.5 hover:bg-white/10 rounded-lg transition-colors text-slate-300 hover:text-white shrink-0"
               title="Back"
             >
-              <ArrowLeft size={18} />
+              <ArrowLeft size={16} />
             </button>
           )}
 
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-[#e89b1a] flex items-center justify-center text-[#0b1628] font-black text-sm shadow-md">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#e89b1a] flex items-center justify-center text-[#0b1628] font-black text-xs sm:text-sm shadow-md shrink-0">
               W
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <input
                 type="text"
                 value={docTitle}
                 onChange={(e) => setDocTitle(e.target.value)}
                 disabled={readOnly}
-                className="bg-transparent text-white font-bold text-sm tracking-tight border-b border-transparent hover:border-slate-500 focus:border-[#e89b1a] outline-none px-1 py-0.5 rounded transition-colors w-64 md:w-96"
+                className="bg-transparent text-white font-bold text-xs sm:text-sm tracking-tight border-b border-transparent hover:border-slate-500 focus:border-[#e89b1a] outline-none px-1 py-0.5 rounded transition-colors w-24 sm:w-48 md:w-80 lg:w-96 min-w-0 flex-1"
                 placeholder="Enter report title..."
               />
-              <span className="text-[10px] text-slate-400 px-1">Taxime Word Processor &bull; Auto-saved</span>
+              <span className="text-[9px] sm:text-[10px] text-slate-400 px-1 truncate hidden xs:inline">Taxime Word Processor &bull; Auto-saved</span>
             </div>
           </div>
         </div>
 
         {/* Top Right Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           {isTeamLead && (
             <button
               onClick={() => setShowSendModal(true)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#e89b1a] hover:bg-[#d48c15] text-[#0b1628] font-bold text-xs rounded-lg transition-all shadow-md active:scale-95 cursor-pointer"
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-[#e89b1a] hover:bg-[#d48c15] text-[#0b1628] font-bold text-xs rounded-lg transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              <Send size={14} />
-              <span>Send to Admin</span>
+              <Send size={13} />
+              <span className="hidden md:inline">Send to Admin</span>
+              <span className="md:hidden">Send</span>
             </button>
           )}
 
@@ -696,38 +707,40 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
             <button
               onClick={() => handleSaveDocument(false)}
               disabled={isSaving}
-              className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all shadow-md active:scale-95 cursor-pointer"
+              className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-all shadow-md active:scale-95 cursor-pointer"
             >
-              <CheckCircle2 size={14} />
-              <span>Approve & Save</span>
+              <CheckCircle2 size={13} />
+              <span className="hidden md:inline">Approve & Save</span>
+              <span className="md:hidden">Approve</span>
             </button>
           )}
 
           <button
             onClick={() => handleSaveDocument(false)}
             disabled={isSaving}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 cursor-pointer"
+            className="flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white text-xs font-semibold rounded-lg transition-all active:scale-95 cursor-pointer"
           >
-            <Save size={14} />
-            <span>{isSaving ? 'Saving...' : 'Save Draft'}</span>
+            <Save size={13} />
+            <span className="hidden sm:inline">{isSaving ? 'Saving...' : 'Save Draft'}</span>
+            <span className="sm:hidden">Save</span>
           </button>
 
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
+            className="p-1 sm:p-1.5 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-colors cursor-pointer"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
-            {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
           </button>
         </div>
       </div>
 
       {/* ── MS WORD RIBBON TABS ── */}
-      <div className="bg-[#f8fafc] dark:bg-[#1e293b] border-b border-slate-300 dark:border-slate-700 shrink-0">
-        <div className="flex items-center space-x-1 px-4 pt-1">
+      <div className="bg-[#f8fafc] dark:bg-[#1e293b] border-b border-slate-300 dark:border-slate-700 shrink-0 overflow-hidden">
+        <div className="flex items-center gap-0.5 px-1 sm:px-2 pt-1 overflow-x-auto no-scrollbar whitespace-nowrap">
           <button
             onClick={() => setActiveTab('home')}
-            className={`px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 shrink-0 cursor-pointer ${
               activeTab === 'home'
                 ? 'bg-white dark:bg-[#0f172a] text-[#e89b1a] border-[#e89b1a]'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 border-transparent'
@@ -737,7 +750,7 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('insert')}
-            className={`px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 shrink-0 cursor-pointer ${
               activeTab === 'insert'
                 ? 'bg-white dark:bg-[#0f172a] text-[#e89b1a] border-[#e89b1a]'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 border-transparent'
@@ -747,7 +760,7 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('layout')}
-            className={`px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 shrink-0 cursor-pointer ${
               activeTab === 'layout'
                 ? 'bg-white dark:bg-[#0f172a] text-[#e89b1a] border-[#e89b1a]'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 border-transparent'
@@ -757,7 +770,7 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('export')}
-            className={`px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 cursor-pointer ${
+            className={`px-3 sm:px-4 py-1.5 text-xs font-bold rounded-t-md transition-colors border-t-2 shrink-0 cursor-pointer ${
               activeTab === 'export'
                 ? 'bg-white dark:bg-[#0f172a] text-[#e89b1a] border-[#e89b1a]'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 border-transparent'
@@ -768,7 +781,7 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
         </div>
 
         {/* ── RIBBON TOOLBAR CONTENT ── */}
-        <div className="bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-700 px-4 py-2 flex flex-wrap items-center gap-3 shadow-xs">
+        <div className="bg-white dark:bg-[#0f172a] border-t border-slate-200 dark:border-slate-700 px-2 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-3 shadow-xs overflow-x-auto no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
           
           {/* TAB 1: HOME */}
           {activeTab === 'home' && (
@@ -1111,37 +1124,35 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
       </div>
 
       {/* ── MS WORD PAPER CANVAS AREA ── */}
-      <div className="flex-1 overflow-auto p-4 md:p-8 flex justify-center items-start">
+      {/* Outer scroll wrapper: overflow-auto so desktop zoom works; overflow-x-auto so mobile can scroll horizontally if canvas is wide */}
+      <div className="flex-1 overflow-auto overscroll-contain p-1.5 sm:p-4 md:p-8 flex justify-center items-start" style={{ WebkitOverflowScrolling: 'touch' }}>
         <div
           style={{
-            transform: `scale(${zoom / 100})`,
+            /* Disable zoom transform on mobile screens to prevent canvas overflow */
+            transform: isMobile ? 'none' : `scale(${zoom / 100})`,
             transformOrigin: 'top center',
             transition: 'transform 0.15s ease-out'
           }}
-          className="my-2"
+          className="my-1 sm:my-2 w-full flex justify-center min-w-0"
         >
           {/* Authentic White Paper Page */}
           <div
-            className={`bg-white text-slate-900 shadow-2xl border border-slate-300 relative transition-all rounded-xs ${
-              pageSize === 'a4'
-                ? 'w-[794px] min-h-[1123px]'
-                : 'w-[816px] min-h-[1056px]'
-            } ${
+            className={`bg-white text-slate-900 shadow-2xl border border-slate-300 relative transition-all rounded-sm w-full max-w-[794px] min-h-[400px] sm:min-h-[1056px] ${
               pageMargins === 'narrow'
-                ? 'p-6 md:p-8'
+                ? 'p-3 sm:p-6 md:p-8'
                 : pageMargins === 'wide'
-                ? 'p-12 md:p-16'
-                : 'p-8 md:p-12'
+                ? 'p-4 sm:p-10 md:p-16'
+                : 'p-4 sm:p-8 md:p-12'
             }`}
           >
             {/* Printable Word Header */}
-            <div className="border-b border-[#e89b1a]/40 pb-2 mb-8 flex items-center justify-between text-xs text-slate-400 font-sans tracking-wide">
-              <div className="flex items-center space-x-2">
-                <span className="font-bold text-[#e89b1a] tracking-wider uppercase">TAXIME OPERATIONS</span>
-                <span>&bull;</span>
-                <span>OFFICIAL MANAGEMENT REPORT</span>
+            <div className="border-b border-[#e89b1a]/40 pb-2 mb-4 sm:mb-8 flex flex-wrap items-center justify-between text-[9px] sm:text-xs text-slate-400 font-sans tracking-wide gap-1">
+              <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                <span className="font-bold text-[#e89b1a] tracking-wider uppercase text-[9px] sm:text-[10px] shrink-0">TAXIME OPERATIONS</span>
+                <span className="shrink-0">&bull;</span>
+                <span className="truncate text-[9px] sm:text-[10px]">MANAGEMENT REPORT</span>
               </div>
-              <div>CONFIDENTIAL &bull; FOR INTERNAL USE</div>
+              <div className="text-[9px] sm:text-xs shrink-0">CONFIDENTIAL &bull; INTERNAL</div>
             </div>
 
             {/* The Document Editable Core */}
@@ -1151,17 +1162,18 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
               onInput={updateStats}
               onKeyUp={checkActiveFormatting}
               onMouseUp={checkActiveFormatting}
-              className="outline-none min-h-[850px] font-sans leading-relaxed text-[11pt] text-slate-800 selection:bg-[#e89b1a]/30"
+              className="outline-none min-h-[300px] sm:min-h-[850px] font-sans leading-relaxed text-[9pt] sm:text-[11pt] text-slate-800 selection:bg-[#e89b1a]/30 break-words"
               style={{
                 fontFamily: currentFont,
-                wordBreak: 'break-word'
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word'
               }}
               spellCheck={true}
             />
 
             {/* Printable Word Footer */}
-            <div className="border-t border-slate-200 mt-12 pt-3 flex items-center justify-between text-[10px] text-slate-400 font-sans">
-              <div>Taxime Operations Management System &bull; Confidential</div>
+            <div className="border-t border-slate-200 mt-6 sm:mt-12 pt-2 sm:pt-3 flex flex-wrap items-center justify-between text-[9px] sm:text-[10px] text-slate-400 font-sans gap-1">
+              <div>Taxime Operations System &bull; Confidential</div>
               <div className="font-semibold text-slate-500">Page 1 of 1</div>
             </div>
           </div>
@@ -1169,36 +1181,36 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
       </div>
 
       {/* ── MS WORD STATUS BAR ── */}
-      <div className="bg-[#0b1628] text-slate-400 px-4 py-1.5 text-xs flex items-center justify-between border-t border-slate-700 shrink-0 font-sans">
-        <div className="flex items-center space-x-4">
+      <div className="bg-[#0b1628] text-slate-400 px-3 sm:px-4 py-1.5 text-[10px] sm:text-xs flex flex-wrap items-center justify-between border-t border-slate-700 shrink-0 font-sans gap-2">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <span>Page 1 of 1</span>
           <span>{stats.words.toLocaleString()} words</span>
-          <span>{stats.characters.toLocaleString()} characters</span>
+          <span className="hidden xs:inline">{stats.characters.toLocaleString()} chars</span>
           <span className="hidden sm:inline">&bull; {stats.readingTime} min read</span>
           {combinedReports.length > 0 && (
             <span className="text-[#e89b1a] font-bold">
-              {combinedReports.length} reports merged
+              {combinedReports.length} merged
             </span>
           )}
         </div>
 
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1.5">
-            <span className="text-[11px]">Zoom:</span>
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-1.5">
+            <span className="text-[10px] sm:text-[11px] hidden xs:inline">Zoom:</span>
             <input
               type="range"
               min="60"
               max="150"
               value={zoom}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="w-20 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#e89b1a]"
+              className="w-14 sm:w-20 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#e89b1a]"
             />
-            <span className="w-8 text-right font-mono text-[11px]">{zoom}%</span>
+            <span className="w-7 sm:w-8 text-right font-mono text-[10px] sm:text-[11px]">{zoom}%</span>
           </div>
 
-          <div className="flex items-center space-x-1 border-l border-slate-700 pl-2">
-            <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">
-              {pageSize.toUpperCase()} &bull; {pageMargins}
+          <div className="flex items-center space-x-1 border-l border-slate-700 pl-1.5 sm:pl-2">
+            <span className="text-[9px] sm:text-[10px] bg-slate-800 text-slate-300 px-1.5 sm:px-2 py-0.5 rounded font-mono">
+              {pageSize.toUpperCase()}
             </span>
           </div>
         </div>

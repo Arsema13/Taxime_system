@@ -266,59 +266,59 @@ export default function ReviewReportsPage() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <FileText size={16} className="text-slate-600" />
-              <span className="font-bold text-lg">{stats.total}</span>
+              <span className="font-bold text-base sm:text-lg">{stats.total}</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Total Reports</p>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Total Reports</p>
           </div>
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <Clock size={16} className="text-blue-600" />
-              <span className="font-bold text-lg">{stats.submitted + stats.revisionNeeded}</span>
+              <span className="font-bold text-base sm:text-lg">{stats.submitted + stats.revisionNeeded}</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Pending Review</p>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Pending Review</p>
           </div>
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <CheckCircle size={16} className="text-emerald-600" />
-              <span className="font-bold text-lg">{stats.approved}</span>
+              <span className="font-bold text-base sm:text-lg">{stats.approved}</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Approved</p>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Approved</p>
           </div>
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
             <div className="flex items-center space-x-2">
               <XCircle size={16} className="text-red-600" />
-              <span className="font-bold text-lg">{stats.rejected}</span>
+              <span className="font-bold text-base sm:text-lg">{stats.rejected}</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Rejected</p>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Rejected</p>
           </div>
-          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/40 dark:border-slate-700/40">
+          <div className="bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border border-white/40 dark:border-slate-700/40 col-span-2 sm:col-span-1">
             <div className="flex items-center space-x-2">
               <AlertCircle size={16} className="text-amber-600" />
-              <span className="font-bold text-lg">{stats.revisionNeeded}</span>
+              <span className="font-bold text-base sm:text-lg">{stats.revisionNeeded}</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Needs Revision</p>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">Needs Revision</p>
           </div>
         </div>
       )}
 
       {/* Filters */}
-      <Card padding="lg" className="mb-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-slate-500 dark:text-slate-400" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Period:</span>
-            <div className="flex gap-1">
+      <Card padding="md" className="mb-4 sm:mb-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Calendar size={16} className="text-slate-500 dark:text-slate-400 shrink-0" />
+            <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Period:</span>
+            <div className="flex gap-1 flex-wrap">
               {PERIOD_OPTIONS.map(opt => (
                 <button
                   key={opt.value}
                   onClick={() => setPeriod(opt.value)}
-                  className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-lg transition-colors ${
                     period === opt.value
-                      ? 'bg-[#e89b1a] text-white'
+                      ? 'bg-[#e89b1a] text-white font-semibold'
                       : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 hover:bg-slate-200'
                   }`}
                 >

@@ -36,27 +36,28 @@ export function Modal({ isOpen, onClose, title, description, size = 'md', childr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       <div
         className="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
       <div
         className={[
-          'relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-3xl shadow-2xl w-full animate-in flex flex-col max-h-[90vh] border border-white/40 dark:border-slate-700/50',
+          'relative bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl w-full animate-in flex flex-col max-h-[94vh] sm:max-h-[90vh] border border-white/40 dark:border-slate-700/50',
           SIZES[size],
         ].join(' ')}
       >
         {(title || !hideClose) && (
-          <div className="flex items-start justify-between gap-4 px-6 pt-5 pb-4 border-b border-white/40 dark:border-slate-700/50 shrink-0">
+          <div className="flex items-start justify-between gap-3 px-4 sm:px-6 pt-4 sm:pt-5 pb-3 sm:pb-4 border-b border-slate-200/60 dark:border-slate-700/50 shrink-0">
             <div>
-              {title && <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{title}</h2>}
-              {description && <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
+              {title && <h2 className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100">{title}</h2>}
+              {description && <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">{description}</p>}
             </div>
             {!hideClose && (
               <button
                 onClick={onClose}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors rounded-lg p-1 hover:bg-white/40 dark:hover:bg-slate-700/50 shrink-0 mt-0.5"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors rounded-lg p-1 hover:bg-slate-100 dark:hover:bg-slate-700/50 shrink-0 mt-0.5"
+                aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -64,10 +65,10 @@ export function Modal({ isOpen, onClose, title, description, size = 'md', childr
           </div>
         )}
 
-        <div className="px-6 py-4 overflow-y-auto flex-1">{children}</div>
+        <div className="px-4 sm:px-6 py-3 sm:py-4 overflow-y-auto flex-1">{children}</div>
 
         {footer && (
-          <div className="px-6 pb-5 pt-4 border-t border-white/40 dark:border-slate-700/50 flex items-center justify-end gap-2 shrink-0">
+          <div className="px-4 sm:px-6 pb-4 sm:pb-5 pt-3 sm:pt-4 border-t border-slate-200/60 dark:border-slate-700/50 flex items-center justify-end gap-2 shrink-0 flex-wrap">
             {footer}
           </div>
         )}

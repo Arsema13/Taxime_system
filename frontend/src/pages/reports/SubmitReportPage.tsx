@@ -87,7 +87,7 @@ export default function SubmitReportPage() {
                 placeholder="e.g., Weekly Progress Report"
                 required
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Select
                   label="Report Type"
                   value={form.reportType}
@@ -113,7 +113,7 @@ export default function SubmitReportPage() {
                   ]}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="From Date"
                   type="date"

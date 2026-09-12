@@ -29,9 +29,15 @@ function processQueue(error: unknown, token: string | null = null) {
 api.interceptors.response.use(
   (res) => res,
   async (error: AxiosError) => {
-    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const original = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
 
-    if (error.response?.status === 401 && !original._retry) {
+    if (
+      error.response?.status === 401 &&
+      original &&
+      !original._retry &&
+      !original.url?.includes('/auth/login') &&
+      !original.url?.includes('/auth/refresh-token')
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });

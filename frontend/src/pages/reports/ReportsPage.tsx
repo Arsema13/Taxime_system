@@ -238,7 +238,7 @@ export default function ReportsPage() {
           description="Task performance metrics and team productivity insights"
           breadcrumbs={[{ label: 'Reports', to: '/reports' }, { label: 'Analytics' }]}
           actions={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <Button
                 size="sm"
                 variant="outline"
