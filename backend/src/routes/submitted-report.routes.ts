@@ -10,6 +10,8 @@ router.use(authenticate);
 router.get('/stats', submittedReportController.getStats);
 router.post('/combine', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.combine);
 router.post('/combine/export/word', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.exportCombinedWord);
+router.post('/combine/export/pdf', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.exportCombinedPdf);
+router.post('/combine/export/excel', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.exportCombinedExcel);
 
 router.get('/', submittedReportController.getAll);
 router.get('/:id', submittedReportController.getById);

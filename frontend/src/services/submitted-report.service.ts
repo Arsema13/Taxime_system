@@ -109,6 +109,20 @@ class SubmittedReportService {
     return data;
   }
 
+  async exportCombinedPdf(payload: { reportIds: string[]; title?: string; summary?: string; notes?: string }): Promise<Blob> {
+    const { data } = await api.post('/submitted-reports/combine/export/pdf', payload, {
+      responseType: 'blob'
+    });
+    return data;
+  }
+
+  async exportCombinedExcel(payload: { reportIds: string[]; title?: string; summary?: string; notes?: string }): Promise<Blob> {
+    const { data } = await api.post('/submitted-reports/combine/export/excel', payload, {
+      responseType: 'blob'
+    });
+    return data;
+  }
+
   downloadBlob(blob: Blob, filename: string) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

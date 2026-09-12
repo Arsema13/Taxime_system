@@ -450,6 +450,66 @@ export class SubmittedReportController {
     } catch (error) { next(error); }
   }
 
+  async exportCombinedPdf(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { reportIds, title, summary, notes } = req.body;
+
+      if (!reportIds || !Array.isArray(reportIds) || reportIds.length === 0) {
+        return res.status(400).json({ success: false, message: 'reportIds must be provided as an array' });
+      }
+
+      const reports = await prisma.report.findMany({
+        where: { id: { in: reportIds } },
+        include: {
+          author: { select: { id: true, firstName: true, lastName: true, email: true } },
+          task: { select: { id: true, title: true } }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      const buffer = await exportService.exportCombinedReportsToPDF(
+        title || 'Consolidated Operations Report',
+        reports,
+        summary,
+        notes
+      );
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=consolidated-report-${Date.now()}.pdf`);
+      res.send(buffer);
+    } catch (error) { next(error); }
+  }
+
+  async exportCombinedExcel(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { reportIds, title, summary, notes } = req.body;
+
+      if (!reportIds || !Array.isArray(reportIds) || reportIds.length === 0) {
+        return res.status(400).json({ success: false, message: 'reportIds must be provided as an array' });
+      }
+
+      const reports = await prisma.report.findMany({
+        where: { id: { in: reportIds } },
+        include: {
+          author: { select: { id: true, firstName: true, lastName: true, email: true } },
+          task: { select: { id: true, title: true } }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      const buffer = await exportService.exportCombinedReportsToExcel(
+        title || 'Consolidated Operations Report',
+        reports,
+        summary,
+        notes
+      );
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=consolidated-report-${Date.now()}.xlsx`);
+      res.send(buffer);
+    } catch (error) { next(error); }
+  }
+
   async exportPdf(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
@@ -467,25 +527,7 @@ export class SubmittedReportController {
         return res.status(404).json({ success: false, message: 'Report not found' });
       }
 
-      const reportData = {
-        type: `Submitted Report - ${report.title}`,
-        data: [{
-          Title: report.title,
-          Status: report.status,
-          Type: report.reportType,
-          Period: report.period,
-          Progress: `${report.progress}%`,
-          'Time Spent': report.timeSpent ? `${report.timeSpent}h` : 'N/A',
-          Summary: report.summary,
-          Achievements: report.achievements || 'N/A',
-          Blockers: report.blockers || 'N/A',
-          'Next Steps': report.nextSteps || 'N/A',
-          Author: `${report.author.firstName} ${report.author.lastName}`,
-          'Review Comments': report.reviewerComment || 'N/A'
-        }]
-      };
-
-      const buffer = await exportService.exportToPDF(reportData);
+      const buffer = await exportService.exportSubmittedReportToPDF(report);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=report-${id}.pdf`);
       res.send(buffer);
@@ -509,25 +551,7 @@ export class SubmittedReportController {
         return res.status(404).json({ success: false, message: 'Report not found' });
       }
 
-      const reportData = {
-        type: `Submitted Report - ${report.title}`,
-        data: [{
-          Title: report.title,
-          Status: report.status,
-          Type: report.reportType,
-          Period: report.period,
-          Progress: `${report.progress}%`,
-          'Time Spent': report.timeSpent ? `${report.timeSpent}h` : 'N/A',
-          Summary: report.summary,
-          Achievements: report.achievements || 'N/A',
-          Blockers: report.blockers || 'N/A',
-          'Next Steps': report.nextSteps || 'N/A',
-          Author: `${report.author.firstName} ${report.author.lastName}`,
-          'Review Comments': report.reviewerComment || 'N/A'
-        }]
-      };
-
-      const buffer = await exportService.exportToExcel(reportData);
+      const buffer = await exportService.exportSubmittedReportToExcel(report);
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', `attachment; filename=report-${id}.xlsx`);
       res.send(buffer);

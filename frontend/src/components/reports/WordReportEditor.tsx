@@ -411,15 +411,26 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
           <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
           <head><meta charset='utf-8'><title>${docTitle}</title>
           <style>
-            body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #0f172a; }
-            table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-            th, td { border: 1px solid #cbd5e1; padding: 8px 12px; }
-            th { background-color: #0b1628; color: #ffffff; }
-            h1 { color: #e89b1a; font-size: 24pt; text-align: center; }
-            h2 { color: #0f172a; font-size: 16pt; border-bottom: 2px solid #e89b1a; }
+            @page { margin: 1in; size: letter; }
+            body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #0f172a; max-width: 800px; margin: 0 auto; }
+            h1 { color: #e89b1a; font-size: 24pt; text-align: center; margin-bottom: 8px; }
+            h2 { color: #0b1628; font-size: 15pt; border-bottom: 2px solid #e89b1a; padding-bottom: 4px; margin-top: 24px; }
+            h3 { color: #1e293b; font-size: 12pt; margin-top: 16px; }
+            table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 10pt; }
+            th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+            th { background-color: #0b1628; color: #ffffff; font-weight: bold; }
+            tr:nth-child(even) td { background-color: #f8fafc; }
+            .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 9pt; }
+            .header-banner { background-color: #0b1628; color: #ffffff; padding: 12px 20px; border-radius: 6px; margin-bottom: 24px; text-align: center; }
           </style>
           </head>
-          <body>${content}</body>
+          <body>
+            <div class="header-banner">
+              <strong style="color: #e89b1a; font-size: 14pt;">TAXIME OPERATIONS MANAGEMENT</strong><br/>
+              <span style="font-size: 9pt; color: #94a3b8;">CONFIDENTIAL OPERATIONAL RECORD</span>
+            </div>
+            ${content}
+          </body>
           </html>
         `;
         const blob = new Blob(['\ufeff' + wordHtml], { type: 'application/msword' });
@@ -440,6 +451,15 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
         const blob = await submittedReportService.exportReportPdf(initialReport.id);
         submittedReportService.downloadBlob(blob, `${docTitle.replace(/\s+/g, '_')}.pdf`);
         success('Exported', 'PDF document downloaded successfully!');
+      } else if (combinedReports.length > 0) {
+        const blob = await submittedReportService.exportCombinedPdf({
+          reportIds: combinedReports.map(r => r.id),
+          title: docTitle,
+          summary: editorRef.current?.innerText.slice(0, 500),
+          notes: adminNote
+        });
+        submittedReportService.downloadBlob(blob, `${docTitle.replace(/\s+/g, '_')}.pdf`);
+        success('Exported', 'Consolidated PDF exported successfully!');
       } else {
         handlePrint();
       }
@@ -457,27 +477,24 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
         const blob = await submittedReportService.exportReportExcel(initialReport.id);
         submittedReportService.downloadBlob(blob, `${docTitle.replace(/\s+/g, '_')}.xlsx`);
         success('Exported', 'Excel spreadsheet exported successfully!');
+      } else if (combinedReports.length > 0) {
+        const blob = await submittedReportService.exportCombinedExcel({
+          reportIds: combinedReports.map(r => r.id),
+          title: docTitle,
+          summary: editorRef.current?.innerText.slice(0, 500),
+          notes: adminNote
+        });
+        submittedReportService.downloadBlob(blob, `${docTitle.replace(/\s+/g, '_')}.xlsx`);
+        success('Exported', 'Consolidated Excel workbook exported successfully!');
       } else {
         const rows = [
+          ['TAXIME OPERATIONS MANAGEMENT SYSTEM - REPORT SUMMARY'],
           ['Document Title', docTitle],
-          ['Generated Date', new Date().toISOString()],
+          ['Generated Date', new Date().toLocaleString()],
           ['Author', `${user?.firstName || ''} ${user?.lastName || ''}`],
           ['Total Words', stats.words.toString()],
           ['Total Characters', stats.characters.toString()]
         ];
-        if (combinedReports.length > 0) {
-          rows.push([]);
-          rows.push(['Contributor', 'Title', 'Progress (%)', 'Time Spent (h)', 'Status']);
-          combinedReports.forEach(r => {
-            rows.push([
-              `${r.author?.firstName || ''} ${r.author?.lastName || ''}`,
-              r.title,
-              `${r.progress}`,
-              `${r.timeSpent || 0}`,
-              r.status
-            ]);
-          });
-        }
         const csvContent = rows.map(e => e.map(cell => `"${(cell || '').replace(/"/g, '""')}"`).join(',')).join('\n');
         submittedReportService.downloadText(csvContent, `${docTitle.replace(/\s+/g, '_')}.csv`, 'text/csv');
         success('Exported', 'CSV summary exported successfully!');
@@ -495,18 +512,67 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${docTitle}</title>
   <style>
-    body { font-family: Calibri, Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 24px; color: #0f172a; line-height: 1.6; }
-    h1 { color: #e89b1a; text-align: center; font-size: 26pt; }
-    h2 { color: #0b1628; border-bottom: 2px solid #e89b1a; padding-bottom: 4px; font-size: 16pt; }
-    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; }
-    th { background: #0b1628; color: #ffffff; }
+    @media print { body { padding: 0; } }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      max-width: 860px;
+      margin: 30px auto;
+      padding: 30px 40px;
+      color: #0f172a;
+      line-height: 1.65;
+      background-color: #ffffff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-radius: 8px;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #e89b1a;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    .brand-title { color: #e89b1a; font-size: 20pt; font-weight: 800; margin: 0; }
+    .brand-sub { color: #64748b; font-size: 9pt; margin: 2px 0 0 0; }
+    h1 { color: #0b1628; font-size: 22pt; margin-top: 10px; margin-bottom: 8px; }
+    h2 { color: #0b1628; border-bottom: 2px solid #e89b1a; padding-bottom: 4px; font-size: 15pt; margin-top: 26px; }
+    h3 { color: #1e293b; font-size: 12pt; margin-top: 18px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 10pt; }
+    th, td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
+    th { background: #0b1628; color: #ffffff; font-weight: 600; }
+    tr:nth-child(even) td { background-color: #f8fafc; }
+    ul, ol { padding-left: 24px; }
+    li { margin-bottom: 6px; }
+    .footer-bar {
+      margin-top: 40px;
+      padding-top: 14px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9pt;
+      color: #94a3b8;
+    }
   </style>
 </head>
 <body>
+  <div class="header-bar">
+    <div>
+      <h2 class="brand-title">TAXIME</h2>
+      <p class="brand-sub">OPERATIONS MANAGEMENT SYSTEM</p>
+    </div>
+    <div style="text-align: right;">
+      <span style="background: #0b1628; color: #e89b1a; padding: 4px 10px; border-radius: 4px; font-size: 8pt; font-weight: bold;">OFFICIAL RECORD</span>
+      <p class="brand-sub">${new Date().toLocaleDateString()}</p>
+    </div>
+  </div>
   ${content}
+  <div class="footer-bar">
+    <span>Taxime Operations System • Confidential</span>
+    <span>Generated: ${new Date().toLocaleString()}</span>
+  </div>
 </body>
 </html>`;
     submittedReportService.downloadText(standaloneHtml, `${docTitle.replace(/\s+/g, '_')}.html`, 'text/html');
@@ -515,14 +581,15 @@ export const WordReportEditor: React.FC<WordReportEditorProps> = ({
 
   const handleExportMarkdown = () => {
     const content = editorRef.current?.innerText || '';
-    const md = `# ${docTitle}\n\n*Generated on ${new Date().toLocaleDateString()} by ${user?.firstName} ${user?.lastName}*\n\n---\n\n${content}`;
+    const md = `# ${docTitle}\n\n**Generated:** ${new Date().toLocaleDateString()} | **Author:** ${user?.firstName} ${user?.lastName} | **Taxime Operations System**\n\n---\n\n${content}\n\n---\n*Confidential Operational Record • Taxime System*`;
     submittedReportService.downloadText(md, `${docTitle.replace(/\s+/g, '_')}.md`, 'text/markdown');
     success('Exported', 'Markdown document exported successfully!');
   };
 
   const handleExportText = () => {
     const text = editorRef.current?.innerText || '';
-    submittedReportService.downloadText(text, `${docTitle.replace(/\s+/g, '_')}.txt`, 'text/plain');
+    const formattedText = `=======================================================\nTAXIME OPERATIONS MANAGEMENT SYSTEM\nREPORT: ${docTitle.toUpperCase()}\nDate: ${new Date().toLocaleDateString()}\n=======================================================\n\n${text}\n\n=======================================================\nConfidential Operational Record\n=======================================================`;
+    submittedReportService.downloadText(formattedText, `${docTitle.replace(/\s+/g, '_')}.txt`, 'text/plain');
     success('Exported', 'Plain text exported successfully!');
   };
 

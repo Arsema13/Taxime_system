@@ -184,22 +184,43 @@ export default function ReviewReportsPage() {
     }
 
     try {
-      const blobs = await Promise.all(
-        idsToExport.map(id => {
-          if (format === 'pdf') return submittedReportService.exportReportPdf(id);
-          if (format === 'excel') return submittedReportService.exportReportExcel(id);
-          return submittedReportService.exportReportWord(id);
-        })
-      );
-
       const ext = format === 'excel' ? 'xlsx' : format === 'word' ? 'docx' : 'pdf';
-      for (let i = 0; i < blobs.length; i++) {
-        const report = filteredReports.find(r => r.id === idsToExport[i]);
-        const filename = `report-${(report?.title || 'combined').replace(/\s+/g, '_')}.${ext}`;
-        submittedReportService.downloadBlob(blobs[i], filename);
-      }
+      const today = new Date().toISOString().split('T')[0];
 
-      success('Exported', `${idsToExport.length} reports exported`);
+      if (idsToExport.length === 1) {
+        const id = idsToExport[0];
+        const report = filteredReports.find(r => r.id === id);
+        let blob: Blob;
+        if (format === 'pdf') blob = await submittedReportService.exportReportPdf(id);
+        else if (format === 'excel') blob = await submittedReportService.exportReportExcel(id);
+        else blob = await submittedReportService.exportReportWord(id);
+
+        const filename = `report-${(report?.title || 'detail').replace(/\s+/g, '_')}.${ext}`;
+        submittedReportService.downloadBlob(blob, filename);
+        success('Exported', `Report exported as ${format.toUpperCase()}`);
+      } else {
+        let blob: Blob;
+        if (format === 'pdf') {
+          blob = await submittedReportService.exportCombinedPdf({
+            reportIds: idsToExport,
+            title: 'Consolidated Operations Report',
+          });
+        } else if (format === 'excel') {
+          blob = await submittedReportService.exportCombinedExcel({
+            reportIds: idsToExport,
+            title: 'Consolidated Operations Report',
+          });
+        } else {
+          blob = await submittedReportService.exportCombinedWord({
+            reportIds: idsToExport,
+            title: 'Consolidated Operations Report',
+          });
+        }
+
+        const filename = `consolidated-report-${today}.${ext}`;
+        submittedReportService.downloadBlob(blob, filename);
+        success('Exported', `Consolidated ${idsToExport.length} reports into single ${format.toUpperCase()}`);
+      }
     } catch {
       error('Error', 'Failed to export reports');
     }
