@@ -40,6 +40,13 @@ export class NotificationController {
     } catch (error) { next(error); }
   }
 
+  async clearAll(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      await notificationService.clearAll(req.user!.id);
+      res.json(successResponse('All notifications cleared'));
+    } catch (error) { next(error); }
+  }
+
   async getPreferences(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const prefs = await notificationService.getPreferences(req.user!.id);

@@ -45,4 +45,18 @@ export class TaskStatusController {
       res.json(successResponse('Task rejected', task));
     } catch (error) { next(error); }
   }
+
+  async holdTask(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const task = await taskService.changeStatus(req.params.id, 'ON_HOLD', req.user!.id);
+      res.json(successResponse('Task put on hold', task));
+    } catch (error) { next(error); }
+  }
+
+  async cancelTask(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const task = await taskService.changeStatus(req.params.id, 'CANCELLED', req.user!.id);
+      res.json(successResponse('Task cancelled', task));
+    } catch (error) { next(error); }
+  }
 }

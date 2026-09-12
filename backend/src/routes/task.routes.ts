@@ -31,6 +31,10 @@ router.post('/:id/start', taskController.startTask);
 router.post('/:id/submit', taskController.submitForReview);
 router.post('/:id/approve', authorize('ADMIN', 'TEAM_LEAD'), taskController.approveTask);
 router.post('/:id/reject', authorize('ADMIN', 'TEAM_LEAD'), taskController.rejectTask);
+router.post('/:id/hold', taskController.holdTask);
+router.post('/:id/cancel', taskController.cancelTask);
+router.patch('/:id/archive', taskController.archiveTask);
+router.patch('/:id/progress', taskController.updateProgress);
 
 // Subtasks
 router.get('/:id/subtasks', taskController.getSubtasks);

@@ -6,8 +6,10 @@ const router = Router();
 
 router.use(authenticate);
 
-// Stats must be before /:id routes
+// Stats and Combine must be before /:id routes
 router.get('/stats', submittedReportController.getStats);
+router.post('/combine', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.combine);
+router.post('/combine/export/word', authorize('ADMIN', 'TEAM_LEAD'), submittedReportController.exportCombinedWord);
 
 router.get('/', submittedReportController.getAll);
 router.get('/:id', submittedReportController.getById);

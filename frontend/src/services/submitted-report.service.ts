@@ -97,6 +97,18 @@ class SubmittedReportService {
     return data;
   }
 
+  async combineReports(input: any): Promise<Report> {
+    const { data } = await api.post('/submitted-reports/combine', input);
+    return data.data;
+  }
+
+  async exportCombinedWord(payload: { reportIds: string[]; title?: string; summary?: string; notes?: string }): Promise<Blob> {
+    const { data } = await api.post('/submitted-reports/combine/export/word', payload, {
+      responseType: 'blob'
+    });
+    return data;
+  }
+
   downloadBlob(blob: Blob, filename: string) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -106,6 +118,11 @@ class SubmittedReportService {
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
+  }
+
+  downloadText(content: string, filename: string, mimeType: string = 'text/plain') {
+    const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+    this.downloadBlob(blob, filename);
   }
 }
 

@@ -87,6 +87,21 @@ export interface ReviewReportInput {
   reviewerComment?: string;
 }
 
+export interface CombineReportsInput {
+  reportIds: string[];
+  title?: string;
+  summary?: string;
+  progress?: number;
+  timeSpent?: number;
+  blockers?: string;
+  achievements?: string;
+  nextSteps?: string;
+  period?: ReportPeriod;
+  reportType?: ReportType;
+  sendToAdmin?: boolean;
+  reviewerComment?: string;
+}
+
 export interface ReportFilters {
   status?: ReportStatus;
   reportType?: ReportType;
@@ -94,4 +109,5 @@ export interface ReportFilters {
   fromDate?: string;
   toDate?: string;
   authorId?: string;
+  teamId?: string;
 }

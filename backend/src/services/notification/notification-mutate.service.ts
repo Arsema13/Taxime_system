@@ -50,6 +50,11 @@ export class NotificationMutateService {
     await prisma.notification.delete({ where: { id: notificationId } });
     return { message: 'Notification deleted' };
   }
+
+  async clearAll(userId: string) {
+    await prisma.notification.deleteMany({ where: { userId } });
+    return { message: 'All notifications cleared' };
+  }
 }
 
 export const notificationMutateService = new NotificationMutateService();

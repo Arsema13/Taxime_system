@@ -35,6 +35,10 @@ export class NotificationService {
     return notificationMutateService.delete(notificationId, userId);
   }
 
+  async clearAll(userId: string) {
+    return notificationMutateService.clearAll(userId);
+  }
+
   async getPreferences(userId: string) {
     return notificationPreferenceService.getPreferences(userId);
   }

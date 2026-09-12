@@ -11,6 +11,21 @@ export class TaskExtraController {
     } catch (error) { next(error); }
   }
 
+  async archiveTask(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const task = await taskService.update(req.params.id, req.user!.id, req.user!.role, { isArchived: true });
+      res.json(successResponse('Task archived', task));
+    } catch (error) { next(error); }
+  }
+
+  async updateProgress(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { progress } = req.body;
+      const task = await taskService.update(req.params.id, req.user!.id, req.user!.role, { progress });
+      res.json(successResponse('Progress updated', task));
+    } catch (error) { next(error); }
+  }
+
   async getWorkload(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { teamId, departmentId } = req.query as any;

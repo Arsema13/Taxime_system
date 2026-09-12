@@ -34,7 +34,11 @@ export class TaskController {
   deleteSubtask = this.subtaskCtrl.deleteSubtask.bind(this.subtaskCtrl);
   addDependency = this.dependencyCtrl.addDependency.bind(this.dependencyCtrl);
   removeDependency = this.dependencyCtrl.removeDependency.bind(this.dependencyCtrl);
+  holdTask = this.statusCtrl.holdTask.bind(this.statusCtrl);
+  cancelTask = this.statusCtrl.cancelTask.bind(this.statusCtrl);
   toggleFavorite = this.extraCtrl.toggleFavorite.bind(this.extraCtrl);
+  archiveTask = this.extraCtrl.archiveTask.bind(this.extraCtrl);
+  updateProgress = this.extraCtrl.updateProgress.bind(this.extraCtrl);
   getWorkload = this.extraCtrl.getWorkload.bind(this.extraCtrl);
   getCount = this.extraCtrl.getCount.bind(this.extraCtrl);
 }

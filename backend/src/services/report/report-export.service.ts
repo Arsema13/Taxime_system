@@ -458,6 +458,169 @@ export class ReportExportService {
     return this._buildWordDoc(report.title || 'Report', children);
   }
 
+  // ── Combined Reports Word Export ──────────────────────────────────────────
+  async exportCombinedReportsToWord(title: string, reports: any[], summary?: string, notes?: string): Promise<Buffer> {
+    const children: (Paragraph | Table)[] = [];
+
+    // Title
+    children.push(new Paragraph({
+      children: [new TextRun({ text: title || 'Consolidated Operations Report', bold: true, size: 48, font: 'Calibri', color: GOLD })],
+      heading: HeadingLevel.TITLE,
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 100 },
+    }));
+
+    // Subtitle
+    const totalHours = reports.reduce((acc, r) => acc + (r.timeSpent || 0), 0);
+    const avgProgress = reports.length > 0 ? Math.round(reports.reduce((acc, r) => acc + (r.progress || 0), 0) / reports.length) : 0;
+
+    children.push(new Paragraph({
+      children: [
+        new TextRun({ text: `Compiled on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, size: 20, font: 'Calibri', color: GRAY }),
+        new TextRun({ text: `  |  ${reports.length} Reports Included`, bold: true, size: 20, font: 'Calibri', color: DARK }),
+        new TextRun({ text: `  |  Avg Progress: ${avgProgress}%`, bold: true, size: 20, font: 'Calibri', color: GREEN }),
+        new TextRun({ text: `  |  Total Hours: ${totalHours}h`, bold: true, size: 20, font: 'Calibri', color: DARK }),
+      ],
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 300 },
+    }));
+
+    // Executive Summary
+    if (summary) {
+      children.push(new Paragraph({
+        children: [new TextRun({ text: 'Executive Overview', bold: true, size: 28, font: 'Calibri', color: DARK })],
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 200, after: 120 },
+      }));
+      children.push(new Paragraph({
+        children: [new TextRun({ text: summary, size: 22, font: 'Calibri' })],
+        spacing: { after: 260 },
+      }));
+    }
+
+    // Consolidated Metrics Table
+    children.push(new Paragraph({
+      children: [new TextRun({ text: 'Contributors & Task Summary', bold: true, size: 26, font: 'Calibri', color: DARK })],
+      heading: HeadingLevel.HEADING_2,
+      spacing: { before: 200, after: 150 },
+    }));
+
+    const tableHeaders = ['Contributor', 'Report Title', 'Progress', 'Hours', 'Status'];
+    const colPct = Math.floor(100 / tableHeaders.length);
+
+    const headerRow = new TableRow({
+      tableHeader: true,
+      children: tableHeaders.map((h) => new TableCell({
+        width: { size: colPct, type: WidthType.PERCENTAGE },
+        shading: { type: ShadingType.SOLID, color: DARK, fill: DARK },
+        children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 18, font: 'Calibri', color: WHITE })] })],
+      })),
+    });
+
+    const dataRows = reports.map((r, idx) => new TableRow({
+      children: [
+        new TableCell({
+          width: { size: colPct, type: WidthType.PERCENTAGE },
+          shading: idx % 2 === 0 ? { type: ShadingType.SOLID, color: LIGHT, fill: LIGHT } : undefined,
+          children: [new Paragraph({ children: [new TextRun({ text: `${r.author?.firstName || ''} ${r.author?.lastName || ''}`.trim() || 'Team Member', size: 18, font: 'Calibri', bold: true })] })],
+        }),
+        new TableCell({
+          width: { size: colPct, type: WidthType.PERCENTAGE },
+          shading: idx % 2 === 0 ? { type: ShadingType.SOLID, color: LIGHT, fill: LIGHT } : undefined,
+          children: [new Paragraph({ children: [new TextRun({ text: r.title || 'Untitled', size: 18, font: 'Calibri' })] })],
+        }),
+        new TableCell({
+          width: { size: colPct, type: WidthType.PERCENTAGE },
+          shading: idx % 2 === 0 ? { type: ShadingType.SOLID, color: LIGHT, fill: LIGHT } : undefined,
+          children: [new Paragraph({ children: [new TextRun({ text: `${r.progress ?? 0}%`, size: 18, font: 'Calibri' })] })],
+        }),
+        new TableCell({
+          width: { size: colPct, type: WidthType.PERCENTAGE },
+          shading: idx % 2 === 0 ? { type: ShadingType.SOLID, color: LIGHT, fill: LIGHT } : undefined,
+          children: [new Paragraph({ children: [new TextRun({ text: `${r.timeSpent ?? 0}h`, size: 18, font: 'Calibri' })] })],
+        }),
+        new TableCell({
+          width: { size: colPct, type: WidthType.PERCENTAGE },
+          shading: idx % 2 === 0 ? { type: ShadingType.SOLID, color: LIGHT, fill: LIGHT } : undefined,
+          children: [new Paragraph({ children: [new TextRun({ text: (r.status || 'DRAFT').replace(/_/g, ' '), size: 18, font: 'Calibri' })] })],
+        }),
+      ],
+    }));
+
+    children.push(new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [headerRow, ...dataRows],
+    }));
+
+    // Individual Reports Detailed Breakdown
+    children.push(new Paragraph({
+      children: [new TextRun({ text: 'Individual Reports Breakdown', bold: true, size: 28, font: 'Calibri', color: DARK })],
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400, after: 200 },
+    }));
+
+    for (const r of reports) {
+      const authorName = `${r.author?.firstName || ''} ${r.author?.lastName || ''}`.trim() || 'Contributor';
+
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: `${authorName}: ${r.title}`, bold: true, size: 24, font: 'Calibri', color: GOLD }),
+        ],
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 240, after: 80 },
+      }));
+
+      children.push(new Paragraph({
+        children: [
+          new TextRun({ text: `Progress: ${r.progress ?? 0}%  |  Time: ${r.timeSpent ?? 0}h  |  Status: ${(r.status || '').replace(/_/g, ' ')}`, size: 18, font: 'Calibri', color: GRAY, italics: true }),
+        ],
+        spacing: { after: 120 },
+      }));
+
+      if (r.summary) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: 'Summary: ', bold: true, size: 20, font: 'Calibri' }), new TextRun({ text: r.summary, size: 20, font: 'Calibri' })],
+          spacing: { after: 100 },
+        }));
+      }
+
+      if (r.achievements) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: 'Achievements: ', bold: true, size: 20, font: 'Calibri', color: GREEN }), new TextRun({ text: r.achievements, size: 20, font: 'Calibri' })],
+          spacing: { after: 100 },
+        }));
+      }
+
+      if (r.blockers) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: 'Blockers / Challenges: ', bold: true, size: 20, font: 'Calibri', color: RED }), new TextRun({ text: r.blockers, size: 20, font: 'Calibri' })],
+          spacing: { after: 100 },
+        }));
+      }
+
+      if (r.nextSteps) {
+        children.push(new Paragraph({
+          children: [new TextRun({ text: 'Next Steps: ', bold: true, size: 20, font: 'Calibri', color: '2563EB' }), new TextRun({ text: r.nextSteps, size: 20, font: 'Calibri' })],
+          spacing: { after: 160 },
+        }));
+      }
+    }
+
+    if (notes) {
+      children.push(new Paragraph({
+        children: [new TextRun({ text: 'Supervisor & Team Lead Notes', bold: true, size: 26, font: 'Calibri', color: DARK })],
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 300, after: 120 },
+      }));
+      children.push(new Paragraph({
+        children: [new TextRun({ text: notes, size: 22, font: 'Calibri', italics: true })],
+        spacing: { after: 200 },
+      }));
+    }
+
+    return this._buildWordDoc(title || 'Consolidated Report', children);
+  }
+
   // ── Internal helpers ──────────────────────────────────────────────────────
 
   /** Flatten nested arrays from report data into a flat list */

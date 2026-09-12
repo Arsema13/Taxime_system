@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit2, Send, CheckCircle, Save, Trash2, Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { ArrowLeft, Edit2, Send, CheckCircle, Save, Trash2, Download, FileText, FileSpreadsheet, Edit3 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -200,6 +200,16 @@ export default function ReportDetailPage() {
         ]}
         actions={
           <div className="flex items-center gap-2">
+            {(isCommander || isTeamLead) && (
+              <Button
+                variant="outline"
+                size="sm"
+                icon={<Edit3 className="w-4 h-4" />}
+                onClick={() => navigate(`/reports/editor/${report.id}`)}
+              >
+                Word Editor
+              </Button>
+            )}
             {canEdit && !editing && (
               <Button variant="outline" size="sm" icon={<Edit2 className="w-4 h-4" />} onClick={() => setEditing(true)}>
                 Edit

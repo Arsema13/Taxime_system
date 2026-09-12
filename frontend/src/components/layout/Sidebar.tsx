@@ -4,7 +4,7 @@ import {
   LayoutDashboard, CheckSquare, Calendar, Users,
   BarChart3, Bell, Activity, Settings, LogOut,
   X, AlertTriangle, Plus, ClipboardList,
-  FileText, Send, ClipboardCheck, Star,
+  FileText, Send, ClipboardCheck, Star, Edit3,
 } from 'lucide-react';
 import { useAuth } from '@/contexts';
 import { useNotifications } from '@/contexts';
@@ -28,6 +28,7 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
   { label: 'My Reports',     to: '/reports/my-reports', icon: <FileText size={20} />, excludeRoles: ['ADMIN'] },
   { label: 'Reports',        to: '/reports/review',     icon: <ClipboardCheck size={20} />, roles: ['ADMIN'] },
   { label: 'Review Reports', to: '/reports/review',     icon: <ClipboardCheck size={20} />, roles: ['TEAM_LEAD'] },
+  { label: 'Word Editor',    to: '/reports/editor',     icon: <Edit3 size={20} />,          roles: ['ADMIN', 'TEAM_LEAD'] },
   { label: 'Analytics',      to: '/reports',            icon: <BarChart3 size={20} />, roles: ['ADMIN', 'TEAM_LEAD'] },
   { label: 'Employees',      to: '/employees',          icon: <Users size={20} />, roles: ['ADMIN'] },
   { label: 'Teams',          to: '/teams',              icon: <Users size={20} />, roles: ['ADMIN', 'TEAM_LEAD'] },

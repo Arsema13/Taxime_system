@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Filter, RefreshCw, FileText, CheckCircle, XCircle, AlertCircle,
   Download, Edit3, Save, X, ChevronDown, ChevronUp,
-  Calendar, Clock,
+  Calendar, Clock, Layers
 } from 'lucide-react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Card } from '@/components/ui/Card';
@@ -52,6 +53,7 @@ function getDateRange(period: string): { fromDate: string; toDate: string } {
 
 export default function ReviewReportsPage() {
   const { success, error } = useToast();
+  const navigate = useNavigate();
   const [reports, setReports] = useState<Report[]>([]);
   const [stats, setStats] = useState<ReportStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -203,6 +205,17 @@ export default function ReviewReportsPage() {
     }
   };
 
+  const openInWordEditor = (report: Report) => {
+    navigate(`/reports/editor/${report.id}`);
+  };
+
+  const openCombineInWordEditor = () => {
+    const idsToUse = selectedIds.size > 0 ? Array.from(selectedIds) : filteredReports.map(r => r.id);
+    if (idsToUse.length === 0) { error('Error', 'No reports to combine'); return; }
+    const reportsToPass = filteredReports.filter(r => idsToUse.includes(r.id));
+    navigate('/reports/editor', { state: { reports: reportsToPass } });
+  };
+
   return (
     <div>
       <PageHeader
@@ -210,7 +223,10 @@ export default function ReviewReportsPage() {
         description="View, edit, and export team reports"
         breadcrumbs={[{ label: 'Reports', to: '/reports' }, { label: 'Review' }]}
         actions={
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" size="sm" icon={<Layers className="w-4 h-4" />} onClick={openCombineInWordEditor}>
+              Combine in Word Editor
+            </Button>
             <Button variant="outline" size="sm" icon={<RefreshCw className="w-4 h-4" />} onClick={loadData}>
               Refresh
             </Button>
@@ -397,6 +413,9 @@ export default function ReviewReportsPage() {
                         </>
                       ) : (
                         <>
+                          <Button size="sm" variant="ghost" onClick={() => openInWordEditor(report)} icon={<Edit3 className="w-3 h-3" />}>
+                            Word Editor
+                          </Button>
                           <Button size="sm" variant="ghost" onClick={() => startEditing(report)} icon={<Edit3 className="w-3 h-3" />}>
                             Edit
                           </Button>

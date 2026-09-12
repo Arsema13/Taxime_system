@@ -70,6 +70,16 @@ export class UserController {
       res.json(successResponse('Your stats', stats));
     } catch (error) { next(error); }
   }
+
+  async search(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { q, limit } = req.query as any;
+      const result = await userService.findAll({
+        page: 1, limit: parseInt(limit) || 10, search: q,
+      });
+      res.json(successResponse('Users found', result.data));
+    } catch (error) { next(error); }
+  }
 }
 
 export const userController = new UserController();

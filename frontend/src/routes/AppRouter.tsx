@@ -41,6 +41,7 @@ const SubmitReportPage   = lazy(() => import('@/pages/reports/SubmitReportPage')
 const MyReportsPage      = lazy(() => import('@/pages/reports/MyReportsPage'));
 const ReviewReportsPage  = lazy(() => import('@/pages/reports/ReviewReportsPage'));
 const ReportDetailPage   = lazy(() => import('@/pages/reports/ReportDetailPage'));
+const ReportEditorPage   = lazy(() => import('@/pages/reports/ReportEditorPage'));
 const ActivityLogPage    = lazy(() => import('@/pages/activity/ActivityLogPage'));
 
 // ── Profile & Settings ────────────────────────────────────────────────────
@@ -158,6 +159,24 @@ export function AppRouter() {
             element={
               <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><ReviewReportsPage /></SuspenseWrap>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Report Word Editor — Commander + Team Lead */}
+          <Route
+            path="/reports/editor"
+            element={
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
+                <SuspenseWrap><ReportEditorPage /></SuspenseWrap>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/editor/:id"
+            element={
+              <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
+                <SuspenseWrap><ReportEditorPage /></SuspenseWrap>
               </ProtectedRoute>
             }
           />

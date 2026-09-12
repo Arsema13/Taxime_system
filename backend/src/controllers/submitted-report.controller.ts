@@ -47,14 +47,29 @@ export class SubmittedReportController {
     try {
       const userId = req.user!.id;
       const role = req.user!.role;
-      const { status, reportType, period, fromDate, toDate, authorId, assignerId } = req.query as any;
+      const { status, reportType, period, fromDate, toDate, authorId, assignerId, teamId } = req.query as any;
 
       const where: any = {};
 
-      if (role === 'MEMBER' || role === 'TEAM_LEAD') {
+      if (role === 'MEMBER') {
         where.authorId = userId;
+      } else if (role === 'TEAM_LEAD') {
+        const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { teamId: true } });
+        if (currentUser?.teamId) {
+          where.OR = [
+            { authorId: userId },
+            { author: { teamId: currentUser.teamId } },
+            { assignerId: userId }
+          ];
+        } else {
+          where.authorId = userId;
+        }
       } else if (assignerId) {
         where.assignerId = assignerId;
+      }
+
+      if (teamId && role === 'ADMIN') {
+        where.author = { teamId: String(teamId) };
       }
 
       if (status) where.status = status;
@@ -70,7 +85,7 @@ export class SubmittedReportController {
       const reports = await prisma.report.findMany({
         where,
         include: {
-          author: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+          author: { select: { id: true, firstName: true, lastName: true, avatar: true, email: true, teamId: true } },
           assigner: { select: { id: true, firstName: true, lastName: true, avatar: true } },
           task: { select: { id: true, title: true } }
         },
@@ -88,7 +103,7 @@ export class SubmittedReportController {
       const report = await prisma.report.findUnique({
         where: { id },
         include: {
-          author: { select: { id: true, firstName: true, lastName: true, avatar: true, email: true } },
+          author: { select: { id: true, firstName: true, lastName: true, avatar: true, email: true, teamId: true } },
           assigner: { select: { id: true, firstName: true, lastName: true, avatar: true } },
           task: { select: { id: true, title: true, status: true, priority: true, dueDate: true } }
         }
@@ -108,31 +123,40 @@ export class SubmittedReportController {
       const userId = req.user!.id;
       const role = req.user!.role;
 
-      const existing = await prisma.report.findUnique({ where: { id } });
+      const existing = await prisma.report.findUnique({
+        where: { id },
+        include: { author: { select: { id: true, teamId: true } } }
+      });
       if (!existing) {
         return res.status(404).json({ success: false, message: 'Report not found' });
       }
 
-      if (existing.authorId !== userId && role !== 'ADMIN') {
+      const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { teamId: true } });
+      const isTeamLeadOfAuthor = role === 'TEAM_LEAD' && existing.author?.teamId && currentUser?.teamId && existing.author.teamId === currentUser.teamId;
+
+      if (existing.authorId !== userId && role !== 'ADMIN' && !isTeamLeadOfAuthor) {
         return res.status(403).json({ success: false, message: 'Not authorized' });
       }
 
       const {
-        title, summary, progress, timeSpent, blockers, achievements, nextSteps, reviewerComment
+        title, summary, progress, timeSpent, blockers, achievements, nextSteps, reviewerComment, status
       } = req.body;
+
+      const updateData: any = {
+        ...(title !== undefined && { title }),
+        ...(summary !== undefined && { summary }),
+        ...(progress !== undefined && { progress }),
+        ...(timeSpent !== undefined && { timeSpent }),
+        ...(blockers !== undefined && { blockers }),
+        ...(achievements !== undefined && { achievements }),
+        ...(nextSteps !== undefined && { nextSteps }),
+        ...(reviewerComment !== undefined && { reviewerComment }),
+        ...(status !== undefined && { status })
+      };
 
       const report = await prisma.report.update({
         where: { id },
-        data: {
-          title,
-          summary,
-          progress,
-          timeSpent,
-          blockers,
-          achievements,
-          nextSteps,
-          reviewerComment
-        },
+        data: updateData,
         include: {
           author: { select: { id: true, firstName: true, lastName: true, avatar: true } },
           assigner: { select: { id: true, firstName: true, lastName: true, avatar: true } },
@@ -254,8 +278,19 @@ export class SubmittedReportController {
       const userId = req.user!.id;
 
       const where: any = {};
-      if (role === 'MEMBER' || role === 'TEAM_LEAD') {
+      if (role === 'MEMBER') {
         where.authorId = userId;
+      } else if (role === 'TEAM_LEAD') {
+        const currentUser = await prisma.user.findUnique({ where: { id: userId }, select: { teamId: true } });
+        if (currentUser?.teamId) {
+          where.OR = [
+            { authorId: userId },
+            { author: { teamId: currentUser.teamId } },
+            { assignerId: userId }
+          ];
+        } else {
+          where.authorId = userId;
+        }
       }
 
       const [total, drafts, submitted, approved, rejected, revisionNeeded] = await Promise.all([
@@ -270,6 +305,148 @@ export class SubmittedReportController {
       res.json(successResponse('Stats fetched', {
         total, drafts, submitted, approved, rejected, revisionNeeded
       }));
+    } catch (error) { next(error); }
+  }
+
+  async combine(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user!.id;
+      const {
+        reportIds,
+        title,
+        summary,
+        progress,
+        timeSpent,
+        blockers,
+        achievements,
+        nextSteps,
+        period,
+        reportType,
+        sendToAdmin,
+        reviewerComment
+      } = req.body;
+
+      if (!reportIds || !Array.isArray(reportIds) || reportIds.length === 0) {
+        return res.status(400).json({ success: false, message: 'reportIds must be a non-empty array' });
+      }
+
+      const sourceReports = await prisma.report.findMany({
+        where: { id: { in: reportIds } },
+        include: {
+          author: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+          task: { select: { id: true, title: true } }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      if (sourceReports.length === 0) {
+        return res.status(404).json({ success: false, message: 'None of the specified reports were found' });
+      }
+
+      const totalTime = sourceReports.reduce((sum, r) => sum + (r.timeSpent || 0), 0);
+      const avgProgress = Math.round(sourceReports.reduce((sum, r) => sum + (r.progress || 0), 0) / sourceReports.length);
+      const earliestFrom = sourceReports.reduce((min, r) => r.fromDate < min ? r.fromDate : min, sourceReports[0].fromDate);
+      const latestTo = sourceReports.reduce((max, r) => r.toDate > max ? r.toDate : max, sourceReports[0].toDate);
+
+      const defaultTitle = `Consolidated Report - ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+
+      const defaultSummary = summary || sourceReports
+        .map(r => `[${r.author.firstName} ${r.author.lastName}]: ${r.summary}`)
+        .join('\n\n');
+
+      const defaultAchievements = achievements || sourceReports
+        .filter(r => r.achievements)
+        .map(r => `[${r.author.firstName} ${r.author.lastName}]: ${r.achievements}`)
+        .join('\n');
+
+      const defaultBlockers = blockers || sourceReports
+        .filter(r => r.blockers)
+        .map(r => `[${r.author.firstName} ${r.author.lastName}]: ${r.blockers}`)
+        .join('\n');
+
+      const defaultNextSteps = nextSteps || sourceReports
+        .filter(r => r.nextSteps)
+        .map(r => `[${r.author.firstName} ${r.author.lastName}]: ${r.nextSteps}`)
+        .join('\n');
+
+      let assignerId: string | null = null;
+      if (sendToAdmin) {
+        const adminUser = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
+        assignerId = adminUser?.id || null;
+      }
+
+      const combinedReport = await prisma.report.create({
+        data: {
+          title: title || defaultTitle,
+          reportType: reportType || 'WEEKLY_REPORT',
+          period: period || 'WEEKLY',
+          fromDate: earliestFrom,
+          toDate: latestTo,
+          summary: defaultSummary,
+          progress: progress !== undefined ? progress : avgProgress,
+          timeSpent: timeSpent !== undefined ? timeSpent : totalTime,
+          blockers: defaultBlockers || null,
+          achievements: defaultAchievements || null,
+          nextSteps: defaultNextSteps || null,
+          reviewerComment: reviewerComment || null,
+          authorId: userId,
+          assignerId,
+          status: sendToAdmin ? 'SUBMITTED' : 'DRAFT',
+          submittedAt: sendToAdmin ? new Date() : null,
+        },
+        include: {
+          author: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+          assigner: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+          task: { select: { id: true, title: true } }
+        }
+      });
+
+      if (sendToAdmin) {
+        const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { id: true } });
+        for (const admin of admins) {
+          await prisma.notification.create({
+            data: {
+              userId: admin.id,
+              type: 'GENERAL',
+              title: 'Consolidated Team Report Submitted',
+              message: `${req.user!.firstName} ${req.user!.lastName} submitted a consolidated report: "${combinedReport.title}"`,
+              link: `/reports/${combinedReport.id}`
+            }
+          }).catch(() => {});
+        }
+      }
+
+      res.status(201).json(successResponse('Combined report created successfully', combinedReport));
+    } catch (error) { next(error); }
+  }
+
+  async exportCombinedWord(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { reportIds, title, summary, notes } = req.body;
+
+      if (!reportIds || !Array.isArray(reportIds) || reportIds.length === 0) {
+        return res.status(400).json({ success: false, message: 'reportIds must be provided as an array' });
+      }
+
+      const reports = await prisma.report.findMany({
+        where: { id: { in: reportIds } },
+        include: {
+          author: { select: { id: true, firstName: true, lastName: true, email: true } },
+          task: { select: { id: true, title: true } }
+        },
+        orderBy: { createdAt: 'asc' }
+      });
+
+      const buffer = await exportService.exportCombinedReportsToWord(
+        title || 'Consolidated Operations Report',
+        reports,
+        summary,
+        notes
+      );
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', `attachment; filename=consolidated-report-${Date.now()}.docx`);
+      res.send(buffer);
     } catch (error) { next(error); }
   }
 
