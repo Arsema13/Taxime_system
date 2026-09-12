@@ -54,7 +54,7 @@ export const taskService = {
   },
 
   async toggleFavorite(id: string): Promise<Task> {
-    const { data } = await api.patch(`/tasks/${id}/favorite`);
+    const { data } = await api.post(`/tasks/${id}/favorite`);
     return data.data ?? data;
   },
 

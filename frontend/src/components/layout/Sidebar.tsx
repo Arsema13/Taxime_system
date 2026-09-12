@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, CheckSquare, Calendar, Users, Building2,
+  LayoutDashboard, CheckSquare, Calendar, Users,
   BarChart3, Bell, Activity, Settings, LogOut,
   X, AlertTriangle, Plus, ClipboardList,
-  FileText, Send, ClipboardCheck, Star, Shield,
+  FileText, Send, ClipboardCheck, Star,
 } from 'lucide-react';
 import { useAuth } from '@/contexts';
 import { useNotifications } from '@/contexts';
@@ -31,9 +31,7 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
   { label: 'Analytics',      to: '/reports',            icon: <BarChart3 size={20} />, roles: ['ADMIN', 'TEAM_LEAD'] },
   { label: 'Employees',      to: '/employees',          icon: <Users size={20} />, roles: ['ADMIN'] },
   { label: 'Teams',          to: '/teams',              icon: <Users size={20} />, roles: ['ADMIN', 'TEAM_LEAD'] },
-  { label: 'Departments',    to: '/departments',        icon: <Building2 size={20} />, roles: ['ADMIN'] },
   { label: 'Activity',       to: '/activity',           icon: <Activity size={20} />, roles: ['ADMIN', 'TEAM_LEAD'] },
-  { label: 'Audit Log',      to: '/audit',              icon: <Shield size={20} />, roles: ['ADMIN'] },
   { label: 'Notifications',  to: '/notifications',      icon: <Bell size={20} /> },
   { label: 'Settings',       to: '/settings',           icon: <Settings size={20} /> },
 ];

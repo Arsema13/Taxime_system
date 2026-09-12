@@ -77,13 +77,15 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
   }, [setSearchParams]);
 
   const load = useCallback(async () => {
+    // In myTasksMode, wait until user is loaded before fetching
+    if (myTasksMode && !user) return;
     setLoading(true); setError(false);
     try {
       const res = await taskService.getTasks(filters);
       setData(res);
     } catch { setError(true); }
     finally { setLoading(false); }
-  }, [filters]);
+  }, [filters, myTasksMode, user]);
 
   useEffect(() => { load(); }, [load]);
 

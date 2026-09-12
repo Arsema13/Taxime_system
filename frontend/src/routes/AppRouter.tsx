@@ -31,7 +31,6 @@ const EmployeeDetailPage = lazy(() => import('@/pages/employees/EmployeeDetailPa
 // ── Org structure ─────────────────────────────────────────────────────────
 const TeamsPage          = lazy(() => import('@/pages/organization/TeamsPage'));
 const TeamDetailPage     = lazy(() => import('@/pages/teams/TeamDetailPage'));
-const DepartmentsPage    = lazy(() => import('@/pages/organization/DepartmentsPage'));
 
 // ── Notifications ─────────────────────────────────────────────────────────
 const NotificationsPage  = lazy(() => import('@/pages/notifications/NotificationsPage'));
@@ -43,7 +42,6 @@ const MyReportsPage      = lazy(() => import('@/pages/reports/MyReportsPage'));
 const ReviewReportsPage  = lazy(() => import('@/pages/reports/ReviewReportsPage'));
 const ReportDetailPage   = lazy(() => import('@/pages/reports/ReportDetailPage'));
 const ActivityLogPage    = lazy(() => import('@/pages/activity/ActivityLogPage'));
-const AuditLogPage       = lazy(() => import('@/pages/activity/AuditLogPage'));
 
 // ── Profile & Settings ────────────────────────────────────────────────────
 const ProfilePage        = lazy(() => import('@/pages/profile/ProfilePage'));
@@ -136,16 +134,6 @@ export function AppRouter() {
             }
           />
 
-          {/* Departments — Commander only */}
-          <Route
-            path="/departments"
-            element={
-              <ProtectedRoute roles={['ADMIN']}>
-                <SuspenseWrap><DepartmentsPage /></SuspenseWrap>
-              </ProtectedRoute>
-            }
-          />
-
           {/* Notifications — all */}
           <Route path="/notifications" element={<SuspenseWrap><NotificationsPage /></SuspenseWrap>} />
 
@@ -180,14 +168,6 @@ export function AppRouter() {
             element={
               <ProtectedRoute roles={['ADMIN', 'TEAM_LEAD']}>
                 <SuspenseWrap><ActivityLogPage /></SuspenseWrap>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/audit"
-            element={
-              <ProtectedRoute roles={['ADMIN']}>
-                <SuspenseWrap><AuditLogPage /></SuspenseWrap>
               </ProtectedRoute>
             }
           />

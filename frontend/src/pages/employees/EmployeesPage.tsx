@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Trash2, Search, Filter, Download, UserPlus, Mail, Phone } from 'lucide-react';
-import { userService, departmentService } from '@/services';
-import type { User, UserRole, PaginatedResponse, Department } from '@/types';
+import { userService } from '@/services';
+import type { User, UserRole, PaginatedResponse } from '@/types';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { Input, Select } from '@/components/ui/Input';
@@ -16,7 +16,6 @@ import { useToast } from '@/contexts';
 interface EmployeeFilters {
   search?: string;
   role?: UserRole;
-  departmentId?: string;
   isActive?: boolean;
   page: number;
   limit: number;
@@ -28,7 +27,6 @@ interface EmployeeFormData {
   email: string;
   phone: string;
   role: UserRole;
-  departmentId: string;
   isActive: boolean;
 }
 
@@ -36,7 +34,6 @@ export default function EmployeesPage() {
   const { success, error } = useToast();
 
   const [data, setData] = useState<PaginatedResponse<User> | null>(null);
-  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
@@ -49,19 +46,15 @@ export default function EmployeesPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<EmployeeFormData>({
     firstName: '', lastName: '', email: '', phone: '',
-    role: 'EMPLOYEE', departmentId: '', isActive: true
+    role: 'MEMBER', isActive: true
   });
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
     setLoading(true); setLoadError(false);
     try {
-      const [usersRes, deptsRes] = await Promise.all([
-        userService.getUsers(filters),
-        departmentService.getDepartments({ page: 1, limit: 100 }),
-      ]);
+      const usersRes = await userService.getUsers(filters);
       setData(usersRes);
-      setDepartments(deptsRes.data);
     } catch {
       setLoadError(true);
     } finally {
@@ -79,17 +72,13 @@ export default function EmployeesPage() {
       email: user.email,
       phone: user.phone ?? '',
       role: user.role,
-      departmentId: user.departmentId ?? '',
       isActive: user.isActive ?? false,
     });
     setEditModal(true);
   };
 
   const handleCreate = () => {
-    setFormData({
-      firstName: '', lastName: '', email: '', phone: '',
-      role: 'EMPLOYEE', departmentId: '', isActive: true
-    });
+    setFormData({ firstName: '', lastName: '', email: '', phone: '', role: 'MEMBER', isActive: true });
     setCreateModal(true);
   };
 
@@ -108,7 +97,6 @@ export default function EmployeesPage() {
         email: formData.email,
         phone: formData.phone || undefined,
         role: formData.role,
-        departmentId: formData.departmentId || undefined,
         isActive: formData.isActive,
       };
 
@@ -144,9 +132,7 @@ export default function EmployeesPage() {
 
   const resetFilters = () => {
     setFilters({ page: 1, limit: 20 });
-  };
-
-  const getRoleBadgeVariant = (role: UserRole) => {
+  }; = (role: UserRole) => {
     switch (role) {
       case 'SUPER_ADMIN': return 'danger';
       case 'ADMIN': return 'warning';
@@ -204,7 +190,7 @@ export default function EmployeesPage() {
             >
               Filters
             </Button>
-            {(filters.role || filters.departmentId || filters.isActive !== undefined) && (
+            {(filters.role || filters.isActive !== undefined) && (
               <Button variant="ghost" size="sm" onClick={resetFilters}>
                 Clear
               </Button>
@@ -212,7 +198,7 @@ export default function EmployeesPage() {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
               <Select
                 value={filters.role ?? ''}
                 onChange={e => setFilters(f => ({ ...f, role: e.target.value as UserRole || undefined, page: 1 }))}
@@ -221,16 +207,7 @@ export default function EmployeesPage() {
                 <option value="">All Roles</option>
                 <option value="ADMIN">Admin</option>
                 <option value="TEAM_LEAD">Team Lead</option>
-                <option value="EMPLOYEE">Member</option>
-              </Select>
-
-              <Select
-                value={filters.departmentId ?? ''}
-                onChange={e => setFilters(f => ({ ...f, departmentId: e.target.value || undefined, page: 1 }))}
-                className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
-              >
-                <option value="">All Teams</option>
-                {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                <option value="MEMBER">Member</option>
               </Select>
 
               <Select
@@ -399,17 +376,7 @@ export default function EmployeesPage() {
           >
             <option value="ADMIN">Admin</option>
             <option value="TEAM_LEAD">Team Lead</option>
-            <option value="EMPLOYEE">Member</option>
-          </Select>
-
-          <Select
-            label="Team"
-            value={formData.departmentId}
-            onChange={e => setFormData(f => ({ ...f, departmentId: e.target.value }))}
-            className="border-[#e89b1a]/40 dark:border-[#e89b1a]/40 focus:border-[#e89b1a]"
-          >
-            <option value="">No Team</option>
-            {Array.isArray(departments) && departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            <option value="MEMBER">Member</option>
           </Select>
 
           <label className="flex items-center gap-2 cursor-pointer">
