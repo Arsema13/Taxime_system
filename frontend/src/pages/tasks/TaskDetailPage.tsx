@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft, Edit, Trash2, Star, Calendar, Clock, User, Users,
   Paperclip, MessageSquare, Activity, CheckSquare,
+  Download, Eye, X, FileText, Image, Film, Music, File,
 } from 'lucide-react';
 import { taskService } from '@/services';
 import type { Task, Comment, Attachment, ActivityLog, Subtask } from '@/types';
@@ -22,6 +23,7 @@ import { Card, ErrorState } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ConfirmDialog } from '@/components/ui/Modal';
 import { useToast } from '@/contexts';
+import api from '@/services/api';
 import { format, formatDistanceToNow } from 'date-fns';
 
 export default function TaskDetailPage() {
@@ -37,6 +39,9 @@ export default function TaskDetailPage() {
   const [error, setError] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [previewAtt, setPreviewAtt] = useState<Attachment | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const load = async () => {
     if (!id) return;
@@ -136,6 +141,71 @@ export default function TaskDetailPage() {
     if (!id) return;
     await taskService.deleteComment(id, commentId);
     load();
+  };
+
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType.startsWith('image/')) return <Image className="w-5 h-5" />;
+    if (mimeType.startsWith('video/')) return <Film className="w-5 h-5" />;
+    if (mimeType.startsWith('audio/')) return <Music className="w-5 h-5" />;
+    if (mimeType === 'application/pdf') return <FileText className="w-5 h-5" />;
+    return <File className="w-5 h-5" />;
+  };
+
+  const isPreviewable = (mimeType: string) => {
+    return mimeType.startsWith('image/') || mimeType === 'application/pdf' || mimeType.startsWith('video/') || mimeType.startsWith('audio/') || mimeType === 'text/plain' || mimeType === 'text/html' || mimeType === 'text/css' || mimeType === 'text/javascript' || mimeType === 'application/json';
+  };
+
+  const handleDownload = async (att: Attachment) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`/api/attachments/${att.id}/download`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = att.originalName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toastError('Error', 'Could not download file');
+    }
+  };
+
+  const handlePreview = async (att: Attachment) => {
+    setPreviewAtt(att);
+    setPreviewLoading(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`/api/attachments/${att.id}/download`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error('Preview failed');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      setPreviewUrl(url);
+    } catch {
+      toastError('Error', 'Could not load preview');
+      setPreviewAtt(null);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  const closePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewAtt(null);
+    setPreviewUrl(null);
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   if (loading) return <PageLoader />;
@@ -249,13 +319,33 @@ export default function TaskDetailPage() {
                   ) : (
                     <div className="flex flex-col gap-2">
                       {attachments.map((att) => (
-                        <div key={att.id} className="flex items-center gap-3 p-3 rounded-lg border border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:bg-slate-900/50 dark:hover:bg-slate-700/50">
-                          <Paperclip className="w-4 h-4 text-slate-400 shrink-0" />
+                        <div key={att.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:bg-slate-900/50 dark:hover:bg-slate-700/50 transition-colors">
+                          <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                            {getFileIcon(att.mimeType)}
+                          </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{att.originalName}</p>
                             <p className="text-xs text-slate-400">
-                              {(att.size / 1024).toFixed(1)} KB · {att.uploader.firstName} {att.uploader.lastName}
+                              {formatFileSize(att.size)} · {att.uploader.firstName} {att.uploader.lastName}
                             </p>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            {isPreviewable(att.mimeType) && (
+                              <button
+                                onClick={() => handlePreview(att)}
+                                className="p-2 rounded-lg text-slate-400 hover:text-[#e89b1a] hover:bg-[#e89b1a]/10 transition-colors"
+                                title="Preview"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDownload(att)}
+                              className="p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                              title="Download"
+                            >
+                              <Download className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -394,6 +484,65 @@ export default function TaskDetailPage() {
         confirmLabel="Delete"
         variant="danger"
       />
+
+      {/* File Preview Modal */}
+      {previewAtt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={closePreview} />
+          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                  {getFileIcon(previewAtt.mimeType)}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{previewAtt.originalName}</p>
+                  <p className="text-xs text-slate-400">{formatFileSize(previewAtt.size)}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => handleDownload(previewAtt)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                  title="Download"
+                >
+                  <Download className="w-4 h-4" />
+                </button>
+                <button onClick={closePreview} className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto p-4 flex items-center justify-center min-h-[300px]">
+              {previewLoading ? (
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#e89b1a]" />
+              ) : previewUrl ? (
+                previewAtt.mimeType.startsWith('image/') ? (
+                  <img src={previewUrl} alt={previewAtt.originalName} className="max-w-full max-h-[70vh] object-contain rounded-lg" />
+                ) : previewAtt.mimeType === 'application/pdf' ? (
+                  <iframe src={previewUrl} className="w-full h-[70vh] rounded-lg border border-slate-200 dark:border-slate-700" title={previewAtt.originalName} />
+                ) : previewAtt.mimeType.startsWith('video/') ? (
+                  <video src={previewUrl} controls className="max-w-full max-h-[70vh] rounded-lg">
+                    Your browser does not support video playback.
+                  </video>
+                ) : previewAtt.mimeType.startsWith('audio/') ? (
+                  <audio src={previewUrl} controls className="w-full max-w-md" />
+                ) : previewAtt.mimeType.startsWith('text/') || previewAtt.mimeType === 'application/json' ? (
+                  <iframe src={previewUrl} className="w-full h-[70vh] rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" title={previewAtt.originalName} />
+                ) : (
+                  <div className="text-center py-8">
+                    <File className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-sm text-slate-500">Preview not available for this file type</p>
+                    <Button size="sm" className="mt-3" onClick={() => handleDownload(previewAtt)} icon={<Download className="w-4 h-4" />}>
+                      Download to view
+                    </Button>
+                  </div>
+                )
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
