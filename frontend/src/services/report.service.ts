@@ -20,45 +20,49 @@ export type ReportType =
   | 'task-history'
   | 'completion-timeline';
 
+// Map frontend kebab-case types to backend snake_case types
+const TYPE_MAP: Record<ReportType, string> = {
+  'task-summary':        'task_summary',
+  'employee-performance':'employee_performance',
+  'team-performance':    'team_performance',
+  'department':          'department_report',
+  'overdue':             'overdue_report',
+  'task-history':        'task_history',
+  'completion-timeline': 'completion_timeline',
+};
+
 export const reportService = {
   async getReport(type: ReportType, filters: ReportFilters = {}): Promise<unknown> {
-    const { data } = await api.get(`/reports/${type}`, { params: filters });
+    const { data } = await api.get('/reports', { params: { type: TYPE_MAP[type], ...filters } });
     return data.data ?? data;
   },
 
   async getTaskReport(filters: ReportFilters = {}): Promise<unknown> {
     const { data } = await api.get('/reports', { 
-      params: { 
-        type: 'task_summary',
-        ...filters 
-      } 
+      params: { type: 'task_summary', ...filters } 
     });
     return data.data ?? data;
   },
 
   async exportReport(filters: ReportFilters = {}, format: 'pdf' | 'excel' = 'pdf'): Promise<Blob> {
     const { data } = await api.get('/reports', {
-      params: {
-        type: 'task_summary',
-        format,
-        ...filters
-      },
+      params: { type: 'task_summary', format, ...filters },
       responseType: 'blob',
     });
     return data;
   },
 
   async exportPdf(type: ReportType, filters: ReportFilters = {}): Promise<Blob> {
-    const { data } = await api.get(`/reports/${type}/export/pdf`, {
-      params: filters,
+    const { data } = await api.get('/reports', {
+      params: { type: TYPE_MAP[type], format: 'pdf', ...filters },
       responseType: 'blob',
     });
     return data;
   },
 
   async exportExcel(type: ReportType, filters: ReportFilters = {}): Promise<Blob> {
-    const { data } = await api.get(`/reports/${type}/export/excel`, {
-      params: filters,
+    const { data } = await api.get('/reports', {
+      params: { type: TYPE_MAP[type], format: 'excel', ...filters },
       responseType: 'blob',
     });
     return data;
