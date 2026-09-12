@@ -26,6 +26,7 @@ export async function findAllTask(query: {
         team: { select: { id: true, name: true } },
         tags: { include: { tag: true } },
         subtasks: { select: { id: true, isCompleted: true } },
+        favorites: userId ? { where: { userId }, select: { id: true } } : false,
         _count: { select: { comments: true, attachments: true, subtasks: true } },
       },
       orderBy: { [sortBy]: sortOrder },
@@ -35,6 +36,8 @@ export async function findAllTask(query: {
 
   const enriched = tasks.map((t: any) => ({
     ...t,
+    isFavorite: Array.isArray(t.favorites) && t.favorites.length > 0,
+    favorites: undefined,
     subtaskProgress: t.subtasks.length > 0
       ? { completed: t.subtasks.filter((s: any) => s.isCompleted).length, total: t.subtasks.length }
       : null,
