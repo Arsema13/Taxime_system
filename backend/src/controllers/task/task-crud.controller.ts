@@ -28,9 +28,17 @@ export class TaskCrudController {
 
   async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const task = await taskService.create({ ...req.body, creatorId: req.user!.id });
+      if (!req.user?.id) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+      }
+      const task = await taskService.create({ ...req.body, creatorId: req.user.id });
       res.status(201).json(successResponse('Task created', task));
-    } catch (error) { next(error); }
+    } catch (error: any) {
+      if (error?.message?.includes('Creator user not found')) {
+        return res.status(401).json({ success: false, message: 'Session expired. Please log in again.' });
+      }
+      next(error);
+    }
   }
 
   async update(req: AuthRequest, res: Response, next: NextFunction) {

@@ -16,6 +16,9 @@ export async function createTask(data: {
 }) {
   const { assigneeIds, primaryAssigneeId, tags, ...taskData } = data;
 
+  const creator = await prisma.user.findUnique({ where: { id: data.creatorId } });
+  if (!creator) throw new Error('Creator user not found. Please log in again.');
+
   const createInput: any = {
     title: taskData.title, description: taskData.description, status: 'PENDING',
     priority: taskData.priority as TaskPriority,
