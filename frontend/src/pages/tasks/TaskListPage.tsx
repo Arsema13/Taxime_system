@@ -90,21 +90,31 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
   useEffect(() => { load(); }, [load]);
 
   const handleFavorite = async (taskId: string) => {
-    // Optimistically toggle in UI immediately
-    setData(prev => prev ? {
-      ...prev,
-      data: prev.data.map(t => t.id === taskId ? { ...t, isFavorite: !t.isFavorite } : t)
-    } : prev);
+    const task = data?.data.find(t => t.id === taskId);
+    const wasF = task?.isFavorite ?? false;
+
+    // Optimistically update or remove from list
+    setData(prev => {
+      if (!prev) return prev;
+      if (favoritesMode && wasF) {
+        // Remove from favorites list immediately
+        return { ...prev, data: prev.data.filter(t => t.id !== taskId) };
+      }
+      return { ...prev, data: prev.data.map(t => t.id === taskId ? { ...t, isFavorite: !t.isFavorite } : t) };
+    });
+
     try {
       await taskService.toggleFavorite(taskId);
-      // If in favorites mode, reload to remove unfavorited tasks
-      if (favoritesMode) load();
     } catch {
       // Revert on error
-      setData(prev => prev ? {
-        ...prev,
-        data: prev.data.map(t => t.id === taskId ? { ...t, isFavorite: !t.isFavorite } : t)
-      } : prev);
+      setData(prev => {
+        if (!prev) return prev;
+        if (favoritesMode && wasF) {
+          // Re-add the task back
+          return task ? { ...prev, data: [task, ...prev.data] } : prev;
+        }
+        return { ...prev, data: prev.data.map(t => t.id === taskId ? { ...t, isFavorite: wasF } : t) };
+      });
       toastError('Error', 'Could not toggle favorite');
     }
   };
