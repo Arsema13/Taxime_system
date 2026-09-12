@@ -7,4 +7,9 @@ const prisma = new PrismaClient({
   } : undefined,
 });
 
+// Handle Neon/serverless connection drops by reconnecting on error
+prisma.$connect().catch((e) => {
+  console.error('[DB] Initial connection failed:', e.message);
+});
+
 export default prisma;
