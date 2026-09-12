@@ -72,7 +72,7 @@ export default function EmployeesPage() {
       email: user.email,
       phone: user.phone ?? '',
       role: user.role,
-      isActive: user.isActive ?? false,
+      isActive: (user as any).status === 'ACTIVE',
     });
     setEditModal(true);
   };
@@ -101,10 +101,10 @@ export default function EmployeesPage() {
       };
 
       if (selectedUser) {
-        await userService.updateUser(selectedUser.id, payload);
+        await userService.updateUser(selectedUser.id, { ...payload, status: formData.isActive ? 'ACTIVE' : 'INACTIVE' });
         success('Updated', 'Employee updated successfully');
       } else {
-        await userService.createUser({ ...payload, password: 'Welcome123!' });
+        await userService.createUser({ ...payload, password: 'Welcome123!', status: 'ACTIVE' });
         success('Created', 'Employee created successfully');
       }
 
@@ -292,8 +292,8 @@ export default function EmployeesPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge variant={user.isActive ? 'success' : 'default'}>
-                        {user.isActive ? 'Active' : 'Inactive'}
+                      <Badge variant={user.status === 'ACTIVE' ? 'success' : user.status === 'SUSPENDED' ? 'danger' : 'default'}>
+                        {user.status === 'ACTIVE' ? 'Active' : user.status === 'SUSPENDED' ? 'Suspended' : 'Inactive'}
                       </Badge>
                     </td>
                     <td className="px-4 py-3">

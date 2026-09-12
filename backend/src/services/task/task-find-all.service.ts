@@ -69,7 +69,10 @@ function buildWhereClause(filters: any): any {
   if (assigneeId) where.assignees = { some: { userId: assigneeId } };
   if (creatorId) where.creatorId = creatorId;
   if (isArchived !== undefined) where.isArchived = isArchived === 'true';
-  if (isFavorite !== undefined) where.isFavorite = isFavorite === 'true';
+  if (isFavorite === 'true' && userId) {
+    // Filter tasks favorited by this specific user via UserFavorite table
+    where.favorites = { some: { userId } };
+  }
   if (dueDateFrom || dueDateTo) {
     where.dueDate = {};
     if (dueDateFrom) where.dueDate.gte = new Date(dueDateFrom);
