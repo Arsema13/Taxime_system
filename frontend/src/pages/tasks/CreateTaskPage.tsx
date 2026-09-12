@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, ChevronDown, ChevronRight, Users, CheckSquare } from 'lucide-react';
+import { ArrowLeft, Save, ChevronDown, ChevronRight, Users, CheckSquare, Paperclip, X } from 'lucide-react';
 import { taskService, userService, teamService } from '@/services';
 import type { TaskPriority, User } from '@/types';
 import type { Team } from '@/types/department.types';
@@ -21,6 +21,8 @@ interface CreateTaskForm {
   assigneeIds: string[];
 }
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 export default function CreateTaskPage() {
   const navigate = useNavigate();
   const { success, error } = useToast();
@@ -35,6 +37,7 @@ export default function CreateTaskPage() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [files, setFiles] = useState<File[]>([]);
 
   useEffect(() => {
     Promise.all([
@@ -97,6 +100,16 @@ export default function CreateTaskPage() {
         assigneeIds: form.assigneeIds,
       };
       const created = await taskService.createTask(payload);
+      // Upload attachments after task is created
+      if (files.length > 0) {
+        for (const file of files) {
+          try {
+            await taskService.uploadAttachment(created.id, file);
+          } catch {
+            // Individual file upload failure is non-blocking
+          }
+        }
+      }
       success('Created', 'Task created successfully');
       navigate(`/tasks/${created.id}`);
     } catch (err: any) {
@@ -105,6 +118,24 @@ export default function CreateTaskPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(e.target.files || []);
+    const valid: File[] = [];
+    for (const f of selected) {
+      if (f.size > MAX_FILE_SIZE) {
+        error('File too large', `"${f.name}" exceeds the 5 MB limit`);
+        continue;
+      }
+      valid.push(f);
+    }
+    setFiles(prev => [...prev, ...valid]);
+    e.target.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const toggleAssignee = (userId: string) => {
@@ -234,6 +265,37 @@ export default function CreateTaskPage() {
                   step="0.5"
                 />
               </div>
+            </Card>
+
+            <Card padding="lg">
+              <h2 className="text-lg font-bold text-[#0B1628] dark:text-slate-100 mb-4">Attachments</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                Optional. Max 5 MB per file.
+              </p>
+              <label className="flex items-center justify-center gap-2 w-full py-6 border-2 border-dashed border-slate-200 dark:border-slate-600 rounded-xl cursor-pointer hover:border-[#e89b1a] hover:bg-[#e89b1a]/5 transition-colors">
+                <Paperclip className="w-4 h-4 text-slate-400" />
+                <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Click to attach files</span>
+                <input
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+              {files.length > 0 && (
+                <div className="flex flex-col gap-2 mt-3">
+                  {files.map((f, i) => (
+                    <div key={i} className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                      <Paperclip className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span className="text-sm text-slate-700 dark:text-slate-300 truncate flex-1 min-w-0">{f.name}</span>
+                      <span className="text-xs text-slate-400 shrink-0">{(f.size / 1024 / 1024).toFixed(1)} MB</span>
+                      <button type="button" onClick={() => removeFile(i)} className="text-slate-400 hover:text-red-500 transition-colors shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card>
           </div>
 

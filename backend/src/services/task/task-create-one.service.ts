@@ -17,7 +17,7 @@ export async function createTask(data: {
   const { assigneeIds, primaryAssigneeId, tags, ...taskData } = data;
 
   const createInput: any = {
-    title: taskData.title, description: taskData.description, status: 'DRAFT',
+    title: taskData.title, description: taskData.description, status: 'PENDING',
     priority: taskData.priority as TaskPriority,
     dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
     startDate: taskData.startDate ? new Date(taskData.startDate) : undefined,

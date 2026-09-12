@@ -93,15 +93,15 @@ function CommentItem({
           </div>
 
           {replying && (
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <input
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submitReply()}
                 placeholder="Write a reply…"
-                className="flex-1 text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="flex-1 text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 min-w-0"
               />
-              <Button size="xs" loading={busy} onClick={submitReply} icon={<Send className="w-3 h-3" />}>Reply</Button>
+              <Button size="xs" loading={busy} onClick={submitReply} icon={<Send className="w-3 h-3" />} className="shrink-0">Reply</Button>
             </div>
           )}
         </div>
@@ -134,16 +134,16 @@ export function CommentSection({ comments, onAdd, onEdit, onDelete }: Props) {
     <div className="flex flex-col gap-4">
       {/* New comment input */}
       <div className="flex gap-3">
-        <Avatar src={user?.avatar} name={`${user?.firstName} ${user?.lastName}`} size="sm" />
-        <div className="flex-1 flex gap-2">
+        <Avatar src={user?.avatar} name={`${user?.firstName} ${user?.lastName}`} size="sm" className="shrink-0" />
+        <div className="flex-1 flex flex-col sm:flex-row gap-2">
           <input
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit()}
             placeholder="Write a comment… (Enter to send)"
-            className="flex-1 text-sm border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50"
+            className="flex-1 text-sm border border-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50 min-w-0"
           />
-          <Button size="sm" loading={busy} onClick={handleSubmit} icon={<Send className="w-4 h-4" />} disabled={!content.trim()}>
+          <Button size="sm" loading={busy} onClick={handleSubmit} icon={<Send className="w-4 h-4" />} disabled={!content.trim()} className="shrink-0">
             Send
           </Button>
         </div>
