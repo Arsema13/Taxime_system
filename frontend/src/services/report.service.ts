@@ -17,7 +17,8 @@ export type ReportType =
   | 'team-performance'
   | 'department'
   | 'overdue'
-  | 'task-history';
+  | 'task-history'
+  | 'completion-timeline';
 
 export const reportService = {
   async getReport(type: ReportType, filters: ReportFilters = {}): Promise<unknown> {

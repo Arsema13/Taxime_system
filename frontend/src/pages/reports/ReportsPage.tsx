@@ -110,8 +110,8 @@ export default function ReportsPage() {
 
       setDashboard(dashData);
       setTaskSummary(summaryData);
-      setTeamPerformance(teamData?.data || []);
-      setCompletionTimeline(timelineData?.data || []);
+      setTeamPerformance((teamData as any)?.data || (Array.isArray(teamData) ? teamData : []));
+      setCompletionTimeline((timelineData as any)?.data || (Array.isArray(timelineData) ? timelineData : []));
     } catch {
       error('Error', 'Failed to load analytics data');
     } finally {
@@ -192,7 +192,7 @@ export default function ReportsPage() {
 
   // ── Export handlers ─────────────────────────────────────────────────────
 
-  const handleExport = async (format: 'PDF' | 'Excel' | 'Word') => {
+  const handleExport = async (exportFormat: 'PDF' | 'Excel' | 'Word') => {
     setIsExporting(true);
     try {
       const params: Record<string, string> = {};
@@ -200,20 +200,20 @@ export default function ReportsPage() {
       if (dateRange.toDate) params.dateTo = dateRange.toDate;
 
       let blob: Blob;
-      const ext = format === 'PDF' ? 'pdf' : format === 'Excel' ? 'xlsx' : 'docx';
+      const ext = exportFormat === 'PDF' ? 'pdf' : exportFormat === 'Excel' ? 'xlsx' : 'docx';
       const filename = `taxime-analytics-${datePreset}-${format(new Date(), 'yyyy-MM-dd')}.${ext}`;
 
-      if (format === 'PDF') {
+      if (exportFormat === 'PDF') {
         blob = await reportService.exportAnalyticsPdf(params);
-      } else if (format === 'Excel') {
+      } else if (exportFormat === 'Excel') {
         blob = await reportService.exportAnalyticsExcel(params);
       } else {
         blob = await reportService.exportAnalyticsWord(params);
       }
       downloadBlob(blob, filename);
-      success('Exported', `Analytics report exported as ${format.toUpperCase()}`);
+      success('Exported', `Analytics report exported as ${exportFormat.toUpperCase()}`);
     } catch {
-      error('Export Failed', `Could not export report as ${format}`);
+      error('Export Failed', `Could not export report as ${exportFormat}`);
     } finally {
       setIsExporting(false);
     }
@@ -508,7 +508,7 @@ export default function ReportsPage() {
                       outerRadius={65}
                       paddingAngle={3}
                     >
-                      {priorityData.map((entry, i) => (
+                      {priorityData.map((entry: { color: string }, i: number) => (
                         <Cell key={i} fill={entry.color} />
                       ))}
                     </Pie>
@@ -520,7 +520,7 @@ export default function ReportsPage() {
               </div>
 
               <div className="flex-1 space-y-1.5 text-xs">
-                {priorityData.map((cat, i) => (
+                {priorityData.map((cat: { name: string; color: string; count: number; value: number }, i: number) => (
                   <div key={i} className="flex items-center justify-between">
                     <span className="flex items-center gap-1.5 text-slate-600 truncate font-medium">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: cat.color }} />
