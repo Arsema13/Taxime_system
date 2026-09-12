@@ -26,7 +26,7 @@ export const taskService = {
   // ── CRUD ──────────────────────────────────────────────────────────────────
   async getTasks(params: TaskQueryParams = {}): Promise<PaginatedResponse<Task>> {
     const { data } = await api.get('/tasks', { params: buildParams(params as Record<string, unknown>) });
-    return data;
+    return data.data ?? data;
   },
 
   async getTask(id: string): Promise<Task> {

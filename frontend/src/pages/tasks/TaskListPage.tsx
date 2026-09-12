@@ -49,8 +49,6 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
         f.creatorId = user?.id;
       } else if (user?.role === 'TEAM_LEAD' && user?.teamId) {
         f.teamId = user.teamId;
-      } else {
-        f.assigneeId = user?.id;
       }
     }
     if (favoritesMode) f.isFavorite = true;
@@ -131,7 +129,6 @@ export default function TaskListPage({ myTasksMode = false, favoritesMode = fals
             if (myTasksMode) {
               if (user?.role === 'ADMIN') resetFilters.creatorId = user?.id;
               else if (user?.role === 'TEAM_LEAD' && user?.teamId) resetFilters.teamId = user.teamId;
-              else resetFilters.assigneeId = user?.id;
             }
             if (favoritesMode) resetFilters.isFavorite = true;
             updateFilters(resetFilters);
